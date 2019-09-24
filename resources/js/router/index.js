@@ -22,6 +22,7 @@ import nestedRoutes from './modules/nested';
 import errorRoutes from './modules/error';
 import excelRoutes from './modules/excel';
 import permissionRoutes from './modules/permission';
+import transactionRoutes from './modules/transaction';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -92,6 +93,21 @@ export const constantRoutes = [
       },
     ],
   },
+  transactionRoutes,
+  {
+    path: '/master',
+    component: Layout,
+    redirect: '/master/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/documentation/index'),
+        name: 'MasterData',
+        meta: { title: 'Master Data', icon: 'documentation', noCache: true, permissions: ['view menu master'] },
+      },
+    ],
+  },
+  adminRoutes,
   {
     path: '/documentation',
     component: Layout,
@@ -127,7 +143,6 @@ export const asyncRoutes = [
   chartsRoutes,
   nestedRoutes,
   tableRoutes,
-  adminRoutes,
   {
     path: '/theme',
     component: Layout,
