@@ -95,15 +95,29 @@ export const constantRoutes = [
   },
   transactionRoutes,
   {
-    path: '/master',
+    path: '/masterdata',
     component: Layout,
-    redirect: '/master/index',
+    redirect: '/masterdata/',
+    name: 'MasterData',
+    alwaysShow: true,
+    meta: {
+      title: 'Master Data',
+      icon: 'admin',
+      permissions: ['view menu masterdata'],
+    },
     children: [
+      /** User managements */
       {
-        path: 'index',
-        component: () => import('@/views/documentation/index'),
-        name: 'MasterData',
-        meta: { title: 'Master Data', icon: 'documentation', noCache: true, permissions: ['view menu master'] },
+        path: 'item',
+        component: () => import('@/views/users/List'),
+        name: 'itemlist',
+        meta: { title: 'Item List', icon: 'user', permissions: ['manage item'] },
+      },
+      {
+        path: 'vendor',
+        component: () => import('@/views/vendors/List'),
+        name: 'vendorlist',
+        meta: { title: 'Vendor List', icon: 'user', permissions: ['manage vendor'] },
       },
     ],
   },

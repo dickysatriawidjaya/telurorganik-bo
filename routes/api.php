@@ -26,12 +26,23 @@ Route::group(['middleware' => 'api'], function () {
         Route::post('auth/logout', 'AuthController@logout');
     });
 
+    //USER
     Route::apiResource('users', 'UserController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_USER_MANAGE);
+    
     Route::get('users/{user}/permissions', 'UserController@permissions')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
+
     Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
+
     Route::apiResource('roles', 'RoleController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
+
     Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
+
     Route::apiResource('permissions', 'PermissionController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
+    //USER END
+
+    //VENDOR
+    Route::apiResource('vendors', 'VendorController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_USER_MANAGE);
+    //VENDOR END
 
     // Fake APIs
     Route::get('/table/list', function () {
