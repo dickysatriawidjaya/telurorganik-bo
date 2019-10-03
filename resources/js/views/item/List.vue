@@ -21,27 +21,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Name" prop="name" sortable>
+      <el-table-column align="center" label="Item Name" prop="name" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="PIC Name" prop="pic_name" sortable>
+      <el-table-column align="center" label="Unit" prop="unit" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.pic_name }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Phone" prop="phone" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.phone }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Address" prop="address" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.address }}</span>
+          <span>{{ scope.row.unit.name }}</span>
         </template>
       </el-table-column>
 
@@ -72,21 +60,17 @@
 
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
       <div v-loading="vendorCreating" class="form-container">
-        <el-form ref="vendorForm" :rules="rules" :model="newVendor" label-position="left" label-width="150px" style="max-width: 500px;">
+        <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
-            <el-input v-model="newVendor.name_form" />
+            <el-input v-model="newItem.name_form" />
           </el-form-item>
-          <el-form-item label="PIC Name" prop="pic_name">
-            <el-input v-model="newVendor.pic_name_form" />
+          <el-form-item label="Unit" prop="unit">
+            <el-select v-model="newItem.unit_id_form" style="width: 150px" class="filter-item">
+              <el-option v-for="u in unitList" :key="u.id" :label="u.name" :value="u.id">{{ u.name }}</el-option>
+            </el-select>
           </el-form-item>
-          <el-form-item label="Phone" prop="phone">
-            <el-input v-model="newVendor.phone_form" />
-          </el-form-item>
-          <el-form-item label="Address" prop="address">
-            <el-input v-model="newVendor.address_form" />
-          </el-form-item>
-          <el-form-item v-if="vendorId > 0" label="Status" prop="status">
-            <el-select v-model="newVendor.status_form" style="width: 150px" class="filter-item">
+          <el-form-item v-if="itemId > 0" label="Status" prop="status">
+            <el-select v-model="newItem.status_form" style="width: 150px" class="filter-item">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
           </el-form-item>
@@ -95,10 +79,10 @@
           <el-button @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button v-if="vendorId <= 0" type="primary" @click="createUser()">
+          <el-button v-if="itemId <= 0" type="primary" @click="createUser()">
             {{ $t('table.confirm') }}
           </el-button>
-          <el-button v-if="vendorId > 0" type="primary" @click="onUpdate()">
+          <el-button v-if="itemId > 0" type="primary" @click="onUpdate()">
             Update
           </el-button>
         </div>
@@ -109,15 +93,17 @@
 
 <script>
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
+import ItemResource from '@/api/item';
 import UserResource from '@/api/user';
-import VendorResource from '@/api/vendor';
+import UnitResource from '@/api/unit';
 import Resource from '@/api/resource';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
 
 const userResource = new UserResource();
-const vendorResource = new VendorResource();
+const itemResource = new ItemResource();
+const unitResource = new UnitResource();
 const permissionResource = new Resource('permissions');
 
 export default {
@@ -127,6 +113,7 @@ export default {
   data() {
     return {
       list: null,
+      unitList: null,
       total: 0,
       loading: true,
       downloading: false,
@@ -137,14 +124,17 @@ export default {
         keyword: '',
         role: '',
       },
+      queryUnit: {
+        paginate: false,
+      },
       nonAdminRoles: ['editor', 'user', 'visitor'],
-      newVendor: {},
+      newItem: {},
       status: [
         { label: 'Active', value: 1 },
         { label: 'Deleted', value: -1 },
       ],
       titleForm: '',
-      vendorId: 0,
+      itemId: 0,
       dialogFormVisible: false,
       dialogPermissionVisible: false,
       dialogPermissionLoading: false,
@@ -235,8 +225,9 @@ export default {
     },
   },
   created() {
-    this.resetnewVendor();
+    this.resetnewItem();
     this.getList();
+    this.getUnitList();
     if (checkPermission(['manage permission'])) {
       this.getPermissions();
     }
@@ -250,10 +241,21 @@ export default {
       this.menuPermissions = menu;
       this.otherPermissions = other;
     },
+    async getUnitList() {
+      const { limit, page } = this.queryUnit;
+      this.loading = true;
+      const { data, meta } = await unitResource.list(this.queryUnit);
+      this.unitList = data;
+      this.list.forEach((element, index) => {
+        element['index'] = (page - 1) * limit + index + 1;
+      });
+      this.total = meta.total;
+      this.loading = false;
+    },
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await vendorResource.list(this.query);
+      const { data, meta } = await itemResource.list(this.query);
       this.list = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
@@ -268,32 +270,30 @@ export default {
     handleCreate() {
       this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['vendorForm'].clearValidate();
+        this.$refs['itemForm'].clearValidate();
       });
-      this.titleForm = 'Create New Vendor';
-      this.vendorId = 0;
-      this.resetnewVendor();
+      this.titleForm = 'Create New Item';
+      this.itemId = 0;
+      this.resetnewItem();
     },
     handleUpdate(data){
       this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['vendorForm'].clearValidate();
+        this.$refs['itemForm'].clearValidate();
       });
-      this.titleForm = 'Edit Vendor';
-      this.vendorId = data.id;
-      this.newVendor.name_form = data.name;
-      this.newVendor.pic_name_form = data.pic_name;
-      this.newVendor.phone_form = data.phone;
-      this.newVendor.address_form = data.address;
-      this.newVendor.status_form = data.status;
+      this.titleForm = 'Edit Item';
+      this.itemId = data.id;
+      this.newItem.name_form = data.name;
+      this.newItem.unit_id_form = data.unit_id;
+      this.newItem.status_form = data.status;
     },
     handleDelete(id, name) {
-      this.$confirm('This will delete vendor ' + "'" + name + "'" + '. Continue?', 'Warning', {
+      this.$confirm('This will delete item ' + "'" + name + "'" + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning',
       }).then(() => {
-        vendorResource.destroy(id).then(response => {
+        itemResource.destroy(id).then(response => {
           this.$message({
             type: 'success',
             message: 'Delete completed',
@@ -310,18 +310,18 @@ export default {
       });
     },
     createUser() {
-      this.$refs['vendorForm'].validate((valid) => {
+      this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.vendorCreating = true;
-          vendorResource
-            .store(this.newVendor)
+          itemResource
+            .store(this.newItem)
             .then(response => {
               this.$message({
-                message: 'New vendor ' + this.newVendor.name + ' has been created successfully.',
+                message: 'New item ' + this.newItem.name + ' has been created successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
-              this.resetnewVendor();
+              this.resetnewItem();
               this.dialogFormVisible = false;
               this.handleFilter();
             })
@@ -339,8 +339,8 @@ export default {
     },
     onUpdate() {
       // this.vendorCreating = true;
-      // vendorResource
-      //   .update(this.vendorId, this.newVendor)
+      // itemResource
+      //   .update(this.itemId, this.newItem)
       //   .then(response => {
       //     this.vendorCreating = false;
       //     this.$message({
@@ -354,18 +354,18 @@ export default {
       //     this.vendorCreating = false;
       //   });
 
-      this.$refs['vendorForm'].validate((valid) => {
+      this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.vendorCreating = true;
-          vendorResource
-            .update(this.vendorId, this.newVendor)
+          itemResource
+            .update(this.itemId, this.newItem)
             .then(response => {
               this.$message({
                 message: 'Vendor information has been updated successfully',
                 type: 'success',
                 duration: 5 * 1000,
               });
-              this.resetnewVendor();
+              this.resetnewItem();
               this.dialogFormVisible = false;
               this.handleFilter();
             })
@@ -381,8 +381,8 @@ export default {
         }
       });
     },
-    resetnewVendor() {
-      this.newVendor = {
+    resetnewItem() {
+      this.newItem = {
         name_form: '',
         phone_form: '',
         address_form: '',
@@ -393,13 +393,13 @@ export default {
     handleDownload() {
       this.downloading = true;
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['id', 'name', 'pic_name', 'phone', 'address', 'status'];
-        const filterVal = ['index', 'name', 'pic_name', 'phone', 'address', 'status'];
+        const tHeader = ['id', 'name', 'unit', 'status'];
+        const filterVal = ['index', 'name', 'unit.name', 'status'];
         const data = this.formatJson(filterVal, this.list);
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'vendor-list',
+          filename: 'item-list',
         });
         this.downloading = false;
       });

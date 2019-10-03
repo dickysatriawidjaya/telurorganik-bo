@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Unit extends Model
 {
     protected $fillable = [
-        'name', 'status', 'created_by','updated_by'
+        'name','unit_code','description','status', 'created_by','updated_by'
     ];
 }

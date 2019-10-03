@@ -109,15 +109,21 @@ export const constantRoutes = [
       /** User managements */
       {
         path: 'item',
-        component: () => import('@/views/users/List'),
+        component: () => import('@/views/item/List'),
         name: 'itemlist',
-        meta: { title: 'Item List', icon: 'user', permissions: ['manage item'] },
+        meta: { title: 'Item', icon: 'user', permissions: ['manage item'] },
+      },
+      {
+        path: 'unit',
+        component: () => import('@/views/unit/List'),
+        name: 'unitlist',
+        meta: { title: 'Unit', icon: 'user', permissions: ['manage unit'] },
       },
       {
         path: 'vendor',
         component: () => import('@/views/vendors/List'),
         name: 'vendorlist',
-        meta: { title: 'Vendor List', icon: 'user', permissions: ['manage vendor'] },
+        meta: { title: 'Vendor', icon: 'user', permissions: ['manage vendor'] },
       },
     ],
   },
