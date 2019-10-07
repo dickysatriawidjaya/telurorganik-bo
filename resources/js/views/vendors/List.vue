@@ -136,6 +136,7 @@ export default {
         limit: 15,
         keyword: '',
         role: '',
+        paginate: true,
       },
       nonAdminRoles: ['editor', 'user', 'visitor'],
       newVendor: {},

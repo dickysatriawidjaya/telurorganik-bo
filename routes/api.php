@@ -52,6 +52,10 @@ Route::group(['middleware' => 'api'], function () {
     Route::apiResource('items', 'ItemController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_USER_MANAGE);
     //Item END
 
+    //Transaction
+    Route::apiResource('transactions', 'TransactionController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_USER_MANAGE);
+    //Transaction END
+
     // Fake APIs
     Route::get('/table/list', function () {
         $rowsNumber = mt_rand(20, 30);

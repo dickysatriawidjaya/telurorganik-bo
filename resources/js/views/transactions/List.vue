@@ -3,8 +3,8 @@
     <div class="filter-container">
       <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @input="handleFilter" />
       <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item" @change="handleFilter">
-        <el-option key="1" label="Active" value="1" />
-        <el-option key="-1" label="Deleted" value="-1" />
+        <el-option key="1" label="PRINTED" value="1" />
+        <el-option key="0" label="WAITING" value="0" />
       </el-select>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
         {{ $t('table.add') }}
@@ -21,31 +21,43 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Item" prop="name" sortable>
+      <el-table-column align="center" label="Transaction No." prop="transaction_no" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Unit" prop="unit" sortable>
+      <el-table-column align="center" label="Vendor" prop="vendor" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.unit.name }}</span>
+          <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
+          <span v-else>{{ scope.row.vendor.name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="Total" prop="total" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
 
       <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">
-            ACTIVE
+            PRINTED
           </el-tag>
-          <el-tag v-if="scope.row.status == -1" type="danger">
-            DELETED
+          <el-tag v-if="scope.row.status == 0" type="warning">
+            WAITING
           </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">
+          <router-link :to="'/administrator/users/edit/'+scope.row.id">
+            <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit">
+              Detail
+            </el-button>
+          </router-link>
           <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">
             Edit
           </el-button>
@@ -59,20 +71,60 @@
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
-      <div v-loading="vendorCreating" class="form-container">
-        <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="newItem.name_form" />
+      <div v-loading="transactionCreating" class="form-container">
+        <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="150px" style="max-width: 500px;">
+          <el-form-item label="Transaction No" prop="transaction_no">
+            <el-input v-model="newTransaction.transaction_no_form" />
           </el-form-item>
-          <el-form-item label="Unit" prop="unit">
-            <el-select v-model="newItem.unit_id_form" style="width: 150px" class="filter-item">
-              <el-option v-for="u in unitList" :key="u.id" :label="u.name" :value="u.id">{{ u.name }}</el-option>
+          <el-form-item label="Vendor" prop="vendor">
+            <el-select v-model="newTransaction.vendor_form" filterable class="filter-item">
+              <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
+                <span style="float: left">{{ v.name }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
+              </el-option>
             </el-select>
           </el-form-item>
+
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
-            <el-select v-model="newItem.status_form" style="width: 150px" class="filter-item">
+            <el-select v-model="newTransaction.status_form" style="width: 150px" class="filter-item">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item>
+            Detail Transaction
+          </el-form-item>
+
+          <hr>
+
+          <el-form-item label="Add Item">
+            <el-button @click="addNewItemForm"> + </el-button>
+          </el-form-item>
+
+          <table>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Discount</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>asd</td>
+                <td>asd</td>
+                <td>asd</td>
+                <td>asd</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <hr>
+
+          <el-form-item label="Total Price" prop="total">
+            <el-input v-show="false" v-model="newTransaction.total_form" />
+            {{ newTransaction.total_form }}
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -95,7 +147,8 @@
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import ItemResource from '@/api/item';
 import UserResource from '@/api/user';
-import UnitResource from '@/api/unit';
+import VendorResource from '@/api/vendor';
+import TransactionResource from '@/api/transaction';
 import Resource from '@/api/resource';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
@@ -103,7 +156,8 @@ import checkPermission from '@/utils/permission'; // Permission checking
 
 const userResource = new UserResource();
 const itemResource = new ItemResource();
-const unitResource = new UnitResource();
+const vendorResource = new VendorResource();
+const transactionResource = new TransactionResource();
 const permissionResource = new Resource('permissions');
 
 export default {
@@ -113,22 +167,23 @@ export default {
   data() {
     return {
       list: null,
-      unitList: null,
+      vendorList: null,
+      detailTransactionForm: null,
       total: 0,
       loading: true,
       downloading: false,
-      vendorCreating: false,
+      transactionCreating: false,
       query: {
         page: 1,
         limit: 15,
         keyword: '',
         role: '',
       },
-      queryUnit: {
+      queryVendor: {
         paginate: false,
       },
       nonAdminRoles: ['editor', 'user', 'visitor'],
-      newItem: {},
+      newTransaction: {},
       status: [
         { label: 'Active', value: 1 },
         { label: 'Deleted', value: -1 },
@@ -225,14 +280,17 @@ export default {
     },
   },
   created() {
-    this.resetnewItem();
+    this.resetnewTransaction();
     this.getList();
-    this.getUnitList();
+    this.getVendorList();
     if (checkPermission(['manage permission'])) {
       this.getPermissions();
     }
   },
   methods: {
+    addNewItemForm(){
+      console.log('masuk');
+    },
     checkPermission,
     async getPermissions() {
       const { data } = await permissionResource.list({});
@@ -241,11 +299,11 @@ export default {
       this.menuPermissions = menu;
       this.otherPermissions = other;
     },
-    async getUnitList() {
-      const { limit, page } = this.queryUnit;
+    async getVendorList() {
+      const { limit, page } = this.queryVendor;
       this.loading = true;
-      const { data, meta } = await unitResource.list(this.queryUnit);
-      this.unitList = data;
+      const { data, meta } = await vendorResource.list(this.queryVendor);
+      this.vendorList = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
       });
@@ -255,8 +313,9 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await itemResource.list(this.query);
+      const { data, meta } = await transactionResource.list(this.query);
       this.list = data;
+
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
       });
@@ -272,9 +331,9 @@ export default {
       this.$nextTick(() => {
         this.$refs['itemForm'].clearValidate();
       });
-      this.titleForm = 'Create New Item';
+      this.titleForm = 'Create New Transaction';
       this.itemId = 0;
-      this.resetnewItem();
+      this.resetnewTransaction();
     },
     handleUpdate(data){
       this.dialogFormVisible = true;
@@ -283,9 +342,9 @@ export default {
       });
       this.titleForm = 'Edit Item';
       this.itemId = data.id;
-      this.newItem.name_form = data.name;
-      this.newItem.unit_id_form = data.unit_id;
-      this.newItem.status_form = data.status;
+      this.newTransaction.name_form = data.name;
+      this.newTransaction.unit_id_form = data.unit_id;
+      this.newTransaction.status_form = data.status;
     },
     handleDelete(id, name) {
       this.$confirm('This will delete item ' + "'" + name + "'" + '. Continue?', 'Warning', {
@@ -312,16 +371,16 @@ export default {
     createUser() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
-          this.vendorCreating = true;
+          this.transactionCreating = true;
           itemResource
-            .store(this.newItem)
+            .store(this.newTransaction)
             .then(response => {
               this.$message({
-                message: 'New item ' + this.newItem.name + ' has been created successfully.',
+                message: 'New item ' + this.newTransaction.name + ' has been created successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
-              this.resetnewItem();
+              this.resetnewTransaction();
               this.dialogFormVisible = false;
               this.handleFilter();
             })
@@ -329,7 +388,7 @@ export default {
               console.log(error);
             })
             .finally(() => {
-              this.vendorCreating = false;
+              this.transactionCreating = false;
             });
         } else {
           console.log('error submit!!');
@@ -338,11 +397,11 @@ export default {
       });
     },
     onUpdate() {
-      // this.vendorCreating = true;
+      // this.transactionCreating = true;
       // itemResource
-      //   .update(this.itemId, this.newItem)
+      //   .update(this.itemId, this.newTransaction)
       //   .then(response => {
-      //     this.vendorCreating = false;
+      //     this.transactionCreating = false;
       //     this.$message({
       //       message: 'Vendor information has been updated successfully',
       //       type: 'success',
@@ -351,21 +410,21 @@ export default {
       //   })
       //   .catch(error => {
       //     console.log(error);
-      //     this.vendorCreating = false;
+      //     this.transactionCreating = false;
       //   });
 
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
-          this.vendorCreating = true;
+          this.transactionCreating = true;
           itemResource
-            .update(this.itemId, this.newItem)
+            .update(this.itemId, this.newTransaction)
             .then(response => {
               this.$message({
                 message: 'Vendor information has been updated successfully',
                 type: 'success',
                 duration: 5 * 1000,
               });
-              this.resetnewItem();
+              this.resetnewTransaction();
               this.dialogFormVisible = false;
               this.handleFilter();
             })
@@ -373,7 +432,7 @@ export default {
               console.log(error);
             })
             .finally(() => {
-              this.vendorCreating = false;
+              this.transactionCreating = false;
             });
         } else {
           console.log('error submit!!');
@@ -381,8 +440,8 @@ export default {
         }
       });
     },
-    resetnewItem() {
-      this.newItem = {
+    resetnewTransaction() {
+      this.newTransaction = {
         name_form: '',
         phone_form: '',
         address_form: '',

@@ -20,6 +20,7 @@ class VendorController extends Controller
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $status = Arr::get($searchParams, 'status', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
+        $paginate = Arr::get($searchParams, 'paginate', '');
 
         if (!empty($status)) {
             $vendorQuery->where('status',$status);
@@ -33,8 +34,11 @@ class VendorController extends Controller
         }
 
         $vendorQuery->orderBy('status','DESC');
-
-        return VendorResource::collection($vendorQuery->paginate($limit));
+        if ($paginate == true) {
+            return VendorResource::collection($vendorQuery->paginate($limit));
+        } else {
+            return VendorResource::collection($vendorQuery->get());
+        }
     }
 
     public function store(Request $request)

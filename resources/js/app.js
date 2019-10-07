@@ -20,6 +20,15 @@ Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key]);
 });
 
+Vue.filter('toCurrency', function(value) {
+  var formatter = new Intl.NumberFormat(['ban', 'id'], {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  });
+  return formatter.format(value);
+});
+
 Vue.config.productionTip = false;
 
 new Vue({

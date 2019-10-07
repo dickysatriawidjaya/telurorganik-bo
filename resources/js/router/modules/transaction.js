@@ -9,7 +9,7 @@ const transactionRoutes = {
     /** transaction managements */
     {
       path: 'transaction',
-      component: () => import('@/views/users/List'),
+      component: () => import('@/views/transactions/List'),
       name: 'Transaction',
       meta: { title: 'Transaction', icon: 'list', permissions: ['view menu transaction'] },
     },
