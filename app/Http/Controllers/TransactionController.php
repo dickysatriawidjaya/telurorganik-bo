@@ -35,7 +35,7 @@ class TransactionController extends Controller
             $transactionQuery->orWhere('total', 'LIKE', '%' . $keyword . '%');
         }
 
-        $transactionQuery->with('vendor','detail_transaction');
+        $transactionQuery->with('vendor','detail_transaction.item');
 
         return TransactionResource::collection($transactionQuery->paginate($limit));
     }
@@ -52,32 +52,51 @@ class TransactionController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'name_form' => 'required',
-                'unit_id_form' => 'required',
+                'transaction_no_form' => 'required',
+                'vendor_id_form' => 'required',
+                'total_form' => 'required',
+                'detail'=>'required'
             ]
         );
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
-        } 
-
-        $check = Transaction::where('name',$request->name_form)->where('status',1)->first();
-        if ($check) {
-            return response()->json(['errors' => "Transaction Name " .$request->name_form. ' Already Exist'], 403);
         }
 
-        $params = $request->all();
-        $params['name']=$request->name_form;
-        $params['unit_id']=$request->unit_id_form;
-        $params['status']=1;
-        $Transaction = Transaction::create($params);
+        try {
+            $params = $request->all();
+            $params['transaction_no']=$request->transaction_no_form;
+            $params['vendor_id']=$request->vendor_id_form;
+            $params['total']=$request->total_form;
+            $params['status']=1;
+            $Transaction = Transaction::create($params);
+        } catch (\Throwable $th) {
+            return response()->json(['errors' =>  "Failed Save Transaction ".$th], 500);
+        }
+        //save detail
+        try {
+            foreach ($request->detail as $key => $d) {
+                $newdetail = New Transaction_Detail;
+                $newdetail->transaction_id = $Transaction->id;
+                $newdetail->item_id = $d['item_id_form'];
+                $newdetail->quantity = $d['quantity_form'];
+                $newdetail->discount = $d['discount_form'];
+                $newdetail->subtotal = $d['subtotal_form'];
+                $newdetail->status = 1;
+                $newdetail->save();
+             }
+        } catch (\Throwable $th) {
+            return response()->json(['errors' =>  "Failed Save Detail Transaction ".$th], 500);
+        }
+        
+        //save detail end
         return new TransactionResource($Transaction);
     }
 
     public function update(Request $request, Transaction $transaction)
     {
         
-        if ($item === null) {
+        if ($transaction === null) {
             return response()->json(['error' => 'Transaction not found'], 404);
         }
 
@@ -85,18 +104,36 @@ class TransactionController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-
-            $found = Transaction::where('name', $request->name_form)->where('status',1)->first();
-
-            if ($found && $found->id !== $item->id) {
-                return response()->json(['error' => 'Transaction name already exist'], 403);
-            }else{
-                $item->name = $request->get('name_form');
-                $item->unit_id = $request->get('unit_id_form');
-                $item->status = $request->get('status_form');
-                $item->save();
-                return new TransactionResource($item);
+            try {
+                $transaction->transaction_no = $request->get('transaction_no_form');
+                $transaction->vendor_id = $request->get('vendor_id_form');
+                $transaction->total = $request->get('total_form');
+                $transaction->status = $request->get('status_form');
+                $transaction->save();
+            } catch (\Throwable $th) {
+                return response()->json(['errors' => "Failed Update Transaction Data ".$th], 403);
             }
+
+            if ($request->detail) {
+                $update = Transaction_Detail::where('transaction_id',$transaction->id)->update(['status' => -1]);
+                try {
+                    foreach ($request->detail as $key => $d) {
+                        $newdetail = New Transaction_Detail;
+                        $newdetail->transaction_id = $transaction->id;
+                        $newdetail->item_id = $d['item_id_form'];
+                        $newdetail->quantity = $d['quantity_form'];
+                        $newdetail->discount = $d['discount_form'];
+                        $newdetail->subtotal = $d['subtotal_form'];
+                        $newdetail->status = 1;
+                        $newdetail->save();
+                    }
+                } catch (\Throwable $th) {
+                    return response()->json(['errors' => "Failed Update Transaction Detail Data ".$th], 403);
+                }
+                
+            }
+            
+            return new TransactionResource($transaction);
         }
     }
 
@@ -114,8 +151,10 @@ class TransactionController extends Controller
     private function getValidationRules($isNew = true)
     {
         return [
-            'name_form' => 'required',
-            'unit_id_form' => 'required',
+            'transaction_no_form' => 'required',
+            'vendor_id_form' => 'required',
+            'total_form' => 'required',
+            'detail'=>'required'
         ];
     }
 }

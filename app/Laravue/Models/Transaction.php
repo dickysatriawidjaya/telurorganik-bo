@@ -15,6 +15,6 @@ class Transaction extends Model
     }
 
     public function detail_transaction(){
-        return $this->hasMany('App\Laravue\Models\Transaction_Detail');
+        return $this->hasMany('App\Laravue\Models\Transaction_Detail')->where('status',1);
     }
 }

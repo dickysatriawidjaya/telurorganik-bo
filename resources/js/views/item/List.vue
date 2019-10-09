@@ -27,6 +27,12 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="Price" prop="price" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.price | toCurrency }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Unit" prop="unit" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.unit.name }}</span>
@@ -68,6 +74,9 @@
             <el-select v-model="newItem.unit_id_form" style="width: 150px" class="filter-item">
               <el-option v-for="u in unitList" :key="u.id" :label="u.name" :value="u.id">{{ u.name }}</el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="Price" prop="price">
+            <el-input-number v-model="newItem.price_form" :min="1" />
           </el-form-item>
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
             <el-select v-model="newItem.status_form" style="width: 150px" class="filter-item">
@@ -123,6 +132,7 @@ export default {
         limit: 15,
         keyword: '',
         role: '',
+        paginate: true,
       },
       queryUnit: {
         paginate: false,
@@ -149,6 +159,7 @@ export default {
         phone_form: [
           { required: true, message: 'Phone number is required', trigger: 'blur' },
         ],
+        price_form: [{ required: true, message: 'Price is required', trigger: 'blur' }],
         address_form: [{ required: true, message: 'Address is required', trigger: 'blur' }],
       },
       permissionProps: {
@@ -284,6 +295,7 @@ export default {
       this.titleForm = 'Edit Item';
       this.itemId = data.id;
       this.newItem.name_form = data.name;
+      this.newItem.price_form = data.price;
       this.newItem.unit_id_form = data.unit_id;
       this.newItem.status_form = data.status;
     },

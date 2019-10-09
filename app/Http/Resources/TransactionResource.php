@@ -21,7 +21,7 @@ class TransactionResource extends JsonResource
             'total' => $this->total,
             'status' => $this->status,
             'vendor' => $this->vendor,
-            'transaction_detail' => $this->transaction_detail,
+            'detail_transaction' => $this->detail_transaction,
         ];
     }
 }

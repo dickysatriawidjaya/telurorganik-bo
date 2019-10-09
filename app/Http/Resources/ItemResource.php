@@ -17,6 +17,7 @@ class ItemResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'price' => $this->price,
             'unit_id' => $this->unit_id,
             'unit' => $this->unit,
             'status' => $this->status,

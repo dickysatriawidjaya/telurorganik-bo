@@ -47,6 +47,7 @@ class ItemController extends Controller
             [
                 'name_form' => 'required',
                 'unit_id_form' => 'required',
+                'price_form' => 'required',
             ]
         );
 
@@ -62,6 +63,7 @@ class ItemController extends Controller
         $params = $request->all();
         $params['name']=$request->name_form;
         $params['unit_id']=$request->unit_id_form;
+        $params['price']=$request->price_form;
         $params['status']=1;
         $Item = Item::create($params);
         return new ItemResource($Item);
@@ -87,6 +89,7 @@ class ItemController extends Controller
                 $item->name = $request->get('name_form');
                 $item->unit_id = $request->get('unit_id_form');
                 $item->status = $request->get('status_form');
+                $item->price = $request->get('price_form');
                 $item->save();
                 return new ItemResource($item);
             }
@@ -109,6 +112,7 @@ class ItemController extends Controller
         return [
             'name_form' => 'required',
             'unit_id_form' => 'required',
+            'price_form' => 'required',
         ];
     }
 }

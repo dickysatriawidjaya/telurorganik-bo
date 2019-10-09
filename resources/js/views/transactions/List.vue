@@ -40,6 +40,12 @@
         </template>
       </el-table-column>
 
+      <!-- <el-table-column align="center" label="detail" prop="transaction_detail" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.transaction_detail }}</span>
+        </template>
+      </el-table-column> -->
+
       <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">
@@ -77,7 +83,7 @@
             <el-input v-model="newTransaction.transaction_no_form" />
           </el-form-item>
           <el-form-item label="Vendor" prop="vendor">
-            <el-select v-model="newTransaction.vendor_form" filterable class="filter-item">
+            <el-select v-model="newTransaction.vendor_id_form" filterable class="filter-item">
               <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
                 <span style="float: left">{{ v.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
@@ -85,7 +91,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item v-if="itemId > 0" label="Status" prop="status">
+          <el-form-item label="Status" prop="status">
             <el-select v-model="newTransaction.status_form" style="width: 150px" class="filter-item">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
@@ -105,17 +111,38 @@
               <tr>
                 <th>No.</th>
                 <th>Item</th>
+                <th>Price</th>
                 <th>Quantity</th>
                 <th>Discount</th>
                 <th>Total</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>asd</td>
-                <td>asd</td>
-                <td>asd</td>
-                <td>asd</td>
+              <tr v-for="(d,index) in newTransaction.detail">
+                <td>
+                  {{ index }}
+                </td>
+                <td>
+                  <el-select v-model="newTransaction.detail[index].item_id_form" style="width: 150px" class="filter-item" @change="setItemPrice(index)">
+                    <el-option v-for="i in itemList" :key="i.id" :label="i.name+'('+i.unit.name+')'" :value="i.id">{{ i.name }} ({{ i.unit.name }})</el-option>
+                  </el-select>
+                </td>
+                <td>
+                  {{ newTransaction.detail[index].price_form }}
+                </td>
+                <td>
+                  <el-input-number v-model="newTransaction.detail[index].quantity_form" :min="0" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                </td>
+                <td>
+                  <el-input-number v-model="newTransaction.detail[index].discount_form" :min="0" :max="100" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                </td>
+                <td>{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
+                <td>
+                  <el-button @click="spliceTransactionDetail(index)">
+                    delete
+                  </el-button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -124,17 +151,17 @@
 
           <el-form-item label="Total Price" prop="total">
             <el-input v-show="false" v-model="newTransaction.total_form" />
-            {{ newTransaction.total_form }}
+            {{ newTransaction.total_form | toCurrency }}
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button v-if="itemId <= 0" type="primary" @click="createUser()">
+          <el-button v-if="transactionId <= 0" type="primary" @click="createTransaction()">
             {{ $t('table.confirm') }}
           </el-button>
-          <el-button v-if="itemId > 0" type="primary" @click="onUpdate()">
+          <el-button v-if="transactionId > 0" type="primary" @click="onUpdate()">
             Update
           </el-button>
         </div>
@@ -168,11 +195,12 @@ export default {
     return {
       list: null,
       vendorList: null,
-      detailTransactionForm: null,
+      itemList: null,
       total: 0,
       loading: true,
       downloading: false,
       transactionCreating: false,
+      transactionId: 0,
       query: {
         page: 1,
         limit: 15,
@@ -182,14 +210,23 @@ export default {
       queryVendor: {
         paginate: false,
       },
+      queryItem: {
+        paginate: false,
+      },
       nonAdminRoles: ['editor', 'user', 'visitor'],
-      newTransaction: {},
+      newTransaction: {
+        transaction_no: '',
+        vendor_id: 0,
+        total: 0,
+        status: 0,
+        detail: [],
+      },
       status: [
         { label: 'Active', value: 1 },
         { label: 'Deleted', value: -1 },
       ],
       titleForm: '',
-      itemId: 0,
+      transcationId: 0,
       dialogFormVisible: false,
       dialogPermissionVisible: false,
       dialogPermissionLoading: false,
@@ -283,13 +320,25 @@ export default {
     this.resetnewTransaction();
     this.getList();
     this.getVendorList();
+    this.getItemList();
     if (checkPermission(['manage permission'])) {
       this.getPermissions();
     }
   },
   methods: {
+    spliceTransactionDetail(index){
+      this.newTransaction.detail.splice(index, 1);
+    },
     addNewItemForm(){
-      console.log('masuk');
+      this.newTransaction.detail.push(
+        {
+          item_id_form: 0,
+          quantity_form: 0,
+          discount_form: 0,
+          subtotal_form: 0,
+        }
+      );
+      console.log(this.newTransaction.detail);
     },
     checkPermission,
     async getPermissions() {
@@ -299,14 +348,19 @@ export default {
       this.menuPermissions = menu;
       this.otherPermissions = other;
     },
+    async getItemList() {
+      const { limit, page } = this.queryItem;
+      this.loading = true;
+      const { data, meta } = await itemResource.list(this.queryItem);
+      this.itemList = data;
+      this.total = meta.total;
+      this.loading = false;
+    },
     async getVendorList() {
       const { limit, page } = this.queryVendor;
       this.loading = true;
       const { data, meta } = await vendorResource.list(this.queryVendor);
       this.vendorList = data;
-      this.list.forEach((element, index) => {
-        element['index'] = (page - 1) * limit + index + 1;
-      });
       this.total = meta.total;
       this.loading = false;
     },
@@ -315,12 +369,40 @@ export default {
       this.loading = true;
       const { data, meta } = await transactionResource.list(this.query);
       this.list = data;
+      console.log(this.list);
 
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
       });
       this.total = meta.total;
       this.loading = false;
+    },
+    setItemPrice(index){
+      const value = this.newTransaction.detail[index].item_id_form;
+      const filterItem = this.itemList.filter(function(i){
+        return i.id == value;
+      });
+      this.newTransaction.detail[index].price_form = filterItem[0].price;
+      this.countSubtotal(this.newTransaction.detail[index].quantity_form, this.newTransaction.detail[index].discount_form, index);
+    },
+    countSubtotal(quantity, discount, index){
+      let result = 0;
+      if (discount) {
+        result = (quantity * this.newTransaction.detail[index].price_form) - (discount / 100 * quantity * this.newTransaction.detail[index].price_form);
+      } else {
+        result = this.newTransaction.detail[index].price_form * quantity;
+      }
+      this.newTransaction.detail[index].subtotal_form = result;
+
+      // countTOTAL
+      let total = 0;
+      this.newTransaction.detail.forEach(element => {
+        total += element.subtotal_form;
+      });
+      console.log(total);
+      this.newTransaction.total_form = total;
+      // countTOTALEND
+      console.log({ quantity, discount, result });
     },
     handleFilter() {
       this.query.page = 1;
@@ -341,10 +423,30 @@ export default {
         this.$refs['itemForm'].clearValidate();
       });
       this.titleForm = 'Edit Item';
-      this.itemId = data.id;
-      this.newTransaction.name_form = data.name;
-      this.newTransaction.unit_id_form = data.unit_id;
+      console.log(data);
+      this.transactionId = data.id;
+      this.newTransaction.transaction_no_form = data.transaction_no;
+      this.newTransaction.vendor_id_form = data.vendor_id;
+      this.newTransaction.total_form = data.total;
       this.newTransaction.status_form = data.status;
+
+      const tmp = [];
+      data.detail_transaction.forEach(function(element, i) {
+        tmp.push(
+          {
+            'id': element.id,
+            'transaction_id_form': element.transaction_id,
+            'item_id_form': element.item_id,
+            'price_form': element.item.price,
+            'quantity_form': element.quantity,
+            'discount_form': element.discount,
+            'subtotal_form': element.subtotal,
+            'status_form': element.status,
+          }
+        );
+      });
+
+      this.newTransaction.detail = tmp;
     },
     handleDelete(id, name) {
       this.$confirm('This will delete item ' + "'" + name + "'" + '. Continue?', 'Warning', {
@@ -368,15 +470,15 @@ export default {
         });
       });
     },
-    createUser() {
+    createTransaction() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.transactionCreating = true;
-          itemResource
+          transactionResource
             .store(this.newTransaction)
             .then(response => {
               this.$message({
-                message: 'New item ' + this.newTransaction.name + ' has been created successfully.',
+                message: 'New Transaction ' + this.newTransaction.transaction_no + ' has been created successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
@@ -397,30 +499,16 @@ export default {
       });
     },
     onUpdate() {
-      // this.transactionCreating = true;
-      // itemResource
-      //   .update(this.itemId, this.newTransaction)
-      //   .then(response => {
-      //     this.transactionCreating = false;
-      //     this.$message({
-      //       message: 'Vendor information has been updated successfully',
-      //       type: 'success',
-      //       duration: 5 * 1000,
-      //     });
-      //   })
-      //   .catch(error => {
-      //     console.log(error);
-      //     this.transactionCreating = false;
-      //   });
+      console.log('update');
 
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.transactionCreating = true;
-          itemResource
-            .update(this.itemId, this.newTransaction)
+          transactionResource
+            .update(this.transactionId, this.newTransaction)
             .then(response => {
               this.$message({
-                message: 'Vendor information has been updated successfully',
+                message: 'Transaction has been updated successfully',
                 type: 'success',
                 duration: 5 * 1000,
               });
@@ -442,11 +530,11 @@ export default {
     },
     resetnewTransaction() {
       this.newTransaction = {
-        name_form: '',
-        phone_form: '',
-        address_form: '',
-        pic_name_form: '',
-        status_form: '',
+        transaction_no: '',
+        vendor_id: 0,
+        total: 0,
+        status: 0,
+        detail: [],
       };
     },
     handleDownload() {

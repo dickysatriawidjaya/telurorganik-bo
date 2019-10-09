@@ -4,7 +4,7 @@ import Layout from '@/layout';
 const transactionRoutes = {
   path: '/transaction',
   component: Layout,
-  redirect: '/transaction/users',
+  redirect: '/transaction/',
   children: [
     /** transaction managements */
     {
