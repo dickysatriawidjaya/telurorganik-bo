@@ -15,6 +15,7 @@ class TransactionController extends Controller
 
     public function index(Request $request)
     {
+        
         $searchParams = $request->all();
         $transactionQuery = Transaction::query();
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
@@ -25,7 +26,7 @@ class TransactionController extends Controller
         if (!empty($status)) {
             $transactionQuery->where('status',$status);
         }
-
+        
         if (!empty($vendor)) {
             $transactionQuery->where('vendor_id',$vendor);
         }
@@ -68,7 +69,7 @@ class TransactionController extends Controller
             $params['transaction_no']=$request->transaction_no_form;
             $params['vendor_id']=$request->vendor_id_form;
             $params['total']=$request->total_form;
-            $params['status']=1;
+            $params['status']=0;
             $Transaction = Transaction::create($params);
         } catch (\Throwable $th) {
             return response()->json(['errors' =>  "Failed Save Transaction ".$th], 500);
@@ -92,6 +93,14 @@ class TransactionController extends Controller
         //save detail end
         return new TransactionResource($Transaction);
     }
+
+    // public function changeStatus(Request $request, Transaction $transaction)
+    // {   
+    //     return "bacot";
+    //     $transaction->status = $request->get('status_form');
+    //     $transaction->save();
+    //     return response()->json(['success' => 'Success Update Status Transaction'], 200);
+    // }
 
     public function update(Request $request, Transaction $transaction)
     {

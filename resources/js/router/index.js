@@ -227,6 +227,16 @@ export const asyncRoutes = [
     hidden: true,
   },
   {
+    path: '/pdf/transactionLUNAS/:vendor_id',
+    component: () => import('@/views/dashboard/admin/pdf/TransactionLUNAS'),
+    hidden: true,
+  },
+  {
+    path: '/pdf/transactionBELUMLUNAS/:vendor_id',
+    component: () => import('@/views/dashboard/admin/pdf/transactionBELUMLUNAS'),
+    hidden: true,
+  },
+  {
     path: '/i18n',
     component: Layout,
     meta: { permissions: ['view menu i18n'] },

@@ -6,9 +6,9 @@ class UnitResource extends Resource {
     super('transactions');
   }
 
-  permissions(id) {
+  changeStatus(id) {
     return request({
-      url: '/' + this.uri + '/' + id + '/permissions',
+      url: '/' + this.uri + '/changeStatus/' + id,
       method: 'get',
     });
   }

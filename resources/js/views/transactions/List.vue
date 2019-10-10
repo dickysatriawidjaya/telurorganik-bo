@@ -2,16 +2,27 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @input="handleFilter" />
+
       <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item" @change="handleFilter">
-        <el-option key="1" label="PRINTED" value="1" />
-        <el-option key="0" label="WAITING" value="0" />
+        <el-option key="1" label="LUNAS" value="1" />
+        <el-option key="-1" label="BELUM LUNAS" value="-1" />
       </el-select>
+
+      <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 150px" class="filter-item" @change="handleFilter">
+        <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
+          <span style="float: left">{{ v.name }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
+        </el-option>
+      </el-select>
+
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
+
       <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         {{ $t('table.export') }} Excel <svg-icon icon-class="excel" />
       </el-button>
+
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
@@ -49,10 +60,10 @@
       <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">
-            PRINTED
+            LUNAS
           </el-tag>
-          <el-tag v-if="scope.row.status == 0" type="warning">
-            WAITING
+          <el-tag v-if="scope.row.status == -1" type="warning">
+            BELUM LUNAS
           </el-tag>
         </template>
       </el-table-column>
@@ -64,12 +75,19 @@
               Detail
             </el-button>
           </router-link>
+
           <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">
             Edit
           </el-button>
-          <el-button v-if="scope.row.status == -1" v-permission="['manage user']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
-            Delete
+<!-- 
+          <el-button v-if="scope.row.status == -1" v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdateStatus(scope.row.id,1)">
+            Set LUNAS
           </el-button>
+
+          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdateStatus(scope.row.id,-1)">
+            Set BELUM LUNAS
+          </el-button> -->
+          
         </template>
       </el-table-column>
     </el-table>
@@ -91,11 +109,12 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="Status" prop="status">
-            <el-select v-model="newTransaction.status_form" style="width: 150px" class="filter-item">
+          <el-form-item v-if="transactionId > 0" label="Status" prop="status">
+            <el-select v-model="newTransaction.status_form" style="width: 150px" class="filter-item" @change="forceupdate">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
           </el-form-item>
+          
           <el-form-item>
             Detail Transaction
           </el-form-item>
@@ -222,8 +241,8 @@ export default {
         detail: [],
       },
       status: [
-        { label: 'Active', value: 1 },
-        { label: 'Deleted', value: -1 },
+        { label: 'LUNAS', value: 1 },
+        { label: 'BELUM LUNAS', value: -1 },
       ],
       titleForm: '',
       transcationId: 0,
@@ -326,6 +345,9 @@ export default {
     }
   },
   methods: {
+    forceupdate(){
+      this.$forceUpdate()
+    },
     spliceTransactionDetail(index){
       this.newTransaction.detail.splice(index, 1);
     },
@@ -430,6 +452,8 @@ export default {
       this.newTransaction.total_form = data.total;
       this.newTransaction.status_form = data.status;
 
+      console.log(this.newTransaction.status_form)
+
       const tmp = [];
       data.detail_transaction.forEach(function(element, i) {
         tmp.push(
@@ -498,6 +522,27 @@ export default {
         }
       });
     },
+    // handleUpdateStatus(id,status){
+    //   this.transactionCreating = true;
+    //   transactionResource
+    //     .changeStatus(id, {'status_form' : status})
+    //     .then(response => {
+    //       this.$message({
+    //         message: 'Transaction has been updated successfully',
+    //         type: 'success',
+    //         duration: 5 * 1000,
+    //       });
+    //       this.resetnewTransaction();
+    //       this.dialogFormVisible = false;
+    //       this.handleFilter();
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //     })
+    //     .finally(() => {
+    //       this.transactionCreating = false;
+    //     });
+    // },
     onUpdate() {
       console.log('update');
 
@@ -536,6 +581,7 @@ export default {
         status: 0,
         detail: [],
       };
+      this.transactionId = 0;
     },
     handleDownload() {
       this.downloading = true;

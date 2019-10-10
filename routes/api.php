@@ -54,6 +54,8 @@ Route::group(['middleware' => 'api'], function () {
 
     //Transaction
     Route::apiResource('transactions', 'TransactionController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_USER_MANAGE);
+    // Route::apiResource('transactions/changeStatus/', 'TransactionController@changeStatus')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_USER_MANAGE);
+
     //Transaction END
 
     // Fake APIs

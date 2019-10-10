@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Transaction LUNAS</h1>
+    <h1>Transaction BELUM LUNAS</h1>
     
     <div class="filter-container">
       <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 150px" class="filter-item" @change="handleFilter">
@@ -10,13 +10,13 @@
         </el-option>
       </el-select>
 
-      <router-link target="_blank" :to="{ path: '/pdf/transactionLUNAS/' + query.vendor }" v-if="query.vendor">
+      <router-link target="_blank" :to="{ path: '/pdf/transactionBELUMLUNAS/' + query.vendor }" v-if="query.vendor">
         <el-button type="primary">
           PRINT
         </el-button>
       </router-link>
 
-      <router-link target="_blank" :to="{ path: '/pdf/transactionLUNAS/' + 0 }" v-else>
+      <router-link target="_blank" :to="{ path: '/pdf/transactionBELUMLUNAS/' + 0 }" v-else>
         <el-button type="primary">
           PRINT
         </el-button>
@@ -132,7 +132,7 @@ export default {
         limit: 15,
         keyword: '',
         role: '',
-        status: 1,
+        status: -1,
         vendor : null,
       },
       total: 0,
