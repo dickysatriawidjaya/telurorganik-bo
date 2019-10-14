@@ -63,8 +63,6 @@
         </template>
       </el-table-column>
 
-       
-
       <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">

@@ -50,7 +50,7 @@ import transactionRoutes from './modules/transaction';
 **/
 let Routes = [];
 
-if(Cookies.get('Role') == "admin"){
+if (Cookies.get('Role') == 'admin'){
   Routes = [
     {
       path: '/redirect',
@@ -160,7 +160,7 @@ if(Cookies.get('Role') == "admin"){
     // },
     // elementUiRoutes,
   ];
-}else{
+} else {
   Routes = [
     // {
     //   path: '/redirect',
@@ -212,7 +212,6 @@ if(Cookies.get('Role') == "admin"){
 }
 
 export const constantRoutes = Routes;
-
 
 export const asyncRoutes = [];
 
@@ -332,9 +331,8 @@ const router = createRouter();
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
   const newRouter = createRouter();
-  Routes = []; 
+  Routes = [];
   router.matcher = newRouter.matcher; // reset router
-  
 }
 
 export default router;

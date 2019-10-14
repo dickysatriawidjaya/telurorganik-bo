@@ -26,10 +26,10 @@
     </el-table-column>
 
     <el-table-column class-name="status-col" label="Created Date" width="110" prop="created_at" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
-        </template>
-      </el-table-column>
+      <template slot-scope="scope">
+        <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
+      </template>
+    </el-table-column>
 
     <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
       <template slot-scope="scope">

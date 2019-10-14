@@ -1,5 +1,5 @@
 import { login, logout, getInfo } from '@/api/auth';
-import { getToken, setToken, removeToken, removeRole, setRole} from '@/utils/auth';
+import { getToken, setToken, removeToken, removeRole, setRole } from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
 
