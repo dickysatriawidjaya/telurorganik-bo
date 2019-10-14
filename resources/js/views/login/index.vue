@@ -43,6 +43,7 @@
 <script>
 import LangSelect from '@/components/LangSelect';
 import { validEmail } from '@/utils/validate';
+import Cookies from 'js-cookie';
 
 export default {
   name: 'Login',
@@ -98,7 +99,16 @@ export default {
           this.loading = true;
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
-              this.$router.push({ path: this.redirect || '/' });
+              window.location.reload(false); 
+
+              if(Cookies.get('Role') == 'admin'){
+                console.log('masuk admin'+this.redirect)
+                this.$router.push({ path: this.redirect || '/' });
+              }else{
+                console.log('masuk bukan admin')
+                this.$router.push({ path: this.redirect || '/' });
+              }
+              
               this.loading = false;
             })
             .catch(() => {

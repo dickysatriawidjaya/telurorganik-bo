@@ -21,6 +21,7 @@ class VendorResource extends JsonResource
             'pic_name' => $this->pic_name,
             'phone' => $this->phone,
             'status' => $this->status,
+            'created_at' => $this->created_at,
         ];
     }
 }

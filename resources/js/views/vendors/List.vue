@@ -45,6 +45,12 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="Created Date" prop="created_at" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">

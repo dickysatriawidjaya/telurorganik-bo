@@ -21,6 +21,7 @@ class ItemResource extends JsonResource
             'unit_id' => $this->unit_id,
             'unit' => $this->unit,
             'status' => $this->status,
+            'created_at' => $this->created_at,
         ];    
     }
 }

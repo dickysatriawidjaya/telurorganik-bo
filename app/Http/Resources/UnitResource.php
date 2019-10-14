@@ -20,6 +20,7 @@ class UnitResource extends JsonResource
             'unit_code' => $this->unit_code,
             'description' => $this->description,
             'status' => $this->status,
+            'created_at' => $this->created_at,
         ];
     }
 }

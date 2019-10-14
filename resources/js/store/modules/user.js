@@ -1,5 +1,5 @@
 import { login, logout, getInfo } from '@/api/auth';
-import { getToken, setToken, removeToken } from '@/utils/auth';
+import { getToken, setToken, removeToken, removeRole, setRole} from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
 
@@ -44,8 +44,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ email: email.trim(), password: password })
         .then(response => {
-          console.log(response);
           commit('SET_TOKEN', response.token);
+          setRole(response.roles[0]);
           setToken(response.token);
           resolve();
         })
@@ -94,6 +94,7 @@ const actions = {
           commit('SET_TOKEN', '');
           commit('SET_ROLES', []);
           removeToken();
+          removeRole();
           resetRouter();
           resolve();
         })

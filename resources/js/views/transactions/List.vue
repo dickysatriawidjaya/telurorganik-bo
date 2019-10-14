@@ -57,6 +57,14 @@
         </template>
       </el-table-column> -->
 
+      <el-table-column align="center" label="Created Date" prop="created_at" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
+        </template>
+      </el-table-column>
+
+       
+
       <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">
@@ -79,7 +87,7 @@
           <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">
             Edit
           </el-button>
-<!-- 
+          <!--
           <el-button v-if="scope.row.status == -1" v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdateStatus(scope.row.id,1)">
             Set LUNAS
           </el-button>
@@ -87,7 +95,7 @@
           <el-button v-if="scope.row.status == 1" v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdateStatus(scope.row.id,-1)">
             Set BELUM LUNAS
           </el-button> -->
-          
+
         </template>
       </el-table-column>
     </el-table>
@@ -114,7 +122,7 @@
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
           </el-form-item>
-          
+
           <el-form-item>
             Detail Transaction
           </el-form-item>
@@ -346,7 +354,7 @@ export default {
   },
   methods: {
     forceupdate(){
-      this.$forceUpdate()
+      this.$forceUpdate();
     },
     spliceTransactionDetail(index){
       this.newTransaction.detail.splice(index, 1);
@@ -452,7 +460,7 @@ export default {
       this.newTransaction.total_form = data.total;
       this.newTransaction.status_form = data.status;
 
-      console.log(this.newTransaction.status_form)
+      console.log(this.newTransaction.status_form);
 
       const tmp = [];
       data.detail_transaction.forEach(function(element, i) {

@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Transaction BELUM LUNAS</h1>
-    
+
     <div class="filter-container">
       <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 150px" class="filter-item" @change="handleFilter">
         <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
@@ -10,13 +10,13 @@
         </el-option>
       </el-select>
 
-      <router-link target="_blank" :to="{ path: '/pdf/transactionBELUMLUNAS/' + query.vendor }" v-if="query.vendor">
+      <router-link v-if="query.vendor" target="_blank" :to="{ path: '/pdf/transactionBELUMLUNAS/' + query.vendor }">
         <el-button type="primary">
           PRINT
         </el-button>
       </router-link>
 
-      <router-link target="_blank" :to="{ path: '/pdf/transactionBELUMLUNAS/' + 0 }" v-else>
+      <router-link v-else target="_blank" :to="{ path: '/pdf/transactionBELUMLUNAS/' + 0 }">
         <el-button type="primary">
           PRINT
         </el-button>
@@ -24,7 +24,6 @@
 
     </div>
 
-  
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="ID" prop="index" sortable width="80">
         <template slot-scope="scope">
@@ -51,6 +50,12 @@
         </template>
       </el-table-column>
 
+      <el-table-column class-name="status-col" label="Created Date" width="110" prop="created_at" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">
@@ -65,7 +70,7 @@
       <el-table-column align="center" label="Actions">
         <template slot-scope="scope">
           <router-link :to="'/administrator/users/edit/'+scope.row.id">
-            <el-button  type="primary" size="small" icon="el-icon-edit">
+            <el-button type="primary" size="small" icon="el-icon-edit">
               Detail
             </el-button>
           </router-link>
@@ -133,7 +138,7 @@ export default {
         keyword: '',
         role: '',
         status: -1,
-        vendor : null,
+        vendor: null,
       },
       total: 0,
     };

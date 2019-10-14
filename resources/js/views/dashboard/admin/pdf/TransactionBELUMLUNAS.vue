@@ -1,51 +1,57 @@
 <template>
   <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" prop="index" sortable width="80">
+    <el-table-column align="center" label="ID" prop="index" sortable width="80">
+      <template slot-scope="scope">
+        <span>{{ scope.row.index }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column align="center" label="Transaction No." prop="transaction_no" sortable>
+      <template slot-scope="scope">
+        <span>{{ scope.row.transaction_no }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column align="center" label="Vendor" prop="vendor" sortable>
+      <template slot-scope="scope">
+        <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
+        <span v-else>{{ scope.row.vendor.name }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column align="center" label="Total" prop="total" sortable>
+      <template slot-scope="scope">
+        <span>{{ scope.row.total | toCurrency }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column class-name="status-col" label="Created Date" width="110" prop="created_at" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.index }}</span>
+          <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Transaction No." prop="transaction_no" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.transaction_no }}</span>
-        </template>
-      </el-table-column>
+    <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
+      <template slot-scope="scope">
+        <el-tag v-if="scope.row.status == 1" type="success">
+          LUNAS
+        </el-tag>
+        <el-tag v-if="scope.row.status == -1" type="warning">
+          BELUM LUNAS
+        </el-tag>
+      </template>
+    </el-table-column>
 
-      <el-table-column align="center" label="Vendor" prop="vendor" sortable>
-        <template slot-scope="scope">
-          <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
-          <span v-else>{{ scope.row.vendor.name }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Total" prop="total" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.total | toCurrency }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.status == 1" type="success">
-            LUNAS
-          </el-tag>
-          <el-tag v-if="scope.row.status == -1" type="warning">
-            BELUM LUNAS
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Actions">
-        <template slot-scope="scope">
-          <router-link :to="'/administrator/users/edit/'+scope.row.id">
-            <el-button  type="primary" size="small" icon="el-icon-edit">
-              Detail
-            </el-button>
-          </router-link>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-table-column align="center" label="Actions">
+      <template slot-scope="scope">
+        <router-link :to="'/administrator/users/edit/'+scope.row.id">
+          <el-button type="primary" size="small" icon="el-icon-edit">
+            Detail
+          </el-button>
+        </router-link>
+      </template>
+    </el-table-column>
+  </el-table>
 </template>
 
 <script>
@@ -57,7 +63,7 @@ export default {
     return {
       article: '',
       fullscreenLoading: true,
-      vendor_id : 0,
+      vendor_id: 0,
       list: null,
       loading: true,
       vendorList: null,
@@ -70,17 +76,16 @@ export default {
         keyword: '',
         role: '',
         status: -1,
-        vendor : null,
+        vendor: null,
       },
       total: 0,
     };
   },
   mounted() {
-    
     var lastCharUrl = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
-    
+
     this.query.vendor = lastCharUrl;
-    
+
     this.fetchData();
   },
   methods: {
@@ -106,13 +111,13 @@ export default {
         element['index'] = (page - 1) * limit + index + 1;
       });
       this.total = meta.total;
-    
-        setTimeout(() => {
-           this.loading = false;
-          this.$nextTick(() => {
-            window.print();
-          });
-        }, 5000);
+
+      setTimeout(() => {
+        this.loading = false;
+        this.$nextTick(() => {
+          window.print();
+        });
+      }, 5000);
     },
   },
 };
