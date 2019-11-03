@@ -8,6 +8,13 @@ const transactionRoutes = {
   children: [
     /** transaction managements */
     {
+      path: 'detail/:id(\\d+)',
+      component: () => import('@/views/transactions/Detail'),
+      name: 'TransactionDetail',
+      meta: { title: 'transactionDetail', noCache: true, permissions: ['manage user'] },
+      hidden: true,
+    },
+    {
       path: 'transaction',
       component: () => import('@/views/transactions/List'),
       name: 'Transaction',

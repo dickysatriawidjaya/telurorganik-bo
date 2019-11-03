@@ -105,8 +105,8 @@ export default {
                 console.log('masuk admin' + this.redirect);
                 this.$router.push({ path: this.redirect || '/' });
               } else {
-                console.log('masuk bukan admin');
-                this.$router.push({ path: this.redirect || '/' });
+                console.log('masuk bukan admin'+this.redirect);
+                this.$router.push({ path: this.redirect || '/transaction' });
               }
 
               this.loading = false;

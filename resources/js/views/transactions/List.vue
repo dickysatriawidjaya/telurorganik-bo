@@ -76,7 +76,7 @@
 
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">
-          <router-link :to="'/administrator/users/edit/'+scope.row.id">
+          <router-link :to="'/transaction/detail/'+scope.row.id">
             <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit">
               Detail
             </el-button>
@@ -450,7 +450,7 @@ export default {
       this.$nextTick(() => {
         this.$refs['itemForm'].clearValidate();
       });
-      this.titleForm = 'Edit Item';
+      this.titleForm = 'Edit Transaction';
       console.log(data);
       this.transactionId = data.id;
       this.newTransaction.transaction_no_form = data.transaction_no;

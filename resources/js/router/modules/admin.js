@@ -5,13 +5,13 @@ const adminRoutes = {
   path: '/administrator',
   component: Layout,
   redirect: '/administrator/users',
-  name: 'Administrator',
-  alwaysShow: true,
-  meta: {
-    title: 'administrator',
-    icon: 'admin',
-    permissions: ['view menu administrator'],
-  },
+  // name: 'Administrator',
+  // alwaysShow: true,
+  // meta: {
+  //   title: 'administrator',
+  //   icon: 'admin',
+  //   permissions: ['view menu administrator'],
+  // },
   children: [
     /** User managements */
     {
@@ -28,32 +28,32 @@ const adminRoutes = {
       meta: { title: 'users', icon: 'user', permissions: ['manage user'] },
     },
     /** Role and permission */
-    {
-      path: 'roles',
-      component: () => import('@/views/role-permission/List'),
-      name: 'RoleList',
-      meta: { title: 'rolePermission', icon: 'role', permissions: ['manage permission'] },
-    },
-    {
-      path: 'articles/create',
-      component: () => import('@/views/articles/Create'),
-      name: 'CreateArticle',
-      meta: { title: 'createArticle', icon: 'edit', permissions: ['manage article'] },
-      hidden: true,
-    },
-    {
-      path: 'articles/edit/:id(\\d+)',
-      component: () => import('@/views/articles/Edit'),
-      name: 'EditArticle',
-      meta: { title: 'editArticle', noCache: true, permissions: ['manage article'] },
-      hidden: true,
-    },
-    {
-      path: 'articles',
-      component: () => import('@/views/articles/List'),
-      name: 'ArticleList',
-      meta: { title: 'articleList', icon: 'list', permissions: ['manage article'] },
-    },
+    // {
+    //   path: 'roles',
+    //   component: () => import('@/views/role-permission/List'),
+    //   name: 'RoleList',
+    //   meta: { title: 'rolePermission', icon: 'role', permissions: ['manage permission'] },
+    // },
+    // {
+    //   path: 'articles/create',
+    //   component: () => import('@/views/articles/Create'),
+    //   name: 'CreateArticle',
+    //   meta: { title: 'createArticle', icon: 'edit', permissions: ['manage article'] },
+    //   hidden: true,
+    // },
+    // {
+    //   path: 'articles/edit/:id(\\d+)',
+    //   component: () => import('@/views/articles/Edit'),
+    //   name: 'EditArticle',
+    //   meta: { title: 'editArticle', noCache: true, permissions: ['manage article'] },
+    //   hidden: true,
+    // },
+    // {
+    //   path: 'articles',
+    //   component: () => import('@/views/articles/List'),
+    //   name: 'ArticleList',
+    //   meta: { title: 'articleList', icon: 'list', permissions: ['manage article'] },
+    // },
   ],
 };
 

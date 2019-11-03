@@ -69,7 +69,7 @@ class TransactionController extends Controller
             $params['transaction_no']=$request->transaction_no_form;
             $params['vendor_id']=$request->vendor_id_form;
             $params['total']=$request->total_form;
-            $params['status']=0;
+            $params['status']=-1;
             $Transaction = Transaction::create($params);
         } catch (\Throwable $th) {
             return response()->json(['errors' =>  "Failed Save Transaction ".$th], 500);

@@ -43,15 +43,15 @@
 
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">
-          <router-link v-if="!scope.row.roles.includes('admin')" :to="'/administrator/users/edit/'+scope.row.id">
-            <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit">
+          <!-- <router-link v-if="!scope.row.roles.includes('admin')" :to="'/administrator/users/edit/'+scope.row.id"> -->
+            <el-button v-if="login_as_role=='admin'" v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">
               Edit
             </el-button>
-          </router-link>
-          <el-button v-if="!scope.row.roles.includes('admin')" v-permission="['manage permission']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row.id);">
+          <!-- </router-link> -->
+          <!-- <el-button v-if="!scope.row.roles.includes('admin')" v-permission="['manage permission']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row.id);">
             Permissions
-          </el-button>
-          <el-button v-if="scope.row.roles.includes('visitor')" v-permission="['manage user']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
+          </el-button> -->
+          <el-button v-if="!scope.row.roles.includes('admin')" v-permission="['manage user']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
             Delete
           </el-button>
         </template>
@@ -90,12 +90,12 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="'Create new user'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
       <div v-loading="userCreating" class="form-container">
         <el-form ref="userForm" :rules="rules" :model="newUser" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('user.role')" prop="role">
             <el-select v-model="newUser.role" class="filter-item" placeholder="Please select role">
-              <el-option v-for="item in nonAdminRoles" :key="item" :label="item | uppercaseFirst" :value="item" />
+              <el-option v-for="item in roles" :key="item" :label="item | uppercaseFirst" :value="item" />
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('user.name')" prop="name">
@@ -125,6 +125,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import UserResource from '@/api/user';
 import Resource from '@/api/resource';
@@ -148,6 +149,8 @@ export default {
       }
     };
     return {
+      titleForm : 'Create User',
+      login_as_role : Cookies.get('Role'),
       list: null,
       total: 0,
       loading: true,
@@ -159,7 +162,8 @@ export default {
         keyword: '',
         role: '',
       },
-      roles: ['admin', 'manager', 'editor', 'user', 'visitor'],
+      // roles: ['admin', 'manager', 'editor', 'user', 'visitor'],
+      roles: ['admin', 'staff'],
       nonAdminRoles: ['editor', 'user', 'visitor'],
       newUser: {},
       dialogFormVisible: false,
@@ -262,6 +266,17 @@ export default {
     }
   },
   methods: {
+    handleUpdate(data){
+    console.log(data)
+      this.dialogFormVisible = true;
+      this.$nextTick(() => {
+        this.$refs['userForm'].clearValidate();
+      });
+      this.titleForm = 'Edit User';
+      this.newUser.role = data.roles;
+      this.newUser.name = data.name;
+      this.newUser.email = data.email;
+    },
     checkPermission,
     async getPermissions() {
       const { data } = await permissionResource.list({});

@@ -213,7 +213,18 @@ if (Cookies.get('Role') == 'admin'){
 
 export const constantRoutes = Routes;
 
-export const asyncRoutes = [];
+export const asyncRoutes = [
+  {
+    path: '/pdf/transactionLUNAS/:vendor_id',
+    component: () => import('@/views/dashboard/admin/pdf/TransactionLUNAS'),
+    hidden: true,
+  },
+  {
+    path: '/pdf/transactionBELUMLUNAS/:vendor_id',
+    component: () => import('@/views/dashboard/admin/pdf/transactionBELUMLUNAS'),
+    hidden: true,
+  },
+];
 
 // export const asyncRoutes = [
 //   permissionRoutes,
