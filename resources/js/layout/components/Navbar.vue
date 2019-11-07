@@ -19,7 +19,7 @@
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <div class="box-nama">
-            hai,<span class="nama-user">SuperAdmin</span>
+            hai,<span class="nama-user">{{user}}</span>
           </div>
           <img :src="'/images/profil.png'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
@@ -57,6 +57,7 @@ import Screenfull from '@/components/Screenfull';
 import SizeSelect from '@/components/SizeSelect';
 import LangSelect from '@/components/LangSelect';
 import Search from '@/components/HeaderSearch';
+import Cookies from 'js-cookie';
 
 export default {
   components: {
@@ -66,6 +67,11 @@ export default {
     SizeSelect,
     LangSelect,
     Search,
+  },
+  data() {
+    return {
+      user : Cookies.get('Role')
+    };
   },
   computed: {
     ...mapGetters([

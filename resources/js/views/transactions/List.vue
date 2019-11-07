@@ -96,10 +96,18 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="Transaction No" prop="transaction_no">
-                <el-input v-model="newTransaction.transaction_no_form" style="width:170px" />
+                <el-input v-model="newTransaction.transaction_no_form" style="width:170px"  @input="forceupdate"/>
+              </el-form-item>
+              <el-form-item label="Transaction Date" prop="transaction_date">
+                <el-date-picker
+                  v-model="newTransaction.date_form"
+                  type="datetime"
+                  value-format="yyyy-MM-dd"
+                  placeholder="Select date and time" @input="forceupdate">
+                </el-date-picker>
               </el-form-item>
               <el-form-item label="Vendor" prop="vendor">
-                <el-select v-model="newTransaction.vendor_id_form" filterable class="filter-item" style="width:170px">
+                <el-select v-model="newTransaction.vendor_id_form" filterable class="filter-item" style="width:170px"  @change="forceupdate">
                   <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
                     <span style="float: left">{{ v.name }}</span>
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
@@ -145,13 +153,13 @@
                     </el-select>
                   </td>
                   <td style="width:107px">
-                    {{ newTransaction.detail[index].price_form }}
+                    {{ newTransaction.detail[index].price_form | toCurrency }}
                   </td>
                   <td style="width:75px">
-                    <el-input v-model="newTransaction.detail[index].quantity_form" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                    <input type="number" v-model="newTransaction.detail[index].quantity_form" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
                   <td style="width:106px">
-                    <el-input v-model="newTransaction.detail[index].discount_form" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                    <input type="number" max="100" min="0" v-model="newTransaction.detail[index].discount_form" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
                   <td style="width:116px">{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
                   <td>
@@ -232,6 +240,7 @@ export default {
       nonAdminRoles: ['editor', 'user', 'visitor'],
       newTransaction: {
         transaction_no: '',
+        date_form:'',
         vendor_id: 0,
         total: 0,
         status: 0,
@@ -254,6 +263,7 @@ export default {
       },
       rules: {
         name_form: [{ required: true, message: 'Name is required', trigger: 'blur' }],
+        created_at_form : [{ required: true, message: 'Date is required', trigger: 'blur' }],
         phone_form: [
           { required: true, message: 'Phone number is required', trigger: 'blur' },
         ],
@@ -448,6 +458,7 @@ export default {
       this.newTransaction.vendor_id_form = data.vendor_id;
       this.newTransaction.total_form = data.total;
       this.newTransaction.status_form = data.status;
+      this.newTransaction.date_form = data.created_at;
 
       console.log(this.newTransaction.status_form);
 
@@ -573,6 +584,7 @@ export default {
     resetnewTransaction() {
       this.newTransaction = {
         transaction_no: '',
+        created_at:'',
         vendor_id: 0,
         total: 0,
         status: 0,

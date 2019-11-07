@@ -22,6 +22,7 @@ class TransactionController extends Controller
         $status = Arr::get($searchParams, 'status', '');
         $vendor = Arr::get($searchParams, 'vendor', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
+        $month = Arr::get($searchParams, 'month', '');
         
         if (!empty($status)) {
             $transactionQuery->where('status',$status);
@@ -29,6 +30,10 @@ class TransactionController extends Controller
         
         if (!empty($vendor)) {
             $transactionQuery->where('vendor_id',$vendor);
+        }
+
+        if (!empty($month)) {
+            $transactionQuery->whereMonth('created_at', '=', $month);
         }
 
         if (!empty($keyword)) {
@@ -56,6 +61,7 @@ class TransactionController extends Controller
                 'transaction_no_form' => 'required',
                 'vendor_id_form' => 'required',
                 'total_form' => 'required',
+                'date_form' => 'required',
                 'detail'=>'required'
             ]
         );
@@ -69,6 +75,7 @@ class TransactionController extends Controller
             $params['transaction_no']=$request->transaction_no_form;
             $params['vendor_id']=$request->vendor_id_form;
             $params['total']=$request->total_form;
+            $params['created_at']=$request->date_form;
             $params['status']=-1;
             $Transaction = Transaction::create($params);
         } catch (\Throwable $th) {
@@ -115,6 +122,7 @@ class TransactionController extends Controller
         } else {
             try {
                 $transaction->transaction_no = $request->get('transaction_no_form');
+                $transaction->created_at = $request->get('date_form');
                 $transaction->vendor_id = $request->get('vendor_id_form');
                 $transaction->total = $request->get('total_form');
                 $transaction->status = $request->get('status_form');
@@ -163,7 +171,8 @@ class TransactionController extends Controller
             'transaction_no_form' => 'required',
             'vendor_id_form' => 'required',
             'total_form' => 'required',
-            'detail'=>'required'
+            'detail'=>'required',
+            'date_form' => 'required',
         ];
     }
 }

@@ -76,15 +76,21 @@ export default {
         keyword: '',
         role: '',
         status: 1,
+        month : moment().month()+1,
         vendor: null,
       },
       total: 0,
     };
   },
   mounted() {
-    var lastCharUrl = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
 
-    this.query.vendor = lastCharUrl;
+    if(this.$route.query.vendor == "null"){
+      this.query.vendor = 0;
+    }else{
+      this.query.vendor = this.$route.query.vendor;
+    }
+    
+    this.query.month = this.$route.query.month;
 
     this.fetchData();
   },

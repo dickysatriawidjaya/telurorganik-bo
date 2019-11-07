@@ -7,12 +7,7 @@
         </el-col>
         <el-col :span="16">
           <div class="button_print">
-            <router-link v-if="query.vendor" target="_blank" :to="{ path: '/pdf/transactionLUNAS/' + query.vendor }">
-              <el-button type="print" icon="el-icon-printer" style="font-size:15px">
-                PRINT
-              </el-button>
-            </router-link>
-            <router-link v-else target="_blank" :to="{ path: '/pdf/transactionLUNAS/' + 0 }">
+            <router-link target="_blank" :to="{ path: '/pdf/transactionLUNAS/?vendor=' + query.vendor +'&month='+ query.month }">
               <el-button type="print" icon="el-icon-printer" style="font-size:15px">
                 PRINT
               </el-button>
@@ -27,10 +22,24 @@
           </h3>
         </el-col>
         <el-col :span="16">
-          <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 235px; margin-top:13px" class="filter-item" @change="handleFilter">
+          <el-select v-model="query.vendor" placeholder="Vendor Filter" clearable style="width: 235px; margin-top:13px" class="filter-item" @change="handleFilter">
             <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
               <span style="float: left">{{ v.name }}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
+            </el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="3">
+          <h3 class="text_normal">
+            Date Month:
+          </h3>
+        </el-col>
+        <el-col :span="16">
+          <el-select v-model="query.month" placeholder="Date Month Filter" clearable style="width: 235px; margin-top:13px" class="filter-item" @change="handleFilter">
+            <el-option v-for="d in dateMonth" :key="d.value" :label="d.name" :value="d.value">
+              <span style="float: left">{{ d.name }}</span>
             </el-option>
           </el-select>
         </el-col>
@@ -212,12 +221,27 @@ export default {
       queryVendor: {
         paginate: false,
       },
+      dateMonth:[
+        {value : 1,name:"January"},
+        {value : 2,name:"February"},
+        {value : 3,name:"March"},
+        {value : 4,name:"April"},
+        {value : 5,name:"Mei"},
+        {value : 6,name:"June"},
+        {value : 7,name:"July"},
+        {value : 8,name:"August"},
+        {value : 9,name:"September"},
+        {value : 10,name:"October"},
+        {value : 11,name:"November"},
+        {value : 12,name:"Desember"},
+      ],
       query: {
         page: 1,
         limit: 15,
         keyword: '',
         role: '',
         status: 1,
+        month:moment().month()+1,
         vendor: null,
       },
       total: 0,
@@ -226,6 +250,7 @@ export default {
   created() {
     this.getList();
     this.getVendorList();
+    this.query.month = moment().month()+1
   },
   methods: {
     handleFilter() {

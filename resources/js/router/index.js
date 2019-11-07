@@ -215,12 +215,12 @@ export const constantRoutes = Routes;
 
 export const asyncRoutes = [
   {
-    path: '/pdf/transactionLUNAS/:vendor_id',
+    path: '/pdf/transactionLUNAS/',
     component: () => import('@/views/dashboard/admin/pdf/TransactionLUNAS'),
     hidden: true,
   },
   {
-    path: '/pdf/transactionBELUMLUNAS/:vendor_id',
+    path: '/pdf/transactionBELUMLUNAS/',
     component: () => import('@/views/dashboard/admin/pdf/transactionBELUMLUNAS'),
     hidden: true,
   },

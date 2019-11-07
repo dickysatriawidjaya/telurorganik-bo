@@ -71,18 +71,18 @@
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
-      <div v-loading="vendorCreating" class="form-container">
+      <div v-loading="itemCreating" class="form-container">
         <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="100px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
             <el-input v-model="newItem.name_form" />
           </el-form-item>
           <el-form-item label="Unit" prop="unit">
-            <el-select v-model="newItem.unit_id_form" style="width: 100px" class="filter-item">
+            <el-select v-model="newItem.unit_id_form" style="width: 100px" class="filter-item" @change="forceUpdate">
               <el-option v-for="u in unitList" :key="u.id" :label="u.name" :value="u.id">{{ u.name }}</el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="Price" prop="price">
-            <el-input v-model="newItem.price_form" />
+          <el-form-item label="Price" prop="price" >
+            <input type="number" v-model="newItem.price_form" @input="forceUpdate" />
           </el-form-item>
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
             <el-select v-model="newItem.status_form" style="width: 150px" class="filter-item">
@@ -132,7 +132,7 @@ export default {
       total: 0,
       loading: true,
       downloading: false,
-      vendorCreating: false,
+      itemCreating: false,
       query: {
         page: 1,
         limit: 15,
@@ -242,6 +242,7 @@ export default {
     },
   },
   created() {
+    
     this.resetnewItem();
     this.getList();
     this.getUnitList();
@@ -250,6 +251,9 @@ export default {
     }
   },
   methods: {
+    forceUpdate(){
+       this.$forceUpdate();
+    },
     checkPermission,
     async getPermissions() {
       const { data } = await permissionResource.list({});
@@ -304,6 +308,8 @@ export default {
       this.newItem.price_form = data.price;
       this.newItem.unit_id_form = data.unit_id;
       this.newItem.status_form = data.status;
+
+     
     },
     handleDelete(id, name) {
       this.$confirm('This will delete item ' + "'" + name + "'" + '. Continue?', 'Warning', {
@@ -330,7 +336,7 @@ export default {
     createUser() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
-          this.vendorCreating = true;
+          this.itemCreating = true;
           itemResource
             .store(this.newItem)
             .then(response => {
@@ -347,7 +353,7 @@ export default {
               console.log(error);
             })
             .finally(() => {
-              this.vendorCreating = false;
+              this.itemCreating = false;
             });
         } else {
           console.log('error submit!!');
@@ -356,11 +362,11 @@ export default {
       });
     },
     onUpdate() {
-      // this.vendorCreating = true;
+      // this.itemCreating = true;
       // itemResource
       //   .update(this.itemId, this.newItem)
       //   .then(response => {
-      //     this.vendorCreating = false;
+      //     this.itemCreating = false;
       //     this.$message({
       //       message: 'Vendor information has been updated successfully',
       //       type: 'success',
@@ -369,12 +375,12 @@ export default {
       //   })
       //   .catch(error => {
       //     console.log(error);
-      //     this.vendorCreating = false;
+      //     this.itemCreating = false;
       //   });
 
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
-          this.vendorCreating = true;
+          this.itemCreating = true;
           itemResource
             .update(this.itemId, this.newItem)
             .then(response => {
@@ -391,7 +397,7 @@ export default {
               console.log(error);
             })
             .finally(() => {
-              this.vendorCreating = false;
+              this.itemCreating = false;
             });
         } else {
           console.log('error submit!!');
