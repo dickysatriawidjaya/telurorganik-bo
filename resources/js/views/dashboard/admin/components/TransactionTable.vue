@@ -21,7 +21,7 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="3">
+        <el-col :span="2">
           <h3 class="text_normal">
             Vendor :
           </h3>
@@ -38,12 +38,12 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="left" label="No." prop="index" width="40">
+      <el-table-column align="left" label="No." prop="index" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" width="80" sortable>
+      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" width="120" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
         </template>
@@ -54,7 +54,7 @@
           <span v-else>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Trans.ID" prop="transaction_no" sortable width="100">
+      <el-table-column align="left" label="Trans.ID" prop="transaction_no" sortable width="140">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
@@ -64,7 +64,7 @@
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="60">
+      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="100">
         <template slot-scope="scope">
           <span v-if="scope.row.status == 1" style="color:#46A2FD">
             Paid
@@ -74,10 +74,10 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Actions" width="60">
+      <el-table-column align="center" label="Actions" width="100">
         <template slot-scope="scope">
           <router-link :to="'/administrator/users/edit/'+scope.row.id">
-            <el-button size="small" icon="el-icon-edit" circle />
+            <el-button size="medium" icon="el-icon-edit" circle />
           </router-link>
         </template>
       </el-table-column>
@@ -93,17 +93,17 @@
       .text_normal{
         color: #707070;
         font-weight: 500;
-        font-size:10px;
+        font-size:16px;
         font-family: 'Ubuntu', sans-serif;
         font-weight: 400;
         line-height:29px;
       }
       .el-input--medium .el-input__inner {
-        height: 23px;
-        line-height: 23px;
+        height: 35px;
+        line-height: 35px;
         color: #707070;
         font-weight: 500;
-        font-size:10px;
+        font-size:16px;
         font-family: 'Ubuntu', sans-serif;
         font-weight: 400;
         line-height:11px;
@@ -124,10 +124,14 @@
         left: -26px;
         position: absolute;
       }
+      .el-button--medium.is-circle {
+        padding: 8px;
+        border: none;
+      }
     }
     .el-table{
         color: #707070;
-        font-size:10px;
+        font-size:16px;
         font-family: 'Ubuntu', sans-serif;
         font-weight: 400;
         line-height:11px;
@@ -155,14 +159,14 @@
     }
     .table_paid{
       color:#46A2FD;
-      font-size:27px;
+      font-size:33px;
       font-family: 'Abel', sans-serif;
       font-weight: 400;
       line-height:34px;
     }
     .table_unpaid{
       color:#FD4646;
-      font-size:27px;
+      font-size:33px;
       font-family: 'Abel', sans-serif;
       font-weight: 400;
       line-height:34px;
@@ -173,7 +177,7 @@
     .el-button--print {
         color: #707070;
         background-color: #FFFFFF;
-        font-size:10px;
+        font-size:16px;
         font-family: 'Ubuntu', sans-serif;
         font-weight: 400;
         line-height:11px;

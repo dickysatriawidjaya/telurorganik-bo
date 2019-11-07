@@ -203,7 +203,7 @@ export default {
   width: 100%;
   background: #f4f4f4;
   padding-left: 21px;
-  font-size: 10px;
+  font-size: 16px;
   font-family: 'Ubuntu', sans-serif;
   font-weight: 300;
   line-height: 24px;
@@ -213,14 +213,14 @@ export default {
       display: inline-block;
       position: relative;
       cursor: pointer;
-      height: 26px;
+      height: 28px;
       border: 1px solid #d8dce5;
       background: transparent;
       color: #A0A0A0;
       border-color: #707070;
       border-radius:5px;
       padding: 0 8px;
-      font-size: 10px;
+      font-size: 16px;
       font-family: 'Ubuntu', sans-serif;
       font-weight: 500;
       line-height: 24px;
@@ -258,7 +258,7 @@ export default {
     list-style-type: none;
     padding: 5px 0;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 18px;
     font-weight: 400;
     color: #333;
     box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, .3);

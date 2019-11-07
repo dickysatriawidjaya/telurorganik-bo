@@ -3,6 +3,7 @@
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
+
     <div class="right-menu">
       <!-- <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
@@ -30,22 +31,13 @@
               {{ $t('navbar.dashboard') }}
             </el-dropdown-item>
           </router-link>
-          <router-link v-show="userId !== null" :to="`/administrator/users/edit/${userId}`">
-            <el-dropdown-item>
-              {{ $t('navbar.profile') }}
-            </el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/tuandm/laravue/">
-            <el-dropdown-item>
-              {{ $t('navbar.github') }}
-            </el-dropdown-item>
-          </a>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <div class="garis"></div>
   </div>
 </template>
 
@@ -89,20 +81,29 @@ export default {
 </script>
 
 <style lang="scss">
+  .garis{
+    border-bottom:1px solid #D3D3D3;
+    margin-top: 89px;
+    width: 97%;
+    margin-left: 20px;
+  }
+  .rightPanel{
+    display:none;
+  }
   .app-breadcrumb.el-breadcrumb .no-redirect{
     color:#707070 !important;
-    font-size:27px;
+    font-size:33px;
     font-family: 'Abel', sans-serif;
     font-weight:400;
     line-height:34px;
   }
   .app-breadcrumb.el-breadcrumb[data-v-03d80f31] {
     color:#707070 !important;
-    font-size:27px;
+    font-size:33px;
     font-family: 'Abel', sans-serif;
     font-weight:400;
     line-height:34px;
-    margin-left: 24px;
+    margin-left: 20px;
     margin-top: 47px;
   }
 .navbar {
@@ -163,7 +164,7 @@ export default {
     .avatar-container {
       margin-right: 30px;
       color:#707070;
-      font-size:13px;
+      font-size:16px;
       font-family: 'Ubuntu', sans-serif;
       font-weight:300;
       line-height:14px;
@@ -177,7 +178,7 @@ export default {
           .nama-user{
             margin-right: 30px;
             color:#707070;
-            font-size:13px;
+            font-size:16px;
             font-family: 'Ubuntu', sans-serif;
             font-weight:500;
             line-height:14px;

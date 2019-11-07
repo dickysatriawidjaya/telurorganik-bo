@@ -2,39 +2,35 @@
   <div class="app-container">
     <div class="filter-container">
 
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item tabel_filter" @input="handleFilter" />
+      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 250px;" class="filter-item tabel_filter" @input="handleFilter" />
 
-      <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item tabel_filter" @change="handleFilter">
-        <el-option key="1" label="LUNAS" value="1" />
-        <el-option key="-1" label="BELUM LUNAS" value="-1" />
+      <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 100px" class="filter-item tabel_filter" @change="handleFilter">
+        <el-option key="1" label="Paid" value="1" />
+        <el-option key="-1" label="Unpaid" value="-1" />
       </el-select>
 
-      <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 150px" class="filter-item tabel_filter" @change="handleFilter">
+      <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 200px" class="filter-item tabel_filter" @change="handleFilter">
         <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
           <span style="float: left">{{ v.name }}</span>
           <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
         </el-option>
       </el-select>
 
-      <el-button class="filter-item is-right" style="margin-top: 4px;" type="add" icon="el-icon-plus" @click="handleCreate">
+      <el-button class="filter-item is-right"  type="add" icon="el-icon-plus" @click="handleCreate">
         {{ $t('table.add') }} Transaction
-      </el-button>
-
-      <el-button v-waves :loading="downloading" class="filter-item" type="expexcel" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }} Excel <svg-icon icon-class="excel" />
       </el-button>
 
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="left" label="No." prop="index" sortable width="80">
+      <el-table-column align="left" label="No." prop="index" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Date" prop="created_at" sortable>
+      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" sortable width="120">
         <template slot-scope="scope">
-          <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
+          <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor" sortable>
@@ -43,7 +39,7 @@
           <span v-else>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Trans.ID" prop="transaction_no" sortable width="90">
+      <el-table-column align="left" label="Trans.ID" prop="transaction_no" sortable width="140">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
@@ -58,23 +54,23 @@
           <span>{{ scope.row.transaction_detail }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column class-name="status-col" label="Status" prop="status" sortable width="120">
+      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="100">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status == 1" type="success">
+          <span v-if="scope.row.status == 1" style="color:#46A2FD">
             Paid
-          </el-tag>
-          <el-tag v-if="scope.row.status == -1" type="warning">
+          </span>
+          <span v-if="scope.row.status == -1" style="color:#FD4646 !important">
             Unpaid
-          </el-tag>
+          </span>
         </template>
       </el-table-column>
 
       <el-table-column align="left" label="Actions" width="100">
         <template slot-scope="scope">
           <router-link :to="'/transaction/detail/'+scope.row.id">
-            <el-button v-permission="['manage user']" size="small" icon="el-icon-document" circle />
+            <el-button v-permission="['manage user']" size="medium" icon="el-icon-document" circle />
           </router-link>
-          <el-button v-permission="['manage user']" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
+          <el-button v-permission="['manage user']" size="medium" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
           <!--
           <el-button v-if="scope.row.status == -1" v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdateStatus(scope.row.id,1)">
             Set LUNAS
@@ -92,14 +88,14 @@
 
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
       <div v-loading="transactionCreating" class="form-container">
-        <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="90px">
+        <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="150px">
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="Transaction No" prop="transaction_no">
-                <el-input v-model="newTransaction.transaction_no_form" style="width:170px" />
+                <el-input v-model="newTransaction.transaction_no_form" style="width:200px"/>
               </el-form-item>
               <el-form-item label="Vendor" prop="vendor">
-                <el-select v-model="newTransaction.vendor_id_form" filterable class="filter-item" style="width:170px">
+                <el-select v-model="newTransaction.vendor_id_form" filterable class="filter-item"style="width:200px">
                   <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
                     <span style="float: left">{{ v.name }}</span>
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
@@ -131,12 +127,12 @@
                   <th>Quantity</th>
                   <th>Discount</th>
                   <th>Total</th>
-                  <th>Action</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(d,index) in newTransaction.detail">
-                  <td style="width:22px">
+                  <td style="width:30px">
                     {{ index }}
                   </td>
                   <td style="width:212px">
@@ -148,10 +144,10 @@
                     {{ newTransaction.detail[index].price_form }}
                   </td>
                   <td style="width:75px">
-                    <el-input v-model="newTransaction.detail[index].quantity_form" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                    <el-input type="number" v-model="newTransaction.detail[index].quantity_form" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
                   <td style="width:106px">
-                    <el-input v-model="newTransaction.detail[index].discount_form" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                    <el-input type="number" v-model="newTransaction.detail[index].discount_form" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
                   <td style="width:116px">{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
                   <td>
@@ -238,8 +234,8 @@ export default {
         detail: [],
       },
       status: [
-        { label: 'LUNAS', value: 1 },
-        { label: 'BELUM LUNAS', value: -1 },
+        { label: 'Paid', value: 1 },
+        { label: 'Unpaid', value: -1 },
       ],
       titleForm: '',
       transcationId: 0,
@@ -642,7 +638,7 @@ export default {
 
 <style lang="scss">
 .el-dialog{
-  width:743px;
+  width:850px;
   border-radius:10px;
   .el-dialog__header{
     margin: 26px 30px 0px;
@@ -650,7 +646,7 @@ export default {
     padding: 24px 0 5.5px 0;
     .el-dialog__title {
       color:#707070;
-      font-size:27px;
+      font-size:33px;
       font-family: 'Abel', sans-serif;
       font-weight:400;
       line-height:43px;
@@ -659,30 +655,30 @@ export default {
   .el-dialog__body {
     padding: 21px 30px;
     color: #606266;
-    font-size: 14px;
+    font-size:20x;
     word-break: break-all;
     .form-container{
       .el-form-item--medium .el-form-item__label {
         color:#707070;
-        font-size:10px;
+        font-size:16px;
         font-family: 'Ubuntu', sans-serif;
         font-weight:500;
         line-height:11px;
         margin-top: 13px;
       }
       .el-input--medium .el-input__inner {
-          height: 26px;
-          line-height: 26px;
-          font-size: 10px;
+          height: 34px;
+          line-height: 34px;
+          font-size:16px;
       }
       .div_tabel{
         .transaksi_tabel_add{
-          width:687px;
+          width:100%;
           border-spacing: 10px;
           border-collapse: separate;
            thead{
             color:#707070;
-            font-size:10px;
+            font-size:16px;
             font-family: 'Ubuntu', sans-serif;
             font-weight:400;
             line-height:11px;
@@ -690,7 +686,7 @@ export default {
           }
           tbody{
            color:#707070;
-           font-size:10px;
+           font-size:16px;
            font-family: 'Ubuntu', sans-serif;
            font-weight:400;
            line-height:11px;
@@ -698,15 +694,15 @@ export default {
              .el-scrollbar{
                .el-select-dropdown__wrap{
                  .el-select-dropdown__item {
-                      font-size: 10px;
+                      font-size:16px;
                       padding: 0 15px;
                       position: relative;
                       white-space: nowrap;
                       overflow: hidden;
                       text-overflow: ellipsis;
                       color: #606266;
-                      height: 20px;
-                      line-height: 20px;
+                      height: 34px;
+                      line-height: 34px;
                       box-sizing: border-box;
                       cursor: pointer;
                   }
@@ -720,7 +716,7 @@ export default {
       }
       .el-select__caret {
           color: #C0C4CC;
-          font-size: 14px;
+          font-size:20x;
           transition: transform .3s;
           transform: rotateZ(180deg);
           cursor: pointer;
@@ -734,7 +730,7 @@ export default {
             box-sizing: border-box;
         }
         .el-select-dropdown__item {
-             font-size: 10px;
+             font-size:16px;
              padding: 0 15px;
              position: relative;
              white-space: nowrap;
@@ -781,29 +777,40 @@ export default {
   flex: 1;
   justify-content: space-between;
   width:96%;
-  font-size: 10px;
-  padding: 20px;
+  font-size:16px;
+  padding: 19px;
   margin:20px;
   background:#FFFFFF;
   border-radius:10px;
+  .el-button--medium.is-circle {
+    padding: 8px;
+    border: none;
+  }
   .filter-container{
     .tabel_filter{
       color:#707070;
-      font-size:10px;
+      font-size:16px;
       font-family: 'Ubuntu', sans-serif;
       font-weight:300;
-      line-height:11px;
+      line-height:16px;
+      .el-input__inner {
+        height: 36px ;
+        line-height: 36px;
+        font-size:16px;
+        border: 1px solid #707070;
+      }
       .el-input--medium{
         .el-input__inner {
           height: 36px ;
           line-height: 36px;
-          font-size:10px;
+          font-size:16px;
+          border: 1px solid #707070;
         }
       }
     }
     .el-select.tabel_filter{
       color:#707070;
-      font-size:10px;
+      font-size:16px;
       font-family: 'Ubuntu', sans-serif;
       font-weight:300;
       line-height:11px;
@@ -812,7 +819,7 @@ export default {
         line-height: 36px;
         .el-select__caret {
             color: #C0C4CC;
-            font-size: 14px;
+            font-size:20x;
             transition: transform .3s;
             /* transform: rotateZ(180deg); */
             cursor: pointer;
@@ -821,14 +828,15 @@ export default {
         .el-input__inner {
           height: 36px;
           line-height: 36px;
-          font-size:10px;
+          font-size:16px;
+          border: 1px solid #707070;
         }
       }
     }
   }
   .el-table{
       color: #707070;
-      font-size:10px;
+      font-size:16px;
       font-family: 'Ubuntu', sans-serif;
       font-weight: 400;
       line-height:11px;
@@ -837,7 +845,7 @@ export default {
           padding: 0 5px;
           line-height: 30px;
           font-family: 'Ubuntu', sans-serif;
-          font-size: 10px;
+          font-size:16px;
       }
   }
   .block {
@@ -852,7 +860,7 @@ export default {
   }
   .el-button--addtable {
     color: #707070;
-    font-size: 10px;
+    font-size:16px;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 500;
     line-height: 11px;
@@ -864,18 +872,19 @@ export default {
   }
   .el-button--add {
     color: #707070;
-    font-size: 10px;
+    font-size: 16px;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 500;
     line-height: 11px;
     background-color: transparent;
     border-color: #707070;
-    border-radius:13px;
-    float:right;
+    border-radius: 13px;
+    float: right;
+    padding: 10px;
   }
   .el-button--expexcel {
     color: #FFFFFF;
-    font-size: 10px;
+    font-size:16px;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 500;
     line-height: 11px;
