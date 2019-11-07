@@ -39,6 +39,7 @@ export default {
   .app-main {
     /* 84 = navbar + tags-view = 50 + 34 */
     min-height: calc(100vh - 84px);
+    background:#F4F4F4;
   }
 
   .fixed-header+.app-main {
@@ -46,4 +47,3 @@ export default {
   }
 }
 </style>
-

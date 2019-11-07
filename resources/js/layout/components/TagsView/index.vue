@@ -1,6 +1,7 @@
 <template>
   <div id="tags-view-container" class="tags-view-container">
     <scroll-pane ref="scrollPane" class="tags-view-wrapper">
+      History:
       <router-link
         v-for="tag in visitedViews"
         ref="tag"
@@ -200,33 +201,42 @@ export default {
 .tags-view-container {
   height: 34px;
   width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #d8dce5;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
+  background: #f4f4f4;
+  padding-left: 21px;
+  font-size: 10px;
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 300;
+  line-height: 24px;
+  color:#A0A0A0;
   .tags-view-wrapper {
     .tags-view-item {
       display: inline-block;
       position: relative;
       cursor: pointer;
       height: 26px;
-      line-height: 26px;
       border: 1px solid #d8dce5;
-      color: #495060;
-      background: #fff;
+      background: transparent;
+      color: #A0A0A0;
+      border-color: #707070;
+      border-radius:5px;
       padding: 0 8px;
-      font-size: 12px;
+      font-size: 10px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 500;
+      line-height: 24px;
       margin-left: 5px;
       margin-top: 4px;
       &:first-of-type {
-        margin-left: 15px;
+        margin-left: 5px;
       }
       &:last-of-type {
-        margin-right: 15px;
+        margin-right: 18px;
       }
       &.active {
-        background-color: #42b983;
+        background-color: #707070;
         color: #fff;
-        border-color: #42b983;
+        border-color: #707070;
+        border-radius:5px;
         &::before {
           content: '';
           background: #fff;

@@ -6,28 +6,28 @@
         <el-option key="1" label="Active" value="1" />
         <el-option key="-1" label="Deleted" value="-1" />
       </el-select>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
-        {{ $t('table.add') }}
+      <el-button class="filter-item" style="margin-left: 10px;" type="add" icon="el-icon-plus" @click="handleCreate">
+        {{ $t('table.add') }} Vendor
       </el-button>
-      <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
+      <el-button v-waves :loading="downloading" class="filter-item" type="expexcel" icon="el-icon-download" @click="handleDownload">
         {{ $t('table.export') }} Excel <svg-icon icon-class="excel" />
       </el-button>
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" prop="index" sortable width="80">
+      <el-table-column align="left" label="No." prop="index" sortable width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Name" prop="name" sortable>
+      <el-table-column align="left" label="Vendor" prop="name" sortable width="140">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="PIC Name" prop="pic_name" sortable>
+      <el-table-column align="left" label="PIC" prop="pic_name" sortable width="120">
         <template slot-scope="scope">
           <span>{{ scope.row.pic_name }}</span>
         </template>
@@ -39,19 +39,19 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Address" prop="address" sortable>
+      <el-table-column align="left" label="Address" prop="address" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.address }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Created Date" prop="created_at" sortable>
+      <el-table-column align="left" label="Created Date" prop="created_at" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
+      <el-table-column align="left" class-name="status-col" label="Status" width="80" prop="status" sortable >
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">
             ACTIVE
@@ -62,13 +62,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="350">
+      <el-table-column align="left" label="Actions" width="150">
         <template slot-scope="scope">
-          <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">
-            Edit
+          <el-button v-permission="['manage user']"  size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)" circle>
           </el-button>
-          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
-            Delete
+          <el-button v-if="scope.row.status == 1" v-permission="['manage user']"  size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" circle>
           </el-button>
         </template>
       </el-table-column>
@@ -98,13 +96,13 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">
+          <el-button type="canceltransaksi" @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button v-if="vendorId <= 0" type="primary" @click="createUser()">
+          <el-button v-if="vendorId <= 0" type="addtransaksi" @click="createUser()">
             {{ $t('table.confirm') }}
           </el-button>
-          <el-button v-if="vendorId > 0" type="primary" @click="onUpdate()">
+          <el-button v-if="vendorId > 0" type="addtransaksi" @click="onUpdate()">
             Update
           </el-button>
         </div>
@@ -457,7 +455,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .edit-input {
   padding-right: 100px;
 }
@@ -471,17 +469,254 @@ export default {
   padding-top: 0;
   margin-left: 150px;
 }
+
 .app-container {
   flex: 1;
   justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
+  width:96%;
+  font-size: 10px;
+  padding: 20px;
+  margin:20px;
+  background:#FFFFFF;
+  border-radius:10px;
+  .filter-container{
+    .tabel_filter{
+      color:#707070;
+      font-size:10px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:11px;
+      .el-input--medium{
+        .el-input__inner {
+          height: 36px ;
+          line-height: 36px;
+          font-size:10px;
+        }
+      }
+    }
+    .el-select.tabel_filter{
+      color:#707070;
+      font-size:10px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:11px;
+      .el-input{
+        height: 36px;
+        line-height: 36px;
+        .el-select__caret {
+            color: #C0C4CC;
+            font-size: 14px;
+            transition: transform .3s;
+            /* transform: rotateZ(180deg); */
+            cursor: pointer;
+            margin: 3px;
+        }
+        .el-input__inner {
+          height: 36px;
+          line-height: 36px;
+          font-size:10px;
+        }
+      }
+    }
+  }
+  .el-table{
+      color: #707070;
+      font-size:10px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 400;
+      line-height:11px;
+      padding:0px !important;
+      .el-tag {
+          padding: 0 5px;
+          line-height: 30px;
+          font-family: 'Ubuntu', sans-serif;
+          font-size: 10px;
+      }
+  }
   .block {
     float: left;
     min-width: 250px;
   }
   .clear-left {
     clear: left;
+  }
+  .el-button--medium.is-circle {
+    padding: 8px;
+  }
+  .el-button--addtable {
+    color: #707070;
+    font-size: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius:13px;
+    padding: 7px 20px;
+    margin-top: 3px;
+  }
+  .el-button--add {
+    color: #707070;
+    font-size: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius:13px;
+    float:right;
+  }
+  .el-button--expexcel {
+    color: #FFFFFF;
+    font-size: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: #85E67F;
+    border-radius:13px;
+  }
+  .el-button--canceltransaksi {
+    color: #B2B2B2;
+    font-size: 13px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 300;
+    line-height: 14px;
+    background-color: #F4F4F4;
+    border-radius:5px;
+    padding:8px 33px;
+  }
+  .el-button--addtransaksi {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 14px;
+    background-color: #46A2FD;
+    border-radius:5px;
+    padding:8px 33px;
+  }
+}
+.el-dialog{
+  width:410px;
+  border-radius:10px;
+  .el-dialog__header{
+    margin: 26px 30px 0px;
+    border-bottom: 1px solid #D3D3D3;
+    padding: 24px 0 5.5px 0;
+    .el-dialog__title {
+      color:#707070;
+      font-size:27px;
+      font-family: 'Abel', sans-serif;
+      font-weight:400;
+      line-height:43px;
+    }
+  }
+  .el-dialog__body {
+    padding: 21px 30px;
+    color: #606266;
+    font-size: 14px;
+    word-break: break-all;
+    .form-container{
+      .el-form-item--medium .el-form-item__label {
+        color:#707070;
+        font-size:10px;
+        font-family: 'Ubuntu', sans-serif;
+        font-weight:500;
+        line-height:11px;
+        margin-top: 13px;
+      }
+      .el-input--medium .el-input__inner {
+          height: 26px;
+          line-height: 26px;
+          font-size: 10px;
+      }
+      .div_tabel{
+        .transaksi_tabel_add{
+          width:687px;
+          border-spacing: 10px;
+          border-collapse: separate;
+           thead{
+            color:#707070;
+            font-size:10px;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight:400;
+            line-height:11px;
+            text-align:left;
+          }
+          tbody{
+           color:#707070;
+           font-size:10px;
+           font-family: 'Ubuntu', sans-serif;
+           font-weight:400;
+           line-height:11px;
+           .el-select-dropdown{
+             .el-scrollbar{
+               .el-select-dropdown__wrap{
+                 .el-select-dropdown__item {
+                      font-size: 10px;
+                      padding: 0 15px;
+                      position: relative;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      color: #606266;
+                      height: 20px;
+                      line-height: 20px;
+                      box-sizing: border-box;
+                      cursor: pointer;
+                  }
+               }
+             }
+
+           }
+
+         }
+        }
+      }
+      .el-select__caret {
+          color: #C0C4CC;
+          font-size: 14px;
+          transition: transform .3s;
+          transform: rotateZ(180deg);
+          cursor: pointer;
+          margin: 3px;
+      }
+      .el-select-dropdown{
+        .el-select-dropdown__list {
+            list-style: none;
+            padding: 0px 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .el-select-dropdown__item {
+             font-size: 10px;
+             padding: 0 15px;
+             position: relative;
+             white-space: nowrap;
+             overflow: hidden;
+             text-overflow: ellipsis;
+             color: #606266;
+             height: 20px;
+             line-height: 20px;
+             box-sizing: border-box;
+             cursor: pointer;
+         }
+      }
+    }
+    .total_price{
+      color:#707070;
+      font-size:13px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:500;
+      line-height:14px;
+      text-align:left;
+    }
+    .dialog-footer{
+      text-align:center;
+      padding-top: 30px;
+      margin-top: 1px;
+      margin-left: 0px;
+    }
   }
 }
 </style>
