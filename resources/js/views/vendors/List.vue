@@ -51,7 +51,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="left" class-name="status-col" label="Status" width="80" prop="status" sortable >
+      <el-table-column align="left" class-name="status-col" label="Status" width="80" prop="status" sortable>
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">
             ACTIVE
@@ -64,10 +64,8 @@
 
       <el-table-column align="left" label="Actions" width="150">
         <template slot-scope="scope">
-          <el-button v-permission="['manage user']"  size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)" circle>
-          </el-button>
-          <el-button v-if="scope.row.status == 1" v-permission="['manage user']"  size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" circle>
-          </el-button>
+          <el-button v-permission="['manage user']" size="small" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
+          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" size="small" icon="el-icon-delete" circle @click="handleDelete(scope.row.id, scope.row.name);" />
         </template>
       </el-table-column>
     </el-table>

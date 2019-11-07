@@ -8,13 +8,13 @@
         <el-col :span="16">
           <div class="button_print">
             <router-link v-if="query.vendor" target="_blank" :to="{ path: '/pdf/transactionBELUMLUNAS/' + query.vendor }">
-              <el-button type="print" icon="el-icon-printer"  style="font-size:15px">
+              <el-button type="print" icon="el-icon-printer" style="font-size:15px">
                 PRINT
               </el-button>
             </router-link>
 
             <router-link v-else target="_blank" :to="{ path: '/pdf/transactionBELUMLUNAS/' + 0 }">
-              <el-button type="print" icon="el-icon-printer"  style="font-size:15px">
+              <el-button type="print" icon="el-icon-printer" style="font-size:15px">
                 PRINT
               </el-button>
             </router-link>
@@ -23,9 +23,9 @@
       </el-row>
       <el-row>
         <el-col :span="3">
-        <h3 class="text_normal">
-          Vendor :
-        </h3>
+          <h3 class="text_normal">
+            Vendor :
+          </h3>
         </el-col>
         <el-col :span="16">
           <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 235px;margin-top: 13px;" class="filter-item" @change="handleFilter">
@@ -64,7 +64,7 @@
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Status"  prop="status" width="60">
+      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="60">
         <template slot-scope="scope">
           <span v-if="scope.row.status == 1" style="color:#46A2FD">
             Paid
@@ -77,8 +77,7 @@
       <el-table-column align="center" label="Actions" width="60">
         <template slot-scope="scope">
           <router-link :to="'/administrator/users/edit/'+scope.row.id">
-            <el-button type="" size="small" icon="el-icon-edit" circle>
-            </el-button>
+            <el-button type="" size="small" icon="el-icon-edit" circle />
           </router-link>
         </template>
       </el-table-column>

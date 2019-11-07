@@ -58,7 +58,7 @@
           <span>{{ scope.row.transaction_detail }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column class-name="status-col" label="Status"  prop="status" sortable width="120">
+      <el-table-column class-name="status-col" label="Status" prop="status" sortable width="120">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">
             Paid
@@ -72,10 +72,9 @@
       <el-table-column align="left" label="Actions" width="100">
         <template slot-scope="scope">
           <router-link :to="'/transaction/detail/'+scope.row.id">
-            <el-button v-permission="['manage user']"  size="small" icon="el-icon-document" circle>
-            </el-button>
+            <el-button v-permission="['manage user']" size="small" icon="el-icon-document" circle />
           </router-link>
-          <el-button  v-permission="['manage user']" icon="el-icon-edit"  @click="handleUpdate(scope.row)" circle></el-button>
+          <el-button v-permission="['manage user']" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
           <!--
           <el-button v-if="scope.row.status == -1" v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdateStatus(scope.row.id,1)">
             Set LUNAS
@@ -93,11 +92,11 @@
 
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
       <div v-loading="transactionCreating" class="form-container">
-        <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="90px" >
+        <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="90px">
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="Transaction No" prop="transaction_no">
-                <el-input v-model="newTransaction.transaction_no_form" style="width:170px"/>
+                <el-input v-model="newTransaction.transaction_no_form" style="width:170px" />
               </el-form-item>
               <el-form-item label="Vendor" prop="vendor">
                 <el-select v-model="newTransaction.vendor_id_form" filterable class="filter-item" style="width:170px">
@@ -156,7 +155,7 @@
                   </td>
                   <td style="width:116px">{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
                   <td>
-                    <el-button type="danger" icon="el-icon-close" @click="spliceTransactionDetail(index)" circle ></el-button>
+                    <el-button type="danger" icon="el-icon-close" circle @click="spliceTransactionDetail(index)" />
 
                   </td>
                 </tr>
@@ -166,9 +165,8 @@
           </div>
           <el-button type="addtable" @click="addNewItemForm">Add Item</el-button>
 
-
           <el-form-item class="total_price" label="Total Price" prop="total" style="float:right">
-            <el-input class="total_price" v-show="false" v-model="newTransaction.total_form" />
+            <el-input v-show="false" v-model="newTransaction.total_form" class="total_price" />
             {{ newTransaction.total_form | toCurrency }}
           </el-form-item>
         </el-form>
@@ -176,10 +174,10 @@
           <el-button type="canceltransaksi" @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button type="addtransaksi" v-if="transactionId <= 0"  @click="createTransaction()">
+          <el-button v-if="transactionId <= 0" type="addtransaksi" @click="createTransaction()">
             {{ $t('table.confirm') }}
           </el-button>
-          <el-button type="addtransaksi" v-if="transactionId > 0"  @click="onUpdate()">
+          <el-button v-if="transactionId > 0" type="addtransaksi" @click="onUpdate()">
             Update
           </el-button>
         </div>

@@ -44,13 +44,11 @@
       <el-table-column align="center" label="Actions" width="150">
         <template slot-scope="scope">
           <!-- <router-link v-if="!scope.row.roles.includes('admin')" :to="'/administrator/users/edit/'+scope.row.id"> -->
-            <el-button v-if="login_as_role=='admin'" v-permission="['manage user']" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)" circle>
-            </el-button>
+          <el-button v-if="login_as_role=='admin'" v-permission="['manage user']" size="small" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
           <!-- </router-link> -->
           <!-- <el-button v-if="!scope.row.roles.includes('admin')" v-permission="['manage permission']"  size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row.id);" circle>
           </el-button> -->
-          <el-button v-if="!scope.row.roles.includes('admin')" v-permission="['manage user']" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" circle>
-          </el-button>
+          <el-button v-if="!scope.row.roles.includes('admin')" v-permission="['manage user']" size="small" icon="el-icon-delete" circle @click="handleDelete(scope.row.id, scope.row.name);" />
         </template>
       </el-table-column>
     </el-table>
@@ -146,8 +144,8 @@ export default {
       }
     };
     return {
-      titleForm : 'Create User',
-      login_as_role : Cookies.get('Role'),
+      titleForm: 'Create User',
+      login_as_role: Cookies.get('Role'),
       list: null,
       total: 0,
       loading: true,
@@ -264,7 +262,7 @@ export default {
   },
   methods: {
     handleUpdate(data){
-    console.log(data)
+      console.log(data);
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['userForm'].clearValidate();

@@ -1,7 +1,7 @@
 <template>
   <el-scrollbar wrap-class="scrollbar-wrapper">
 
-    <img class="logo-login" :src="'/images/logo-menu.png'" >
+    <img class="logo-login" :src="'/images/logo-menu.png'">
     <el-menu
       :show-timeout="200"
       :default-active="$route.path"

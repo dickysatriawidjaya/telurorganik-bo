@@ -1,50 +1,50 @@
 <template>
   <div class="login-container">
-    <img class="logo-login" :src="'/images/logo.png'" >
-      <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-        <h3 class="title">
-          Login
-        </h3>
-        <el-row>
-          <el-col :span="8">
+    <img class="logo-login" :src="'/images/logo.png'">
+    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+      <h3 class="title">
+        Login
+      </h3>
+      <el-row>
+        <el-col :span="8">
           <h3 class="text_normal">
             username :
           </h3>
-          </el-col>
-          <el-col :span="16">
-            <el-form-item prop="email">
-              <el-input v-model="loginForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="8">
+        </el-col>
+        <el-col :span="16">
+          <el-form-item prop="email">
+            <el-input v-model="loginForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8">
           <h3 class="text_normal">
             Password :
           </h3>
-          </el-col>
-          <el-col :span="16">
-            <el-form-item prop="password">
-              <el-input
-                v-model="loginForm.password"
-                :type="pwdType"
-                name="password"
-                auto-complete="on"
-                placeholder="password"
-                @keyup.enter.native="handleLogin"
-              />
-              <span class="show-pwd" @click="showPwd">
-                <svg-icon icon-class="eye" />
-              </span>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <div class="button_login">
-          <el-button :loading="loading" type="telur" style="height:29px;width:104px;margin-top:20px;" @click.native.prevent="handleLogin" >
-            Sign in
-          </el-button>
-        </div>
-      </el-form>
+        </el-col>
+        <el-col :span="16">
+          <el-form-item prop="password">
+            <el-input
+              v-model="loginForm.password"
+              :type="pwdType"
+              name="password"
+              auto-complete="on"
+              placeholder="password"
+              @keyup.enter.native="handleLogin"
+            />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon icon-class="eye" />
+            </span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <div class="button_login">
+        <el-button :loading="loading" type="telur" style="height:29px;width:104px;margin-top:20px;" @click.native.prevent="handleLogin">
+          Sign in
+        </el-button>
+      </div>
+    </el-form>
     <div class="foot_kerjain">
       Created by : kerjain.bandung-2019
     </div>
@@ -116,7 +116,7 @@ export default {
                 console.log('masuk admin' + this.redirect);
                 this.$router.push({ path: this.redirect || '/' });
               } else {
-                console.log('masuk bukan admin'+this.redirect);
+                console.log('masuk bukan admin' + this.redirect);
                 this.$router.push({ path: this.redirect || '/transaction' });
               }
 

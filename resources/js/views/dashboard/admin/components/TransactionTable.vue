@@ -22,28 +22,28 @@
       </el-row>
       <el-row>
         <el-col :span="3">
-        <h3 class="text_normal">
-          Vendor :
-        </h3>
+          <h3 class="text_normal">
+            Vendor :
+          </h3>
         </el-col>
         <el-col :span="16">
-        <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 235px; margin-top:13px" class="filter-item" @change="handleFilter">
-          <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
-            <span style="float: left">{{ v.name }}</span>
-            <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
-          </el-option>
-        </el-select>
+          <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 235px; margin-top:13px" class="filter-item" @change="handleFilter">
+            <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
+              <span style="float: left">{{ v.name }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
+            </el-option>
+          </el-select>
         </el-col>
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="list"  border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="left" label="No." prop="index" width="40">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Date"  prop="created_at" width="80" sortable>
+      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" width="80" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
         </template>
@@ -64,7 +64,7 @@
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Status"  prop="status" width="60">
+      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="60">
         <template slot-scope="scope">
           <span v-if="scope.row.status == 1" style="color:#46A2FD">
             Paid
@@ -77,8 +77,7 @@
       <el-table-column align="center" label="Actions" width="60">
         <template slot-scope="scope">
           <router-link :to="'/administrator/users/edit/'+scope.row.id">
-            <el-button  size="small" icon="el-icon-edit" circle>
-            </el-button>
+            <el-button size="small" icon="el-icon-edit" circle />
           </router-link>
         </template>
       </el-table-column>
