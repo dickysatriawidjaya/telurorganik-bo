@@ -12,7 +12,7 @@
                 </el-col>
                 <el-col :span="12">
                   <h3 class="text_detail">
-                    123456 
+                    {{transaction.transaction_no}} 
                   </h3>
                 </el-col>
             </el-row>
@@ -25,15 +25,15 @@
                   </h3>
                 </el-col>
                 <el-col :span="12">
-                  <h3 class="text_detail">
+                  <!-- <h3 class="text_detail">
                     paid
-                  </h3>
-                  <!-- <span v-if="scope.row.status == 1" style="color:#46A2FD">
+                  </h3> -->
+                  <h3 class="text_detail" v-if="transaction.status == 1" style="color:#46A2FD">
                   Paid
-                  </span>
-                  <span v-if="scope.row.status == -1" style="color:#FD4646 !important">
+                  </h3>
+                  <h3 class="text_detail" v-if="transaction.status == -1" style="color:#FD4646 !important">
                     Unpaid
-                  </span> -->
+                  </h3>
                 </el-col>
             </el-row>
           </el-col>
@@ -48,7 +48,37 @@
                   </el-col>
                   <el-col :span="12">
                     <h3 class="text_detail">
-                      Bos 
+                      {{transaction.vendor.name}} ( {{transaction.vendor.pic_name}} )
+                    </h3>
+                  </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+            <el-row>
+                <el-col :span="8">
+                  <h3 class="text_normal">
+                    Transaction Date
+                  </h3>
+                </el-col>
+                <el-col :span="12">
+                  <h3 class="text_detail">
+                    {{transaction.created_at | moment("DD-MMM-YYYY")}}
+                  </h3>
+                </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="12">
+              <el-row>
+                  <el-col :span="8">
+                    <h3 class="text_normal">
+                      Phone  
+                    </h3>
+                  </el-col>
+                  <el-col :span="12">
+                    <h3 class="text_detail">
+                      {{transaction.vendor.phone}} 
                     </h3>
                   </el-col>
               </el-row>
@@ -56,36 +86,45 @@
             <el-col :span="12">
             </el-col>
         </el-row>
-        <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
+      <el-table v-loading="loading" :data="transaction.detail_transaction" border fit highlight-current-row style="width: 100%">
         <el-table-column align="left" label="No." prop="index" width="60">
           <template slot-scope="scope">
             <span>{{ scope.row.index }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" class-name="status-col" label="Item" prop="created_at" width="120" sortable>
+        <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" width="120" sortable>
           <template slot-scope="scope">
-            <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
+            <span>{{ scope.row.created_at | moment("DD-MMM-YYYY") }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="Price" prop="vendor" sortable>
+        <el-table-column align="left" label="Item" prop="item" sortable>
           <template slot-scope="scope">
-            <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
-            <span v-else>{{ scope.row.vendor.name }}</span>
+             <span>{{ scope.row.item.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="Qty" prop="transaction_no" sortable width="140">
+        <el-table-column align="left" label="Price" prop="price" sortable>
           <template slot-scope="scope">
-            <span>{{ scope.row.transaction_no }}</span>
+             <span>{{ scope.row.item.price | toCurrency }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="Qty" prop="quantity" sortable>
+          <template slot-scope="scope">
+            <span>{{ scope.row.quantity }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="Discount" prop="discount" sortable>
+          <template slot-scope="scope">
+            <span>{{ scope.row.discount }}</span>
           </template>
         </el-table-column>
         <el-table-column align="left" label="Total" prop="total" sortable>
           <template slot-scope="scope">
-            <span>{{ scope.row.total | toCurrency }}</span>
+            <span>{{ scope.row.subtotal | toCurrency }}</span>
           </template>
         </el-table-column>
       </el-table>
        <el-row>
-          <el-col :span="12" style="margin-left: 82%">
+          <el-col :span="12" style="margin-left: 80%">
             <el-row>
                 <el-col :span="5">
                   <h3 class="text_normal">
@@ -94,7 +133,7 @@
                 </el-col>
                 <el-col :span="8">
                   <h3 class="text_normal">
-                    1 juta 
+                   {{transaction.total | toCurrency}}
                   </h3>
                 </el-col>
             </el-row>
@@ -179,6 +218,8 @@ export default {
   data() {
     return {
       user: {},
+      transaction:{},
+      loading:true,
     };
   },
   watch: {
@@ -191,7 +232,9 @@ export default {
   methods: {
     async getTransaction(id) {
       const { data } = await transactionResource.get(id);
-      this.transction = data;
+      this.transaction = data;
+      console.log(this.transaction)
+      this.loading = false;
     },
   },
 };

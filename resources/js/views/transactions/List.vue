@@ -148,7 +148,7 @@
               <tbody>
                 <tr v-for="(d,index) in newTransaction.detail">
                   <td style="width:30px">
-                    {{ index }}
+                    {{ index + 1 }}
                   </td>
                   <td style="width:212px">
                     <el-select v-model="newTransaction.detail[index].item_id_form" class="filter-item" @change="setItemPrice(index)">
@@ -158,7 +158,7 @@
                   <td style="width:107px">
                     {{ newTransaction.detail[index].price_form | toCurrency }}
                   </td>
-                  <td style="width:75px">
+                  <td style="width:100px">
 <!-- <<<<<<< HEAD
                     <input type="number" v-model="newTransaction.detail[index].quantity_form" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>

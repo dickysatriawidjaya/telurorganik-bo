@@ -69,7 +69,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" width="500px">
       <div v-loading="vendorCreating" class="form-container">
         <el-form ref="vendorForm" :rules="rules" :model="newVendor" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">

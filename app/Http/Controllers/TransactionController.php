@@ -48,7 +48,7 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction)
     {
-        $query = Transaction::where('id',$transaction->id)->with('vendor','detail_transaction')->first();
+        $query = Transaction::where('id',$transaction->id)->with('vendor','detail_transaction.item')->first();
         return new TransactionResource($query);
     }
 

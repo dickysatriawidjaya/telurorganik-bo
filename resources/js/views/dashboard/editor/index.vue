@@ -11,9 +11,9 @@
         <span style="font-size:20px;padding-top:20px;display:inline-block;">{{ roles.join('|') }}'s Dashboard</span>
       </div>
     </div>
-    <div>
+    <!-- <div>
       <img :src="emptyGif" class="emptyGif">
-    </div>
+    </div> -->
   </div>
 </template>
 

@@ -85,8 +85,8 @@
       </el-table-column>
       <el-table-column align="center" label="Actions" width="100">
         <template slot-scope="scope">
-          <router-link :to="'/administrator/users/edit/'+scope.row.id">
-            <el-button size="medium" icon="el-icon-edit" circle />
+          <router-link :to="'/transaction/detail/'+scope.row.id">
+            <el-button v-permission="['manage user']" size="medium" icon="el-icon-document" circle />
           </router-link>
         </template>
       </el-table-column>
