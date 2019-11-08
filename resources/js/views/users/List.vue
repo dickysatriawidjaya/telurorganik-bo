@@ -11,9 +11,6 @@
       <el-button class="filter-item" style="margin-left: 10px;" type="add" icon="el-icon-plus" @click="handleCreate">
         {{ $t('table.add') }} User
       </el-button>
-      <el-button v-waves :loading="downloading" class="filter-item" type="expexcel" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button>
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
@@ -85,11 +82,11 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="b">
       <div v-loading="userCreating" class="form-container">
-        <el-form ref="userForm" :rules="rules" :model="newUser" label-position="left" label-width="100px" style="max-width: 500px;">
+        <el-form ref="userForm" :rules="rules" :model="newUser" label-position="left" label-width="180px" style="max-width: 500px;">
           <el-form-item :label="$t('user.role')" prop="role">
-            <el-select v-model="newUser.role" class="filter-item" placeholder="Please select role">
+            <el-select v-model="newUser.role" class="filter-item" placeholder="Please select role" style="width:100%;">
               <el-option v-for="item in roles" :key="item" :label="item | uppercaseFirst" :value="item" />
             </el-select>
           </el-form-item>
@@ -444,126 +441,128 @@ export default {
 </script>
 
 <style lang="scss" >
-  .el-dialog{
-    width:410px;
-    border-radius:10px;
-    .el-dialog__header{
-      margin: 26px 30px 0px;
-      border-bottom: 1px solid #D3D3D3;
-      padding: 24px 0 5.5px 0;
-      .el-dialog__title {
-        color:#707070;
-        font-size:27px;
-        font-family: 'Abel', sans-serif;
-        font-weight:400;
-        line-height:43px;
-      }
-    }
-    .el-dialog__body {
-      padding: 21px 30px;
-      color: #606266;
-      font-size: 14px;
-      word-break: break-all;
-      .form-container{
-        .el-form-item--medium .el-form-item__label {
+  .b{
+    .el-dialog{
+      width:500px;
+      border-radius:10px;
+      .el-dialog__header{
+        margin: 26px 30px 0px;
+        border-bottom: 1px solid #D3D3D3;
+        padding: 24px 0 5.5px 0;
+        .el-dialog__title {
           color:#707070;
-          font-size:10px;
-          font-family: 'Ubuntu', sans-serif;
-          font-weight:500;
-          line-height:11px;
-          margin-top: 13px;
+          font-size:33px;
+          font-family: 'Abel', sans-serif;
+          font-weight:400;
+          line-height:43px;
         }
-        .el-input--medium .el-input__inner {
-            height: 26px;
-            line-height: 26px;
-            font-size: 10px;
-        }
-        .div_tabel{
-          .transaksi_tabel_add{
-            width:687px;
-            border-spacing: 10px;
-            border-collapse: separate;
-             thead{
-              color:#707070;
-              font-size:10px;
-              font-family: 'Ubuntu', sans-serif;
-              font-weight:400;
-              line-height:11px;
-              text-align:left;
-            }
-            tbody{
-             color:#707070;
-             font-size:10px;
-             font-family: 'Ubuntu', sans-serif;
-             font-weight:400;
-             line-height:11px;
-             .el-select-dropdown{
-               .el-scrollbar{
-                 .el-select-dropdown__wrap{
-                   .el-select-dropdown__item {
-                        font-size: 10px;
-                        padding: 0 15px;
-                        position: relative;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        color: #606266;
-                        height: 20px;
-                        line-height: 20px;
-                        box-sizing: border-box;
-                        cursor: pointer;
-                    }
+      }
+      .el-dialog__body {
+        padding: 21px 30px;
+        color: #606266;
+        font-size: 20px;
+        word-break: break-all;
+        .form-container{
+          .el-form-item--medium .el-form-item__label {
+            color:#707070;
+            font-size:16px;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight:500;
+            line-height:11px;
+            margin-top: 13px;
+          }
+          .el-input--medium .el-input__inner {
+              height: 34px;
+              line-height: 34px;
+              font-size: 16px;
+          }
+          .div_tabel{
+            .transaksi_tabel_add{
+              width:687px;
+              border-spacing: 10px;
+              border-collapse: separate;
+               thead{
+                color:#707070;
+                font-size:13px;
+                font-family: 'Ubuntu', sans-serif;
+                font-weight:400;
+                line-height:11px;
+                text-align:left;
+              }
+              tbody{
+               color:#707070;
+               font-size:13px;
+               font-family: 'Ubuntu', sans-serif;
+               font-weight:400;
+               line-height:11px;
+               .el-select-dropdown{
+                 .el-scrollbar{
+                   .el-select-dropdown__wrap{
+                     .el-select-dropdown__item {
+                          font-size: 10px;
+                          padding: 0 15px;
+                          position: relative;
+                          white-space: nowrap;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          color: #606266;
+                          height: 20px;
+                          line-height: 20px;
+                          box-sizing: border-box;
+                          cursor: pointer;
+                      }
+                   }
                  }
+
                }
 
              }
-
-           }
+            }
+          }
+          .el-select__caret {
+              color: #C0C4CC;
+              font-size: 14px;
+              transition: transform .3s;
+              transform: rotateZ(180deg);
+              cursor: pointer;
+              margin: 3px;
+          }
+          .el-select-dropdown{
+            .el-select-dropdown__list {
+                list-style: none;
+                padding: 0px 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            .el-select-dropdown__item {
+                 font-size: 16px;
+                 padding: 0 15px;
+                 position: relative;
+                 white-space: nowrap;
+                 overflow: hidden;
+                 text-overflow: ellipsis;
+                 color: #606266;
+                 height: 20px;
+                 line-height: 20px;
+                 box-sizing: border-box;
+                 cursor: pointer;
+             }
           }
         }
-        .el-select__caret {
-            color: #C0C4CC;
-            font-size: 14px;
-            transition: transform .3s;
-            transform: rotateZ(180deg);
-            cursor: pointer;
-            margin: 3px;
+        .total_price{
+          color:#707070;
+          font-size:16px;
+          font-family: 'Ubuntu', sans-serif;
+          font-weight:500;
+          line-height:14px;
+          text-align:left;
         }
-        .el-select-dropdown{
-          .el-select-dropdown__list {
-              list-style: none;
-              padding: 0px 0;
-              margin: 0;
-              box-sizing: border-box;
-          }
-          .el-select-dropdown__item {
-               font-size: 10px;
-               padding: 0 15px;
-               position: relative;
-               white-space: nowrap;
-               overflow: hidden;
-               text-overflow: ellipsis;
-               color: #606266;
-               height: 20px;
-               line-height: 20px;
-               box-sizing: border-box;
-               cursor: pointer;
-           }
+        .dialog-footer{
+          text-align:center;
+          padding-top: 30px;
+          margin-top: 1px;
+          margin-left: 0px;
         }
-      }
-      .total_price{
-        color:#707070;
-        font-size:13px;
-        font-family: 'Ubuntu', sans-serif;
-        font-weight:500;
-        line-height:14px;
-        text-align:left;
-      }
-      .dialog-footer{
-        text-align:center;
-        padding-top: 30px;
-        margin-top: 1px;
-        margin-left: 0px;
       }
     }
   }
@@ -584,29 +583,40 @@ export default {
   flex: 1;
   justify-content: space-between;
   width:96%;
-  font-size: 10px;
-  padding: 20px;
+  font-size:16px;
+  padding: 16px;
   margin:20px;
   background:#FFFFFF;
   border-radius:10px;
+  .el-button--medium.is-circle {
+    padding: 8px;
+    border: none;
+  }
   .filter-container{
     .tabel_filter{
       color:#707070;
-      font-size:10px;
+      font-size:16px;
       font-family: 'Ubuntu', sans-serif;
       font-weight:300;
-      line-height:11px;
+      line-height:16px;
+      .el-input__inner {
+        height: 36px ;
+        line-height: 36px;
+        font-size:16px;
+        border: 1px solid #707070;
+      }
       .el-input--medium{
         .el-input__inner {
           height: 36px ;
           line-height: 36px;
-          font-size:10px;
+          font-size:16px;
+          border: 1px solid #707070;
         }
       }
     }
     .el-select.tabel_filter{
       color:#707070;
-      font-size:10px;
+      font-size:16px;
       font-family: 'Ubuntu', sans-serif;
       font-weight:300;
       line-height:11px;
@@ -624,14 +634,15 @@ export default {
         .el-input__inner {
           height: 36px;
           line-height: 36px;
-          font-size:10px;
+          font-size:16px;
+          border: 1px solid #707070;
         }
       }
     }
   }
   .el-table{
       color: #707070;
-      font-size:10px;
+      font-size:16px;
       font-family: 'Ubuntu', sans-serif;
       font-weight: 400;
       line-height:11px;
@@ -640,7 +651,7 @@ export default {
           padding: 0 5px;
           line-height: 30px;
           font-family: 'Ubuntu', sans-serif;
-          font-size: 10px;
+          font-size:16px;
       }
   }
   .block {
@@ -655,7 +666,7 @@ export default {
   }
   .el-button--addtable {
     color: #707070;
-    font-size: 10px;
+    font-size:16px;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 500;
     line-height: 11px;
@@ -667,18 +678,19 @@ export default {
   }
   .el-button--add {
     color: #707070;
-    font-size: 10px;
+    font-size: 16px;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 500;
     line-height: 11px;
     background-color: transparent;
     border-color: #707070;
-    border-radius:13px;
-    float:right;
+    border-radius: 13px;
+    float: right;
+    padding: 10px;
   }
   .el-button--expexcel {
     color: #FFFFFF;
-    font-size: 10px;
+    font-size:16px;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 500;
     line-height: 11px;

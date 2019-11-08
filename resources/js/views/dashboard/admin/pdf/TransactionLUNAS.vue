@@ -1,57 +1,45 @@
 <template>
-  <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-    <el-table-column align="center" label="ID" prop="index" sortable width="80">
-      <template slot-scope="scope">
-        <span>{{ scope.row.index }}</span>
-      </template>
-    </el-table-column>
+  <div class="print">
+    <el-table v-loading="loading" :data="list" border fit style="width: 100%">
+      <el-table-column align="center" label="No." prop="index"  width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.index }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column class-name="status-col" label="Date" width="110" prop="created_at" >
+        <template slot-scope="scope">
+          <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Vendor" prop="vendor" >
+        <template slot-scope="scope">
+          <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
+          <span v-else>{{ scope.row.vendor.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Trans.ID" prop="transaction_no" >
+        <template slot-scope="scope">
+          <span>{{ scope.row.transaction_no }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Total" prop="total" >
+        <template slot-scope="scope">
+          <span>{{ scope.row.total | toCurrency }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column class-name="status-col" label="Status" width="110" prop="status" >
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status == 1" type="success">
+            Paid
+          </el-tag>
+          <el-tag v-if="scope.row.status == -1" type="warning">
+            Unpaid
+          </el-tag>
+        </template>
+      </el-table-column>=
+    </el-table>
+  </div>
 
-    <el-table-column align="center" label="Transaction No." prop="transaction_no" sortable>
-      <template slot-scope="scope">
-        <span>{{ scope.row.transaction_no }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Vendor" prop="vendor" sortable>
-      <template slot-scope="scope">
-        <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
-        <span v-else>{{ scope.row.vendor.name }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Total" prop="total" sortable>
-      <template slot-scope="scope">
-        <span>{{ scope.row.total | toCurrency }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column class-name="status-col" label="Created Date" width="110" prop="created_at" sortable>
-      <template slot-scope="scope">
-        <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
-      <template slot-scope="scope">
-        <el-tag v-if="scope.row.status == 1" type="success">
-          LUNAS
-        </el-tag>
-        <el-tag v-if="scope.row.status == -1" type="warning">
-          BELUM LUNAS
-        </el-tag>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Actions">
-      <template slot-scope="scope">
-        <router-link :to="'/administrator/users/edit/'+scope.row.id">
-          <el-button type="primary" size="small" icon="el-icon-edit">
-            Detail
-          </el-button>
-        </router-link>
-      </template>
-    </el-table-column>
-  </el-table>
 </template>
 
 <script>
@@ -130,6 +118,37 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+  .print{
+    width:793px;
+
+    .el-table{
+        color: #707070;
+        font-size:13px;
+        font-family: 'Ubuntu', sans-serif;
+        font-weight: 400;
+        line-height:11px;
+        padding:0px !important;
+        border: 0.5px solid #707070;
+        .el-tag {
+            padding: 0 5px;
+            line-height: 30px;
+            font-family: 'Ubuntu', sans-serif;
+            font-size: 13px;
+        }
+    }
+    @media print {
+      table {
+          border: solid #000 !important;
+          border-width: 1px 0 0 1px !important;
+          border-bottom: 1px solid #000 !important;
+          border-right: 10px solid #000 !important;
+      }
+      th, td {
+          border: solid #000 !important;
+          border-width: 0 1px 1px 0 !important;
+      }
+    }
+  }
 @mixin clearfix {
   &:before {
     display: table;

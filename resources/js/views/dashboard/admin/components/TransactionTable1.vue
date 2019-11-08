@@ -28,7 +28,7 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="3">
+        <el-col :span="2">
           <h3 class="text_normal">
             Vendor :
           </h3>
@@ -58,12 +58,12 @@
       </el-row>
     </div>
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="left" label="No." prop="index" width="40">
+      <el-table-column align="left" label="No." prop="index" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Date" width="80" prop="created_at" sortable>
+      <el-table-column align="left" class-name="status-col" label="Date" width="120" prop="created_at" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
         </template>
@@ -74,7 +74,7 @@
           <span v-else>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Tran.ID" prop="transaction_no" sortable>
+      <el-table-column align="left" label="Tran.ID" prop="transaction_no" sortable width="140">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
@@ -84,20 +84,20 @@
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="60">
+      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="100">
         <template slot-scope="scope">
           <span v-if="scope.row.status == 1" style="color:#46A2FD">
             Paid
           </span>
-          <span v-if="scope.row.status == -1" style="color:##FD4646">
+          <span v-if="scope.row.status == -1" style="color:#FD4646 !important">
             Unpaid
           </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Actions" width="60">
+      <el-table-column align="center" label="Actions" width="100">
         <template slot-scope="scope">
           <router-link :to="'/administrator/users/edit/'+scope.row.id">
-            <el-button type="" size="small" icon="el-icon-edit" circle />
+            <el-button type="" size="medium" icon="el-icon-edit" circle />
           </router-link>
         </template>
       </el-table-column>
