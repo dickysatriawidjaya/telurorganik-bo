@@ -99,6 +99,7 @@
       background:#FFFFFF;
       padding:16px;
       width:100%;
+      border-radius: 10px;
       .text_normal{
         color: #707070;
         font-weight: 500;
