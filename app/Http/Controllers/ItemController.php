@@ -31,10 +31,10 @@ class ItemController extends Controller
 
         $itemQuery->orderBy('status','DESC')->with('unit');
         // return response()->json($itemQuery->paginate($limit);
-        if ($paginate == true) {
+        if ($paginate == "true") {
             return ItemResource::collection($itemQuery->paginate($limit));
         } else {
-            return ItemResource::collection($itemQuery->get());
+            return ItemResource::collection($itemQuery->where("status",1)->get());
         }
         
     }

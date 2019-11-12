@@ -75,7 +75,7 @@ class TransactionController extends Controller
             $params['transaction_no']=$request->transaction_no_form;
             $params['vendor_id']=$request->vendor_id_form;
             $params['total']=$request->total_form;
-            $params['created_at']=$request->date_form;
+            $params['created_at']=date("Y-m-d",strtotime($request->date_form));
             $params['status']=-1;
             $Transaction = Transaction::create($params);
         } catch (\Throwable $th) {
@@ -120,9 +120,10 @@ class TransactionController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
+            
             try {
                 $transaction->transaction_no = $request->get('transaction_no_form');
-                $transaction->created_at = $request->get('date_form');
+                $transaction->created_at = date("Y-m-d",strtotime($request->get('date_form')));
                 $transaction->vendor_id = $request->get('vendor_id_form');
                 $transaction->total = $request->get('total_form');
                 $transaction->status = $request->get('status_form');

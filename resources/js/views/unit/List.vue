@@ -65,7 +65,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" :before-close="handleClose">
       <div v-loading="vendorCreating" class="form-container">
         <el-form ref="unitForm" :rules="rules" :model="newUnit" label-position="left" label-width="100px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
@@ -235,6 +235,13 @@ export default {
     }
   },
   methods: {
+     handleClose(done) {
+      this.$confirm('Are you sure to close this dialog?')
+      .then(_ => {
+          done();
+      })
+      .catch(_ => {});
+    },
     checkPermission,
     async getPermissions() {
       const { data } = await permissionResource.list({});

@@ -226,19 +226,19 @@ export default {
       queryVendor: {
         paginate: false,
       },
-      dateMonth:[
-        {value : 1,name:"January"},
-        {value : 2,name:"February"},
-        {value : 3,name:"March"},
-        {value : 4,name:"April"},
-        {value : 5,name:"Mei"},
-        {value : 6,name:"June"},
-        {value : 7,name:"July"},
-        {value : 8,name:"August"},
-        {value : 9,name:"September"},
-        {value : 10,name:"October"},
-        {value : 11,name:"November"},
-        {value : 12,name:"Desember"},
+      dateMonth: [
+        { value: 1, name: 'January' },
+        { value: 2, name: 'February' },
+        { value: 3, name: 'March' },
+        { value: 4, name: 'April' },
+        { value: 5, name: 'Mei' },
+        { value: 6, name: 'June' },
+        { value: 7, name: 'July' },
+        { value: 8, name: 'August' },
+        { value: 9, name: 'September' },
+        { value: 10, name: 'October' },
+        { value: 11, name: 'November' },
+        { value: 12, name: 'Desember' },
       ],
       query: {
         page: 1,
@@ -246,7 +246,7 @@ export default {
         keyword: '',
         role: '',
         status: 1,
-        month:moment().month()+1,
+        month: moment().month() + 1,
         vendor: null,
       },
       total: 0,
@@ -255,7 +255,7 @@ export default {
   created() {
     this.getList();
     this.getVendorList();
-    this.query.month = moment().month()+1
+    this.query.month = moment().month() + 1;
   },
   methods: {
     handleFilter() {

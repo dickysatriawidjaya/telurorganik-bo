@@ -34,10 +34,10 @@ class VendorController extends Controller
         }
 
         $vendorQuery->orderBy('status','DESC');
-        if ($paginate == true) {
+        if ($paginate == "true") {
             return VendorResource::collection($vendorQuery->paginate($limit));
         } else {
-            return VendorResource::collection($vendorQuery->get());
+            return VendorResource::collection($vendorQuery->where("status",1)->get());
         }
     }
 

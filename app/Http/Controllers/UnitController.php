@@ -32,11 +32,10 @@ class UnitController extends Controller
         }
 
         $unitQuery->orderBy('status','DESC');
-
-        if ($paginate == true) {
+        if ($paginate == "true") {
             return UnitResource::collection($unitQuery->paginate($limit));
         } else {
-            return UnitResource::collection($unitQuery->get());
+            return UnitResource::collection($unitQuery->where("status",1)->get());
         }
     }
 

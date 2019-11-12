@@ -82,7 +82,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="b">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="b" :before-close="handleClose">
       <div v-loading="userCreating" class="form-container">
         <el-form ref="userForm" :rules="rules" :model="newUser" label-position="left" label-width="180px" style="max-width: 500px;">
           <el-form-item :label="$t('user.role')" prop="role">
@@ -258,6 +258,13 @@ export default {
     }
   },
   methods: {
+    handleClose(done) {
+      this.$confirm('Are you sure to close this dialog?')
+      .then(_ => {
+          done();
+      })
+      .catch(_ => {});
+    },
     handleUpdate(data){
       console.log(data);
       this.dialogFormVisible = true;

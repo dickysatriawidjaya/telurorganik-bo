@@ -69,7 +69,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" width="500px">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" width="500px" :before-close="handleClose">
       <div v-loading="vendorCreating" class="form-container">
         <el-form ref="vendorForm" :rules="rules" :model="newVendor" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
@@ -79,7 +79,7 @@
             <el-input v-model="newVendor.pic_name_form" />
           </el-form-item>
           <el-form-item label="Phone" prop="phone">
-            <el-input type="number" v-model="newVendor.phone_form" />
+            <el-input v-model="newVendor.phone_form" type="number" />
           </el-form-item>
           <el-form-item label="Address" prop="address">
             <el-input v-model="newVendor.address_form" />
@@ -242,6 +242,13 @@ export default {
     }
   },
   methods: {
+    handleClose(done) {
+      this.$confirm('Are you sure to close this dialog?')
+      .then(_ => {
+          done();
+      })
+      .catch(_ => {});
+    },
     checkPermission,
     async getPermissions() {
       const { data } = await permissionResource.list({});

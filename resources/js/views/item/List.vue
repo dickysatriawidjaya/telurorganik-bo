@@ -65,7 +65,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" :before-close="handleClose">
       <div v-loading="itemCreating" class="form-container">
         <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="100px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
@@ -174,6 +174,7 @@ export default {
     };
   },
   computed: {
+    
     normalizedMenuPermissions() {
       let tmp = [];
       this.currentUser.permissions.role.forEach(permission => {
@@ -246,6 +247,13 @@ export default {
     }
   },
   methods: {
+    handleClose(done) {
+      this.$confirm('Are you sure to close this dialog?')
+      .then(_ => {
+          done();
+      })
+      .catch(_ => {});
+    },
     forceUpdate(){
        this.$forceUpdate();
     },
@@ -303,8 +311,6 @@ export default {
       this.newItem.price_form = data.price;
       this.newItem.unit_id_form = data.unit_id;
       this.newItem.status_form = data.status;
-
-     
     },
     handleDelete(id, name) {
       this.$confirm('This will delete item ' + "'" + name + "'" + '. Continue?', 'Warning', {

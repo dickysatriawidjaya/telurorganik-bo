@@ -16,13 +16,13 @@
         </el-option>
       </el-select>
 
-      <el-button class="filter-item is-right"  type="add" icon="el-icon-plus" @click="handleCreate">
+      <el-button class="filter-item is-right" type="add" icon="el-icon-plus" @click="handleCreate">
         {{ $t('table.add') }} Transaction
       </el-button>
 
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" >
       <el-table-column align="left" label="No." prop="index" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
@@ -86,26 +86,30 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" :before-close="handleClose">
       <div v-loading="transactionCreating" class="form-container">
         <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="150px">
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="Transaction No" prop="transaction_no">
-<!-- <<<<<<< HEAD -->
-                <el-input v-model="newTransaction.transaction_no_form" style="width:200px"  @input="forceupdate"/>
+                <!-- <<<<<<< HEAD -->
+                <el-input v-model="newTransaction.transaction_no_form" style="width:200px" @input="forceupdate" />
               </el-form-item>
               <el-form-item label="Transaction Date" prop="transaction_date">
-                <el-date-picker
+                <!-- <input type="date" v-model="newTransaction.date_form" format @input="forceupdate"> -->
+                <!-- <el-date-picker
                   v-model="newTransaction.date_form"
                   type="datetime"
                   value-format="yyyy-MM-dd"
-                  placeholder="Select date and time" @input="forceupdate">
-                </el-date-picker>
+                  placeholder="Select date and time"
+                  :picker-options="pickerOptions"
+                  @input="forceupdate"
+                /> -->
+                <datepicker v-model="newTransaction.date_form" name="uniquename"></datepicker>
               </el-form-item>
               <el-form-item label="Vendor" prop="vendor">
                 <el-select v-model="newTransaction.vendor_id_form" filterable class="filter-item" style="width:200px" @change="forceupdate">
-<!-- =======
+                  <!-- =======
                 <el-input v-model="newTransaction.transaction_no_form" style="width:200px"/>
               </el-form-item>
               <el-form-item label="Vendor" prop="vendor">
@@ -142,7 +146,7 @@
                   <th>Quantity</th>
                   <th>Discount</th>
                   <th>Total</th>
-                  <th></th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
@@ -159,16 +163,16 @@
                     {{ newTransaction.detail[index].price_form | toCurrency }}
                   </td>
                   <td style="width:100px">
-<!-- <<<<<<< HEAD
+                    <!-- <<<<<<< HEAD
                     <input type="number" v-model="newTransaction.detail[index].quantity_form" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
                   <td style="width:106px">
                     <input type="number" max="100" min="0" v-model="newTransaction.detail[index].discount_form" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
 ======= -->
-                    <el-input type="number" v-model="newTransaction.detail[index].quantity_form" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                    <el-input v-model="newTransaction.detail[index].quantity_form" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
                   <td style="width:106px">
-                    <el-input type="number" v-model="newTransaction.detail[index].discount_form" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)"  />
+                    <el-input v-model="newTransaction.detail[index].discount_form" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
                   <td style="width:116px">{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
                   <td>
@@ -220,9 +224,12 @@ const vendorResource = new VendorResource();
 const transactionResource = new TransactionResource();
 const permissionResource = new Resource('permissions');
 
+import Datepicker from 'vuejs-datepicker';
+
+
 export default {
   name: 'UserList',
-  components: { Pagination },
+  components: { Pagination , Datepicker },
   directives: { waves, permission },
   data() {
     return {
@@ -249,7 +256,7 @@ export default {
       nonAdminRoles: ['editor', 'user', 'visitor'],
       newTransaction: {
         transaction_no: '',
-        date_form:'',
+        date_form: '',
         vendor_id: 0,
         total: 0,
         status: 0,
@@ -272,7 +279,7 @@ export default {
       },
       rules: {
         name_form: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        created_at_form : [{ required: true, message: 'Date is required', trigger: 'blur' }],
+        created_at_form: [{ required: true, message: 'Date is required', trigger: 'blur' }],
         phone_form: [
           { required: true, message: 'Phone number is required', trigger: 'blur' },
         ],
@@ -286,6 +293,14 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+      pickerOptions: {
+     
+        onClick(picker) {
+          picker.$emit('pick', new Date());
+          picker.$emit('close');
+        }
+        
+      },
     };
   },
   computed: {
@@ -360,8 +375,18 @@ export default {
       this.getPermissions();
     }
   },
-  methods: {
-    forceupdate(){
+  methods: { 
+    handleClose(done) {
+      this.$confirm('Are you sure to close this dialog?')
+      .then(_ => {
+          done();
+      })
+      .catch(_ => {});
+    },
+    
+    forceupdate(event){
+      console.log(event)
+      console.log(this.newTransaction.date_form)
       this.$forceUpdate();
     },
     spliceTransactionDetail(index){
@@ -561,7 +586,6 @@ export default {
     //     });
     // },
     onUpdate() {
-      console.log('update');
 
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
@@ -593,7 +617,7 @@ export default {
     resetnewTransaction() {
       this.newTransaction = {
         transaction_no: '',
-        created_at:'',
+        created_at: '',
         vendor_id: 0,
         total: 0,
         status: 0,
