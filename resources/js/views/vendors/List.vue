@@ -244,10 +244,10 @@ export default {
   methods: {
     handleClose(done) {
       this.$confirm('Are you sure to close this dialog?')
-      .then(_ => {
+        .then(_ => {
           done();
-      })
-      .catch(_ => {});
+        })
+        .catch(_ => {});
     },
     checkPermission,
     async getPermissions() {

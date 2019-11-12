@@ -12,7 +12,7 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="No." prop="index"  width="80">
+      <el-table-column align="center" label="No." prop="index" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
@@ -55,10 +55,8 @@
 
       <el-table-column align="center" label="Actions" width="150">
         <template slot-scope="scope">
-          <el-button v-permission="['manage user']" size="medium" icon="el-icon-edit" @click="handleUpdate(scope.row)" circle>
-          </el-button>
-          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" size="medium" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" circle>
-          </el-button>
+          <el-button v-permission="['manage user']" size="medium" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
+          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" size="medium" icon="el-icon-delete" circle @click="handleDelete(scope.row.id, scope.row.name);" />
         </template>
       </el-table-column>
     </el-table>
@@ -235,12 +233,12 @@ export default {
     }
   },
   methods: {
-     handleClose(done) {
+    handleClose(done) {
       this.$confirm('Are you sure to close this dialog?')
-      .then(_ => {
+        .then(_ => {
           done();
-      })
-      .catch(_ => {});
+        })
+        .catch(_ => {});
     },
     checkPermission,
     async getPermissions() {

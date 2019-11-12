@@ -22,7 +22,7 @@
 
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" >
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="left" label="No." prop="index" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
@@ -105,7 +105,7 @@
                   :picker-options="pickerOptions"
                   @input="forceupdate"
                 /> -->
-                <datepicker v-model="newTransaction.date_form" name="uniquename"></datepicker>
+                <datepicker v-model="newTransaction.date_form" name="uniquename" />
               </el-form-item>
               <el-form-item label="Vendor" prop="vendor">
                 <el-select v-model="newTransaction.vendor_id_form" filterable class="filter-item" style="width:200px" @change="forceupdate">
@@ -226,10 +226,9 @@ const permissionResource = new Resource('permissions');
 
 import Datepicker from 'vuejs-datepicker';
 
-
 export default {
   name: 'UserList',
-  components: { Pagination , Datepicker },
+  components: { Pagination, Datepicker },
   directives: { waves, permission },
   data() {
     return {
@@ -294,12 +293,12 @@ export default {
       menuPermissions: [],
       otherPermissions: [],
       pickerOptions: {
-     
+
         onClick(picker) {
           picker.$emit('pick', new Date());
           picker.$emit('close');
-        }
-        
+        },
+
       },
     };
   },
@@ -375,18 +374,18 @@ export default {
       this.getPermissions();
     }
   },
-  methods: { 
+  methods: {
     handleClose(done) {
       this.$confirm('Are you sure to close this dialog?')
-      .then(_ => {
+        .then(_ => {
           done();
-      })
-      .catch(_ => {});
+        })
+        .catch(_ => {});
     },
-    
+
     forceupdate(event){
-      console.log(event)
-      console.log(this.newTransaction.date_form)
+      console.log(event);
+      console.log(this.newTransaction.date_form);
       this.$forceUpdate();
     },
     spliceTransactionDetail(index){
@@ -586,7 +585,6 @@ export default {
     //     });
     // },
     onUpdate() {
-
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.transactionCreating = true;

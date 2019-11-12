@@ -55,10 +55,8 @@
 
       <el-table-column align="center" label="Actions" width="150">
         <template slot-scope="scope">
-          <el-button v-permission="['manage user']" size="medium" icon="el-icon-edit" @click="handleUpdate(scope.row)" circle>
-          </el-button>
-          <el-button v-if="scope.row.status == 1" v-permission="['manage user']"  size="medium" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" circle>
-          </el-button>
+          <el-button v-permission="['manage user']" size="medium" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
+          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" size="medium" icon="el-icon-delete" circle @click="handleDelete(scope.row.id, scope.row.name);" />
         </template>
       </el-table-column>
     </el-table>
@@ -77,7 +75,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="Price" prop="price">
-            <el-input type="number" v-model="newItem.price_form" @input="forceUpdate"/>
+            <el-input v-model="newItem.price_form" type="number" @input="forceUpdate" />
           </el-form-item>
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
             <el-select v-model="newItem.status_form" style="width: 100%" class="filter-item">
@@ -174,7 +172,7 @@ export default {
     };
   },
   computed: {
-    
+
     normalizedMenuPermissions() {
       let tmp = [];
       this.currentUser.permissions.role.forEach(permission => {
@@ -238,7 +236,6 @@ export default {
     },
   },
   created() {
-    
     this.resetnewItem();
     this.getList();
     this.getUnitList();
@@ -249,13 +246,13 @@ export default {
   methods: {
     handleClose(done) {
       this.$confirm('Are you sure to close this dialog?')
-      .then(_ => {
+        .then(_ => {
           done();
-      })
-      .catch(_ => {});
+        })
+        .catch(_ => {});
     },
     forceUpdate(){
-       this.$forceUpdate();
+      this.$forceUpdate();
     },
     checkPermission,
     async getPermissions() {
