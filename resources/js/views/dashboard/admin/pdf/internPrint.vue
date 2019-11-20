@@ -13,8 +13,7 @@
       </el-table-column>
       <el-table-column align="center" label="Vendor" prop="vendor" >
         <template slot-scope="scope">
-          <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
-          <span v-else>{{ scope.row.vendor.name }}</span>
+          <span>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Trans.ID" prop="transaction_no" >
@@ -25,6 +24,11 @@
       <el-table-column align="center" label="Total" prop="total" >
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
+        </template>
+      </el-table-column>
+       <el-table-column align="center" label="Retur" prop="retur" >
+        <template slot-scope="scope">
+          <span>{{ scope.row.retur }}</span>
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="Status" width="110" prop="status" >

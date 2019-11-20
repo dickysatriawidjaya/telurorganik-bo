@@ -33,7 +33,7 @@ class VendorController extends Controller
             $vendorQuery->orWhere('phone', 'LIKE', '%' . $keyword . '%');
         }
 
-        $vendorQuery->orderBy('status','DESC');
+        $vendorQuery->orderBy('status','DESC')->with('parent');
         if ($paginate == "true") {
             return VendorResource::collection($vendorQuery->paginate($limit));
         } else {
@@ -63,18 +63,41 @@ class VendorController extends Controller
         }
 
         $params = $request->all();
+        $params['parent_id']=0;
         $params['name']=$request->name_form;
         $params['pic_name']=$request->pic_name_form;
         $params['phone']=$request->phone_form;
         $params['address']=$request->address_form;
         $params['status']=1;
         $vendor = Vendor::create($params);
+
+        if (count($request->child) > 0) { // check anak kalo ada insert
+            
+                foreach ($request->child as $key => $c) {
+                    $child = New Vendor;
+                    $child->parent_id = $vendor->id;
+                    $child->name = $c['name_form'];
+                    $child->pic_name = $c['pic_name_form'];
+                    $child->phone = $c['phone_form'];
+                    $child->address = $c['address_form'];
+                    $child->status = 1;
+
+                    try {
+                        $child->save();
+                    } catch (\Throwable $th) {
+                        return response()->json(['errors' => "Failed Add Vendor Child ". $child->name], 500); 
+                    }
+                 }
+            
+            
+        }
+
         return new VendorResource($vendor);
     }
 
     public function update(Request $request, Vendor $vendor)
     {
-        
+        // return $request;
         if ($vendor === null) {
             return response()->json(['error' => 'Vendor not found'], 404);
         }
@@ -95,9 +118,41 @@ class VendorController extends Controller
                 $vendor->address = $request->get('address_form');
                 $vendor->status = $request->get('status_form');
                 $vendor->save();
+                
+
+                //UPDATE CHILD
+                if ($request->child) {
+                    $check_child = Vendor::where('parent_id',$vendor->id)->update(['status' => -1]);
+                    try {
+                        foreach ($request->child as $key => $c) {
+                            if (array_key_exists("id",$c)) {
+                                $child = Vendor::find($c['id']);
+                            }else{
+                                $child = new Vendor;
+                            }
+                            $child->parent_id = $vendor->id;
+                            $child->name = $c['name_form'];
+                            $child->pic_name = $c['pic_name_form'];
+                            $child->phone = $c['phone_form'];
+                            $child->address = $c['address_form'];
+                            $child->status = 1;
+                            $child->save(); // update
+                        }
+                    } catch (\Throwable $th) {
+                        return response()->json(['errors' => "Failed Update Vendor Child Data ".$th], 403);
+                    }
+
+                }
+
                 return new VendorResource($vendor);
             }
         }
+    }
+
+    public function show(Vendor $vendor){
+        $query = Vendor::where('id',$vendor->id)->first();
+        $query['child'] = Vendor::where('parent_id',$vendor->id)->get();
+        return new VendorResource($query);
     }
 
     public function destroy(Vendor $vendor)

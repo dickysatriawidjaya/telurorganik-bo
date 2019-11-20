@@ -24,6 +24,13 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="left" label="Parent" prop="parent" sortable>
+        <template slot-scope="scope">
+          <span v-if="scope.row.parent != null">{{ scope.row.parent.name }}</span>
+          <span v-else>Is Parent</span>
+        </template>
+      </el-table-column>
+
       <el-table-column align="left" label="PIC" prop="pic_name" sortable width="120">
         <template slot-scope="scope">
           <span>{{ scope.row.pic_name }}</span>
@@ -90,6 +97,46 @@
             </el-select>
           </el-form-item>
         </el-form>
+       
+        <div class="div_tabel" v-show="hasChild">
+           Add Child Vendor
+            <hr>
+            <table class="transaksi_tabel_add">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Vendor Name</th>
+                  <th>PIC Name</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(c,index) in newVendor.child">
+                  <td style="width:30px">
+                    {{ index + 1 }}
+                  </td>
+                  <td>
+                      <el-input v-model="newVendor.child[index].name_form" />
+                  </td>
+                  <td>
+                      <el-input v-model="newVendor.child[index].pic_name_form" />
+                  </td>
+                  <td>
+                      <el-input v-model="newVendor.child[index].phone_form" />
+                  </td>
+                  <td>
+                      <el-input v-model="newVendor.child[index].address_form" />
+                  </td>
+                  <td>
+                    <el-button type="danger" icon="el-icon-close" circle @click="spliceVendorChild(index)" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <hr>
+            <el-button type="addtable" @click="addNewVendorForm">Add Child Vendor</el-button>
+          </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="canceltransaksi" @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
@@ -130,6 +177,7 @@ export default {
       loading: true,
       downloading: false,
       vendorCreating: false,
+      hasChild : true,
       query: {
         page: 1,
         limit: 15,
@@ -138,7 +186,15 @@ export default {
         paginate: true,
       },
       nonAdminRoles: ['editor', 'user', 'visitor'],
-      newVendor: {},
+      newVendor: {
+        address_form : "",
+        name_form : "",
+        phone_form : "",
+        pic_name_form : "",
+        status_form : "",
+        tai : "",
+        child : [],
+      },
       status: [
         { label: 'Active', value: 1 },
         { label: 'Deleted', value: -1 },
@@ -240,8 +296,23 @@ export default {
     if (checkPermission(['manage permission'])) {
       this.getPermissions();
     }
+    console.log(this.newVendor);
   },
   methods: {
+    spliceVendorChild(index){
+      this.newVendor.child.splice(index, 1);
+    },
+    addNewVendorForm(){
+      this.newVendor.child.push(
+        {
+          name_form: "",
+          phone_form: "",
+          address_form: "",
+          pic_name_form: "",
+        }
+      );
+      console.log(this.newVendor.child.length);
+    },
     handleClose(done) {
       this.$confirm('Are you sure to close this dialog?')
         .then(_ => {
@@ -282,6 +353,7 @@ export default {
       this.resetnewVendor();
     },
     handleUpdate(data){
+      this.newVendor.child = [];
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['vendorForm'].clearValidate();
@@ -293,6 +365,31 @@ export default {
       this.newVendor.phone_form = data.phone;
       this.newVendor.address_form = data.address;
       this.newVendor.status_form = data.status;
+
+      if (data.parent_id == 0 ) {
+        this.hasChild = true;
+      }else{
+        this.hasChild = false;
+      }
+
+      if (data.child.length > 0) {
+        const tmp = [];
+        data.child.forEach(function(element, i) {
+          tmp.push(
+            {
+              'id': element.id,
+              'name_form': element.name,
+              'pic_name_form': element.pic_name,
+              'phone_form': element.phone,
+              'address_form': element.address,
+              'status_form': element.status,
+            }
+          );
+        });
+
+        this.newVendor.child = tmp;
+      }
+     
     },
     handleDelete(id, name) {
       this.$confirm('This will delete vendor ' + "'" + name + "'" + '. Continue?', 'Warning', {
@@ -395,6 +492,7 @@ export default {
         address_form: '',
         pic_name_form: '',
         status_form: '',
+        child : [],
       };
     },
     handleDownload() {

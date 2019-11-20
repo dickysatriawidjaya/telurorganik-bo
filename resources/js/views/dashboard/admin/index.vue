@@ -51,7 +51,6 @@ import RaddarChart from './components/RaddarChart';
 import PieChart from './components/PieChart';
 import BarChart from './components/BarChart';
 import TransactionTable from './components/TransactionTable';
-import TransactionTable1 from './components/TransactionTable1';
 import TodoList from './components/TodoList';
 import BoxCard from './components/BoxCard';
 
@@ -84,7 +83,6 @@ export default {
     PieChart,
     BarChart,
     TransactionTable,
-    TransactionTable1,
     TodoList,
     BoxCard,
   },

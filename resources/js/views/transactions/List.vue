@@ -144,6 +144,7 @@
                   <th>Item</th>
                   <th>Price</th>
                   <th>Quantity</th>
+                  <th v-if="transactionId > 0">Retur</th>
                   <th>Discount</th>
                   <th>Total</th>
                   <th />
@@ -163,13 +164,10 @@
                     {{ newTransaction.detail[index].price_form | toCurrency }}
                   </td>
                   <td style="width:100px">
-                    <!-- <<<<<<< HEAD
-                    <input type="number" v-model="newTransaction.detail[index].quantity_form" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
-                  </td>
-                  <td style="width:106px">
-                    <input type="number" max="100" min="0" v-model="newTransaction.detail[index].discount_form" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
-======= -->
                     <el-input v-model="newTransaction.detail[index].quantity_form" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                  </td>
+                  <td style="width:100px" v-if="transactionId > 0">
+                    <el-input  :max="newTransaction.detail[index].quantity_form" v-model="newTransaction.detail[index].retur_form" type="number" />
                   </td>
                   <td style="width:106px">
                     <el-input v-model="newTransaction.detail[index].discount_form" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
@@ -177,7 +175,6 @@
                   <td style="width:116px">{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
                   <td>
                     <el-button type="danger" icon="el-icon-close" circle @click="spliceTransactionDetail(index)" />
-
                   </td>
                 </tr>
               </tbody>
@@ -226,6 +223,8 @@ const permissionResource = new Resource('permissions');
 
 import Datepicker from 'vuejs-datepicker';
 
+import Cookies from 'js-cookie';
+
 export default {
   name: 'UserList',
   components: { Pagination, Datepicker },
@@ -244,7 +243,7 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
-        role: '',
+        role: Cookies.get('Role'),
       },
       queryVendor: {
         paginate: false,
@@ -259,6 +258,7 @@ export default {
         vendor_id: 0,
         total: 0,
         status: 0,
+        retur_form : 0,
         detail: [],
       },
       status: [
@@ -373,6 +373,7 @@ export default {
     if (checkPermission(['manage permission'])) {
       this.getPermissions();
     }
+    console.log(this.role)
   },
   methods: {
     handleClose(done) {
@@ -398,6 +399,7 @@ export default {
           quantity_form: 0,
           discount_form: 0,
           subtotal_form: 0,
+          retur_form : 0,
         }
       );
       console.log(this.newTransaction.detail);
@@ -503,6 +505,7 @@ export default {
             'transaction_id_form': element.transaction_id,
             'item_id_form': element.item_id,
             'price_form': element.item.price,
+            'retur_form': element.retur,
             'quantity_form': element.quantity,
             'discount_form': element.discount,
             'subtotal_form': element.subtotal,
@@ -617,6 +620,7 @@ export default {
         transaction_no: '',
         created_at: '',
         vendor_id: 0,
+        retur : 0,
         total: 0,
         status: 0,
         detail: [],

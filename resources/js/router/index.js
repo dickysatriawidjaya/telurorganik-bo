@@ -215,13 +215,13 @@ export const constantRoutes = Routes;
 
 export const asyncRoutes = [
   {
-    path: '/pdf/transactionLUNAS/',
-    component: () => import('@/views/dashboard/admin/pdf/TransactionLUNAS'),
+    path: '/pdf/internPrint/',
+    component: () => import('@/views/dashboard/admin/pdf/internPrint'),
     hidden: true,
   },
   {
-    path: '/pdf/transactionBELUMLUNAS/',
-    component: () => import('@/views/dashboard/admin/pdf/transactionBELUMLUNAS'),
+    path: '/pdf/externPrint/',
+    component: () => import('@/views/dashboard/admin/pdf/externPrint'),
     hidden: true,
   },
 ];

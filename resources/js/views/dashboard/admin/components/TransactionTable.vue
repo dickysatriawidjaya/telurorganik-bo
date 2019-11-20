@@ -3,13 +3,19 @@
     <div class="filter-container">
       <el-row>
         <el-col :span="8">
-          <h1 class="table_paid">Paid</h1>
+          <h1 class="table_paid">Transactions</h1>
         </el-col>
         <el-col :span="16">
           <div class="button_print">
-            <router-link target="_blank" :to="{ path: '/pdf/transactionLUNAS/?vendor=' + query.vendor +'&month='+ query.month }">
+            <router-link target="_blank" :to="{ path: '/pdf/internPrint/?vendor=' + query.vendor  +'&start_date='+ query.start_date +'&end_date='+ query.end_date }">
               <el-button type="print" icon="el-icon-printer" style="font-size:15px">
-                PRINT
+                INTERN PRINT
+              </el-button>
+            </router-link>
+            <br/>
+            <router-link target="_blank" :to="{ path: '/pdf/externPrint/?vendor=' + query.vendor +'&start_date='+ query.start_date +'&start_date='+ query.start_date +'&end_date='+ query.end_date }">
+              <el-button type="print" icon="el-icon-printer" style="font-size:15px">
+                EXTERN PRINT
               </el-button>
             </router-link>
           </div>
@@ -30,7 +36,7 @@
           </el-select>
         </el-col>
       </el-row>
-      <el-row>
+      <!-- <el-row>
         <el-col :span="3">
           <h3 class="text_normal">
             Date Month:
@@ -43,7 +49,44 @@
             </el-option>
           </el-select>
         </el-col>
+      </el-row> -->
+      <el-row>
+        <el-col :span="3">
+          <h3 class="text_normal">
+            Start Date:
+          </h3>
+        </el-col>
+        <el-col :span="16">
+          <datepicker clear-button="true" v-model="query.start_date" name="uniquename" @selected="handleFilter"/>
+        </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="3">
+          <h3 class="text_normal">
+            End Date:
+          </h3>
+        </el-col>
+        <el-col :span="16">
+          <datepicker clear-button="true" v-model="query.end_date" name="uniquename" @selected="handleFilter"/>
+        </el-col>
+      </el-row>
+
+      <el-row>
+        <el-col :span="3">
+          <h3 class="text_normal">
+            Status :
+          </h3>
+        </el-col>
+        <el-col :span="16">
+          <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 100px" class="filter-item tabel_filter" @change="handleFilter">
+            <el-option key="1" label="Paid" value="1" />
+            <el-option key="-1" label="Unpaid" value="-1" />
+          </el-select>
+        </el-col>
+      </el-row>
+
+       
+
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
@@ -78,7 +121,7 @@
           <span v-if="scope.row.status == 1" style="color:#46A2FD">
             Paid
           </span>
-          <span v-if="scope.row.status == -1" style="color:##FD4646">
+          <span v-if="scope.row.status == -1" style="color:#FD4646 !important">
             Unpaid
           </span>
         </template>
@@ -94,110 +137,112 @@
   </div>
 </template>
 
-  <style rel="stylesheet/scss" lang="scss">
-    .table-db-container{
-      background:#FFFFFF;
-      padding:16px;
-      width:100%;
-      border-radius: 10px;
-      .text_normal{
-        color: #707070;
-        font-weight: 500;
-        font-size:16px;
-        font-family: 'Ubuntu', sans-serif;
-        font-weight: 400;
-        line-height:29px;
-      }
-      .el-input--medium .el-input__inner {
-        height: 35px;
-        line-height: 35px;
-        color: #707070;
-        font-weight: 500;
-        font-size:16px;
-        font-family: 'Ubuntu', sans-serif;
-        font-weight: 400;
-        line-height:11px;
-      }
-      .el-input__suffix {
-          position: absolute;
-          height: 50%;
-          right: 5px;
-          top: 19px;
-          text-align: center;
-          color: #C0C4CC;
-          transition: all .3s;
-          pointer-events: none;
-      }
-      .el-select .el-input .el-select__caret.is-reverse {
-        transform: rotateZ(0deg);
-        top: -24px;
-        left: -26px;
+<style rel="stylesheet/scss" lang="scss">
+  .table-db-container{
+    background:#FFFFFF;
+    padding:16px;
+    width:100%;
+    border-radius: 10px;
+    .text_normal{
+      color: #707070;
+      font-weight: 500;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 400;
+      line-height:29px;
+    }
+    .el-input--medium .el-input__inner {
+      height: 35px;
+      line-height: 35px;
+      color: #707070;
+      font-weight: 500;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 400;
+      line-height:11px;
+    }
+    .el-input__suffix {
         position: absolute;
-      }
-      .el-button--medium.is-circle {
-        padding: 8px;
-        border: none;
-      }
+        height: 50%;
+        right: 5px;
+        top: 19px;
+        text-align: center;
+        color: #C0C4CC;
+        transition: all .3s;
+        pointer-events: none;
     }
-    .el-table{
-        color: #707070;
-        font-size:16px;
-        font-family: 'Ubuntu', sans-serif;
-        font-weight: 400;
-        line-height:11px;
-        padding:0px !important;
-        .el-tag {
-            padding: 0 5px;
-            line-height: 30px;
-            font-family: 'Ubuntu', sans-serif;
-            font-size: 10px;
-        }
-        .cell {
-          box-sizing: border-box;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: normal;
-          word-break: break-all;
-          line-height: qqpx;
-          padding-left: 5px;
-          padding-right: 5px;
-        }
-        .status-col .cell {
-          padding: 0 10px;
-          text-align: left;
-        }
+    .el-select .el-input .el-select__caret.is-reverse {
+      transform: rotateZ(0deg);
+      top: -24px;
+      left: -26px;
+      position: absolute;
     }
-    .table_paid{
-      color:#46A2FD;
-      font-size:33px;
-      font-family: 'Abel', sans-serif;
+    .el-button--medium.is-circle {
+      padding: 8px;
+      border: none;
+    }
+  }
+  .el-table{
+      color: #707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
       font-weight: 400;
-      line-height:34px;
-    }
-    .table_unpaid{
-      color:#FD4646;
-      font-size:33px;
-      font-family: 'Abel', sans-serif;
+      line-height:11px;
+      padding:0px !important;
+      .el-tag {
+          padding: 0 5px;
+          line-height: 30px;
+          font-family: 'Ubuntu', sans-serif;
+          font-size: 10px;
+      }
+      .cell {
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+        word-break: break-all;
+        line-height: qqpx;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .status-col .cell {
+        padding: 0 10px;
+        text-align: left;
+      }
+  }
+  .table_paid{
+    color:#46A2FD;
+    font-size:33px;
+    font-family: 'Abel', sans-serif;
+    font-weight: 400;
+    line-height:34px;
+  }
+  .table_unpaid{
+    color:#FD4646;
+    font-size:33px;
+    font-family: 'Abel', sans-serif;
+    font-weight: 400;
+    line-height:34px;
+  }
+  .button_print{
+    text-align: right;
+  }
+  .el-button--print {
+      color: #707070;
+      background-color: #FFFFFF;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
       font-weight: 400;
-      line-height:34px;
-    }
-    .button_print{
-      text-align: right;
-    }
-    .el-button--print {
-        color: #707070;
-        background-color: #FFFFFF;
-        font-size:16px;
-        font-family: 'Ubuntu', sans-serif;
-        font-weight: 400;
-        line-height:11px;
-        border: 1px solid #707070;
-        padding: 7px 12px;
-        margin-top:20px;
-        border-radius:13px;
-    }
-  </style>
+      line-height:11px;
+      border: 1px solid #707070;
+      padding: 7px 12px;
+      margin-top:20px;
+      border-radius:13px;
+  }
+</style>
 <script>
+import Datepicker from 'vuejs-datepicker';
+
 import { fetchList } from '@/api/order';
 import TransactionResource from '@/api/transaction';
 import VendorResource from '@/api/vendor';
@@ -206,6 +251,7 @@ const transactionResource = new TransactionResource();
 const vendorResource = new VendorResource();
 
 export default {
+  components: { Datepicker },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -246,8 +292,9 @@ export default {
         keyword: '',
         role: '',
         status: 1,
-        month: moment().month() + 1,
         vendor: null,
+        start_date : moment().startOf('month').format('YYYY-MM-DD hh:mm'),
+        end_date : moment().endOf('month').format('YYYY-MM-DD hh:mm'),
       },
       total: 0,
     };
@@ -255,7 +302,6 @@ export default {
   created() {
     this.getList();
     this.getVendorList();
-    this.query.month = moment().month() + 1;
   },
   methods: {
     handleFilter() {

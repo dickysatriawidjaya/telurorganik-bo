@@ -7,6 +7,7 @@ use App\Http\Resources\TransactionResource;
 use Validator;
 use App\Laravue\Models\Transaction;
 use App\Laravue\Models\Transaction_Detail;
+use App\Laravue\Models\Vendor;
 use Illuminate\Support\Arr;
 
 class TransactionController extends Controller
@@ -16,6 +17,56 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         
+        $searchParams = $request->all();
+        $transactionQuery = Transaction::query();
+        $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
+        $status = Arr::get($searchParams, 'status', '');
+        $vendor = Arr::get($searchParams, 'vendor', '');
+        $keyword = Arr::get($searchParams, 'keyword', '');
+        $month = Arr::get($searchParams, 'month', '');
+        $role = Arr::get($searchParams, 'role', '');
+        
+        $start_date = Arr::get($searchParams, 'start_date', '');
+        $end_date = Arr::get($searchParams, 'end_date', '');
+        
+        if (!empty($status)) {
+            $transactionQuery->where('status',$status);
+        }
+        
+        if (!empty($vendor)) {
+            $vendor_result = Vendor::where('parent_id',$vendor)->where('status',1)->pluck('id')->toArray();
+            array_push($vendor_result,(int)($vendor));
+            $transactionQuery->whereIn('vendor_id',$vendor_result);
+        }
+
+        // if (!empty($month)) {
+        //     $transactionQuery->whereMonth('transaction_date', '=', $month);
+        // }
+
+        if (!empty($start_date)) {
+            $transactionQuery->where('transaction_date', '>=', date("Y-m-d",strtotime($start_date)));
+        }
+
+        if (!empty($end_date)) {
+            $transactionQuery->where('transaction_date', '<=', date("Y-m-d",strtotime($end_date)));
+        }
+
+        if (!empty($keyword)) {
+            $transactionQuery->where('transaction_no', 'LIKE', '%' . $keyword . '%');
+            $transactionQuery->orWhere('total', 'LIKE', '%' . $keyword . '%');
+        }
+
+        $transactionQuery->with('vendor','detail_transaction.item');
+
+        if ($role != 'admin') {
+            $transactionQuery->where('created_at', '<=', date("Y-m-d"));
+            $transactionQuery->where('created_at', '>=', date("Y-m-d",strtotime("-30 day")));
+        }
+
+        return TransactionResource::collection($transactionQuery->paginate($limit));
+    }
+
+    public function print(){
         $searchParams = $request->all();
         $transactionQuery = Transaction::query();
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
@@ -33,7 +84,7 @@ class TransactionController extends Controller
         }
 
         if (!empty($month)) {
-            $transactionQuery->whereMonth('created_at', '=', $month);
+            $transactionQuery->whereMonth('transaction_date', '=', $month);
         }
 
         if (!empty($keyword)) {
@@ -75,7 +126,8 @@ class TransactionController extends Controller
             $params['transaction_no']=$request->transaction_no_form;
             $params['vendor_id']=$request->vendor_id_form;
             $params['total']=$request->total_form;
-            $params['created_at']=date("Y-m-d",strtotime($request->date_form));
+            $params['transaction_date']=date("Y-m-d",strtotime($request->date_form));
+            $params['created_at']=date("Y-m-d");
             $params['status']=-1;
             $Transaction = Transaction::create($params);
         } catch (\Throwable $th) {
@@ -123,7 +175,7 @@ class TransactionController extends Controller
             
             try {
                 $transaction->transaction_no = $request->get('transaction_no_form');
-                $transaction->created_at = date("Y-m-d",strtotime($request->get('date_form')));
+                $transaction->transaction_date = date("Y-m-d",strtotime($request->get('date_form')));
                 $transaction->vendor_id = $request->get('vendor_id_form');
                 $transaction->total = $request->get('total_form');
                 $transaction->status = $request->get('status_form');
@@ -136,11 +188,14 @@ class TransactionController extends Controller
                 $update = Transaction_Detail::where('transaction_id',$transaction->id)->update(['status' => -1]);
                 try {
                     foreach ($request->detail as $key => $d) {
-                        $newdetail = New Transaction_Detail;
+                        $newdetail = Transaction_Detail::find($d['id']);
                         $newdetail->transaction_id = $transaction->id;
                         $newdetail->item_id = $d['item_id_form'];
                         $newdetail->quantity = $d['quantity_form'];
                         $newdetail->discount = $d['discount_form'];
+                        if (isset($d['retur_form'])) {
+                            $newdetail->retur = $d['retur_form'];
+                        }
                         $newdetail->subtotal = $d['subtotal_form'];
                         $newdetail->status = 1;
                         $newdetail->save();
