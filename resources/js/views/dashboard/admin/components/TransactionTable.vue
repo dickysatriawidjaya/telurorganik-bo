@@ -7,13 +7,13 @@
         </el-col>
         <el-col :span="16">
           <div class="button_print">
-            <router-link target="_blank" :to="{ path: '/pdf/internPrint/?vendor=' + query.vendor  +'&start_date='+ query.start_date +'&end_date='+ query.end_date }">
+            <router-link target="_blank" :to="{ path: '/pdf/internPrint/?vendor=' + query.vendor  +'&start_date='+ query.start_date +'&end_date='+ query.end_date +'&status='+ query.status}">
               <el-button type="print" icon="el-icon-printer" style="font-size:15px">
                 INTERN PRINT
               </el-button>
             </router-link>
             <br/>
-            <router-link target="_blank" :to="{ path: '/pdf/externPrint/?vendor=' + query.vendor +'&start_date='+ query.start_date +'&start_date='+ query.start_date +'&end_date='+ query.end_date }">
+            <router-link target="_blank" :to="{ path: '/pdf/externPrint/?vendor=' + query.vendor  +'&start_date='+ query.start_date +'&end_date='+ query.end_date +'&status='+ query.status}">
               <el-button type="print" icon="el-icon-printer" style="font-size:15px">
                 EXTERN PRINT
               </el-button>
@@ -97,7 +97,7 @@
       </el-table-column>
       <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" width="120" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD-MM-YYYY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor" sortable>

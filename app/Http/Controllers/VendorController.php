@@ -21,6 +21,11 @@ class VendorController extends Controller
         $status = Arr::get($searchParams, 'status', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
         $paginate = Arr::get($searchParams, 'paginate', '');
+        $id = Arr::get($searchParams, 'id', '');
+
+        if (!empty($id)) {
+            $vendorQuery->where('id',$id);
+        }
 
         if (!empty($status)) {
             $vendorQuery->where('status',$status);

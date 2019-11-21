@@ -56,7 +56,7 @@ class TransactionController extends Controller
             $transactionQuery->orWhere('total', 'LIKE', '%' . $keyword . '%');
         }
 
-        $transactionQuery->with('vendor','detail_transaction.item');
+        $transactionQuery->with('vendor','detail_transaction.item.unit');
 
         if ($role != 'admin') {
             $transactionQuery->where('created_at', '<=', date("Y-m-d"));

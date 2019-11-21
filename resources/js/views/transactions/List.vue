@@ -30,7 +30,7 @@
       </el-table-column>
       <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" sortable width="120">
         <template slot-scope="scope">
-          <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD-MM-YYYY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor" sortable>

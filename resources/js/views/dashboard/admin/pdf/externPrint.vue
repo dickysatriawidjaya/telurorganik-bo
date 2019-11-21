@@ -1,6 +1,54 @@
 <template>
   <div class="print">
-    <el-table v-loading="loading" :data="list" border fit style="width: 100%">
+    <div>
+      vendor : <span v-if="query.vendor">{{vendor.name}}</span> 
+               <span v-else> All </span>, 
+      start date : <span v-if="query.start_date"> {{query.start_date | moment("DD MMM YYYY")}} </span>
+                  <span v-else> All </span>
+                  ,
+      end date :  <span v-if="query.end_date"> {{query.end_date | moment("DD MMM YYYY")}} </span>
+                  <span v-else> All </span>
+                  ,
+      status : <span v-if="query.status == 1"> Paid </span>
+               <span v-else-if="query.status == -1"> Unpaid </span>
+               <span v-else> All </span>
+    </div>
+    <table style="width:100%" border="1">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Date</th>
+          <th>Vendor</th>
+          <th>Trans.ID</th>
+          <th>Item</th>
+          <th>Total</th>
+        </tr>
+        
+      </thead>
+      <tbody>
+        <tr v-for="(t,index) in list">
+          <td>{{index + 1}}</td>
+          <td>{{ t.transaction_date | moment("DD-MM-YYYY")  }}</td>
+          <td>{{ t.vendor.name }}</td>
+          <td>{{ t.transaction_no }}</td>
+          <table border="1" width="100%">
+          <td width="100%">
+            <tr v-if="t.detail_transaction.length > 0" v-for="(d,index_detail) in t.detail_transaction" width="100%">
+              <td width="100%">{{index_detail + 1}}</td>
+              <td width="100%">{{d.item.name}}</td>
+              <td width="100%">{{d.item.unit.name}}</td>
+              <td width="100%">{{d.quantity}}</td>
+              <td width="100%">{{d.discount}}</td>
+              <td width="100%">{{d.subtotal | toCurrency}}</td>
+            </tr>
+          </td width="100%">
+          </table>
+          <td>{{t.total | toCurrency}}</td>
+        </tr>
+      </tbody>
+      
+    </table> 
+    <!-- <el-table v-loading="loading" :data="list" border fit style="width: 100%">
       <el-table-column align="center" label="No." prop="index"  width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
@@ -13,8 +61,7 @@
       </el-table-column>
       <el-table-column align="center" label="Vendor" prop="vendor" >
         <template slot-scope="scope">
-          <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
-          <span v-else>{{ scope.row.vendor.name }}</span>
+          <span>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Trans.ID" prop="transaction_no" >
@@ -22,9 +69,14 @@
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Total" prop="total" >
+      <el-table-column align="right" label="Total" prop="total" >
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
+        </template>
+      </el-table-column>
+       <el-table-column align="center" label="Retur" prop="retur" >
+        <template slot-scope="scope">
+          <span>{{ scope.row.retur }}</span>
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="Status" width="110" prop="status" >
@@ -36,19 +88,22 @@
             Unpaid
           </el-tag>
         </template>
-      </el-table-column>=
-    </el-table>
+      </el-table-column>
+    </el-table> -->
+    GRAND TOTAL : {{ grand_total | toCurrency }}
   </div>
-
 </template>
 
 <script>
 import TransactionResource from '@/api/transaction';
+import VendorResource from '@/api/vendor';
 
+const vendorResource = new VendorResource();
 const transactionResource = new TransactionResource();
 export default {
   data() {
     return {
+      grand_total : 0,
       article: '',
       fullscreenLoading: true,
       vendor_id: 0,
@@ -58,14 +113,16 @@ export default {
       queryVendor: {
         paginate: false,
       },
+      vendor : null,
       query: {
         page: 1,
         limit: 15,
         keyword: '',
         role: '',
         status: 1,
-        month : moment().month()+1,
         vendor: null,
+        start_date : '',
+        end_date : '',
       },
       total: 0,
     };
@@ -77,12 +134,38 @@ export default {
     }else{
       this.query.vendor = this.$route.query.vendor;
     }
-    
-    this.query.month = this.$route.query.month;
+
+     if(this.$route.query.start_date == "null"){
+      this.query.start_date = null;
+    }else{
+      this.query.start_date = this.$route.query.start_date;
+    }
+
+    if(this.$route.query.end_date == "null"){
+      this.query.end_date = null;
+    }else{
+      this.query.end_date = this.$route.query.end_date;
+    }
+
+    if(this.$route.query.status == "null"){
+      this.query.status = null;
+    }else{
+      this.query.status = this.$route.query.status;
+    }
 
     this.fetchData();
+    this.getVendor();
   },
   methods: {
+    async getVendor() {
+      const { limit, page } = {'id' : this.query.vendor};
+      this.loading = true;
+      const { data, meta } = await vendorResource.list({'id' : this.query.vendor});
+      this.vendor = data[0];
+      console.log(this.vendor)
+      this.total = meta.total;
+      this.loading = false;
+    },
     // async getList() {
     //   const { limit, page } = this.query;
     //   this.loading = true;
@@ -100,18 +183,21 @@ export default {
       this.loading = true;
       const { data, meta } = await transactionResource.list(this.query);
       this.list = data;
+      let sum = 0;
 
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
+        sum += parseFloat(element.total)
       });
+      this.grand_total = sum;
       this.total = meta.total;
-
-      setTimeout(() => {
-        this.loading = false;
-        this.$nextTick(() => {
-          window.print();
-        });
-      }, 5000);
+      this.loading = false;
+      // setTimeout(() => {
+       
+      //   this.$nextTick(() => {
+      //     window.print();
+      //   });
+      // }, 5000);
     },
   },
 };
@@ -141,9 +227,9 @@ export default {
           border: solid #000 !important;
           border-width: 1px 0 0 1px !important;
           border-bottom: 1px solid #000 !important;
-          border-right: 10px solid #000 !important;
+          border-right: 1px solid #000 !important;
       }
-      th, td {
+      tr, td {
           border: solid #000 !important;
           border-width: 0 1px 1px 0 !important;
       }
