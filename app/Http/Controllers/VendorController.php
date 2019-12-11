@@ -54,13 +54,13 @@ class VendorController extends Controller
             [
                 'name_form' => 'required',
                 'address_form' => 'required',
-                'phone_form' => 'required|integer',
+                'phone_form' => 'required',
             ]
         );
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
-        } 
+        }
 
         $check = Vendor::where('name',$request->name_form)->where('status',1)->first();
         if ($check) {
@@ -77,7 +77,7 @@ class VendorController extends Controller
         $vendor = Vendor::create($params);
 
         if (count($request->child) > 0) { // check anak kalo ada insert
-            
+
                 foreach ($request->child as $key => $c) {
                     $child = New Vendor;
                     $child->parent_id = $vendor->id;
@@ -90,11 +90,11 @@ class VendorController extends Controller
                     try {
                         $child->save();
                     } catch (\Throwable $th) {
-                        return response()->json(['errors' => "Failed Add Vendor Child ". $child->name], 500); 
+                        return response()->json(['errors' => "Failed Add Vendor Child ". $child->name], 500);
                     }
                  }
-            
-            
+
+
         }
 
         return new VendorResource($vendor);
@@ -123,7 +123,7 @@ class VendorController extends Controller
                 $vendor->address = $request->get('address_form');
                 $vendor->status = $request->get('status_form');
                 $vendor->save();
-                
+
 
                 //UPDATE CHILD
                 if ($request->child) {
@@ -170,7 +170,7 @@ class VendorController extends Controller
 
         return response()->json(null, 204);
     }
-    
+
     private function getValidationRules($isNew = true)
     {
         return [

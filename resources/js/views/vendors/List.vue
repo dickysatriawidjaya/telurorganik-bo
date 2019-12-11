@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @input="handleFilter" />
+      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;margin-right:16px;" class="filter-item" @input="handleFilter" />
       <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item" @change="handleFilter">
         <el-option key="1" label="Active" value="1" />
         <el-option key="-1" label="Deleted" value="-1" />
@@ -76,20 +76,23 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" width="500px" :before-close="handleClose">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" width="850px" :before-close="handleClose">
       <div v-loading="vendorCreating" class="form-container">
-        <el-form ref="vendorForm" :rules="rules" :model="newVendor" label-position="left" label-width="150px" style="max-width: 500px;">
+        <el-form ref="vendorForm" :rules="rules" :model="newVendor" label-position="left" label-width="150px" style="max-width: 850px;">
           <el-form-item label="Name" prop="name">
-            <el-input v-model="newVendor.name_form" />
+            <el-input v-model="newVendor.name_form" :class="{highlight:errors.name_form}" />
+            <span v-if="errors.name_form" class="error">{{ errors.name_form[0] }}</span>
           </el-form-item>
           <el-form-item label="PIC Name" prop="pic_name">
             <el-input v-model="newVendor.pic_name_form" />
           </el-form-item>
           <el-form-item label="Phone" prop="phone">
-            <el-input v-model="newVendor.phone_form" type="number" />
+            <el-input v-model="newVendor.phone_form" type="number" :class="{highlight:errors.phone_form}" />
+            <span v-if="errors.phone_form" class="error">{{ errors.phone_form[0] }}</span>
           </el-form-item>
           <el-form-item label="Address" prop="address">
-            <el-input v-model="newVendor.address_form" />
+            <el-input v-model="newVendor.address_form" :class="{highlight:errors.address_form}" />
+            <span v-if="errors.address_form" class="error">{{ errors.address_form[0] }}</span>
           </el-form-item>
           <el-form-item v-if="vendorId > 0" label="Status" prop="status">
             <el-select v-model="newVendor.status_form" style="width: 150px" class="filter-item">
@@ -97,46 +100,46 @@
             </el-select>
           </el-form-item>
         </el-form>
-       
-        <div class="div_tabel" v-show="hasChild">
-           Add Child Vendor
-            <hr>
-            <table class="transaksi_tabel_add">
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>Vendor Name</th>
-                  <th>PIC Name</th>
-                  <th>Phone</th>
-                  <th>Address</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(c,index) in newVendor.child">
-                  <td style="width:30px">
-                    {{ index + 1 }}
-                  </td>
-                  <td>
-                      <el-input v-model="newVendor.child[index].name_form" />
-                  </td>
-                  <td>
-                      <el-input v-model="newVendor.child[index].pic_name_form" />
-                  </td>
-                  <td>
-                      <el-input v-model="newVendor.child[index].phone_form" />
-                  </td>
-                  <td>
-                      <el-input v-model="newVendor.child[index].address_form" />
-                  </td>
-                  <td>
-                    <el-button type="danger" icon="el-icon-close" circle @click="spliceVendorChild(index)" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <hr>
-            <el-button type="addtable" @click="addNewVendorForm">Add Child Vendor</el-button>
-          </div>
+
+        <div v-show="hasChild" class="div_tabel">
+          Add Child Vendor
+          <hr>
+          <table class="transaksi_tabel_add">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Vendor Name</th>
+                <th>PIC Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(c,index) in newVendor.child">
+                <td style="width:30px">
+                  {{ index + 1 }}
+                </td>
+                <td>
+                  <el-input v-model="newVendor.child[index].name_form" />
+                </td>
+                <td>
+                  <el-input v-model="newVendor.child[index].pic_name_form" />
+                </td>
+                <td>
+                  <el-input v-model="newVendor.child[index].phone_form" />
+                </td>
+                <td>
+                  <el-input v-model="newVendor.child[index].address_form" />
+                </td>
+                <td>
+                  <el-button type="danger" icon="el-icon-close" circle @click="spliceVendorChild(index)" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <hr>
+          <el-button type="addtable" @click="addNewVendorForm">Add Child Vendor</el-button>
+        </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="canceltransaksi" @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
@@ -177,7 +180,7 @@ export default {
       loading: true,
       downloading: false,
       vendorCreating: false,
-      hasChild : true,
+      hasChild: true,
       query: {
         page: 1,
         limit: 15,
@@ -187,13 +190,13 @@ export default {
       },
       nonAdminRoles: ['editor', 'user', 'visitor'],
       newVendor: {
-        address_form : "",
-        name_form : "",
-        phone_form : "",
-        pic_name_form : "",
-        status_form : "",
-        tai : "",
-        child : [],
+        address_form: '',
+        name_form: '',
+        phone_form: '',
+        pic_name_form: '',
+        status_form: '',
+        tai: '',
+        child: [],
       },
       status: [
         { label: 'Active', value: 1 },
@@ -225,6 +228,7 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+      errors: [],
     };
   },
   computed: {
@@ -305,10 +309,10 @@ export default {
     addNewVendorForm(){
       this.newVendor.child.push(
         {
-          name_form: "",
-          phone_form: "",
-          address_form: "",
-          pic_name_form: "",
+          name_form: '',
+          phone_form: '',
+          address_form: '',
+          pic_name_form: '',
         }
       );
       console.log(this.newVendor.child.length);
@@ -366,9 +370,9 @@ export default {
       this.newVendor.address_form = data.address;
       this.newVendor.status_form = data.status;
 
-      if (data.parent_id == 0 ) {
+      if (data.parent_id == 0) {
         this.hasChild = true;
-      }else{
+      } else {
         this.hasChild = false;
       }
 
@@ -389,7 +393,6 @@ export default {
 
         this.newVendor.child = tmp;
       }
-     
     },
     handleDelete(id, name) {
       this.$confirm('This will delete vendor ' + "'" + name + "'" + '. Continue?', 'Warning', {
@@ -430,7 +433,10 @@ export default {
               this.handleFilter();
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
               this.vendorCreating = false;
@@ -474,7 +480,10 @@ export default {
               this.handleFilter();
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
               this.vendorCreating = false;
@@ -492,7 +501,7 @@ export default {
         address_form: '',
         pic_name_form: '',
         status_form: '',
-        child : [],
+        child: [],
       };
     },
     handleDownload() {
@@ -832,6 +841,19 @@ export default {
     background-color: #46A2FD;
     border-radius:5px;
     padding:8px 33px;
+  }
+  .error {
+    float: left;
+    font-size: 12px;
+    line-height: normal;
+    padding-top: 2px;
+    color: red;
+    opacity: 0.6;
+  }
+  .highlight {
+    input {
+      border-color: red;
+    }
   }
 }
 

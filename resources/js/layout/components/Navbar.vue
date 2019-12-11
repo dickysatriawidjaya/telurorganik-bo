@@ -20,7 +20,7 @@
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <div class="box-nama">
-            hai,<span class="nama-user">{{user}}</span>
+            hai,<span class="nama-user">{{ user }}</span>
           </div>
           <img :src="'/images/profil.png'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
@@ -37,7 +37,7 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <div class="garis"></div>
+    <div class="garis" />
   </div>
 </template>
 
@@ -62,7 +62,7 @@ export default {
   },
   data() {
     return {
-      user : Cookies.get('Role')
+      user: Cookies.get('Role'),
     };
   },
   computed: {
@@ -179,15 +179,21 @@ export default {
         margin-top: 31px;
         position: relative;
         .box-nama{
-          display: inline-grid;
+          position: absolute;
+          display: inline-block;
           vertical-align: bottom;
+          right: 25px;
+          top: 21px;
+          font-size:19px;
+          font-weight:300;
+          line-height:20px;
+          color:#B2B2B2;
           .nama-user{
             margin-right: 30px;
             color:#707070;
-            font-size:16px;
-            font-family: 'Ubuntu', sans-serif;
+            font-size:19px;
             font-weight:500;
-            line-height:14px;
+            line-height:20px;
           }
         }
         .user-avatar {

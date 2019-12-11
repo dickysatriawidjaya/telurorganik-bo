@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item tabel_filter" @input="handleFilter" />
+      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;margin-right:16px;" class="filter-item tabel_filter" @input="handleFilter" />
       <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item tabel_filter" @change="handleFilter">
         <el-option key="1" label="Active" value="1" />
         <el-option key="-1" label="Deleted" value="-1" />
@@ -67,15 +67,18 @@
       <div v-loading="itemCreating" class="form-container">
         <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="100px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
-            <el-input v-model="newItem.name_form" />
+            <el-input v-model="newItem.name_form" :class="{highlight:errors.name_form}" />
+            <span v-if="errors.name_form" class="error">{{ errors.name_form[0] }}</span>
           </el-form-item>
           <el-form-item label="Unit" prop="unit">
-            <el-select v-model="newItem.unit_id_form" style="width: 100%" class="filter-item" @change="forceUpdate">
+            <el-select v-model="newItem.unit_id_form" :class="{highlight:errors.unit_id_form}" style="width: 100%" class="filter-item" @change="forceUpdate">
               <el-option v-for="u in unitList" :key="u.id" :label="u.name" :value="u.id">{{ u.name }}</el-option>
             </el-select>
+            <span v-if="errors.unit_id_form" class="error">{{ errors.unit_id_form[0] }}</span>
           </el-form-item>
           <el-form-item label="Price" prop="price">
-            <el-input v-model="newItem.price_form" type="number" @input="forceUpdate" />
+            <el-input v-model="newItem.price_form" :class="{highlight:errors.price_form}" type="number" @input="forceUpdate" />
+            <span v-if="errors.price_form" class="error">{{ errors.price_form[0] }}</span>
           </el-form-item>
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
             <el-select v-model="newItem.status_form" style="width: 100%" class="filter-item">
@@ -169,6 +172,7 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+      errors: [],
     };
   },
   computed: {
@@ -348,7 +352,10 @@ export default {
               this.handleFilter();
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
               this.itemCreating = false;
@@ -392,7 +399,10 @@ export default {
               this.handleFilter();
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
               this.itemCreating = false;
@@ -635,14 +645,14 @@ export default {
         height: 36px ;
         line-height: 36px;
         font-size:16px;
-        border: 1px solid #707070;
+        border: 1px solid #D3D3D3 !important;
       }
       .el-input--medium{
         .el-input__inner {
           height: 36px ;
           line-height: 36px;
           font-size:16px;
-          border: 1px solid #707070;
+          border: 1px solid #D3D3D3 !important;
         }
       }
     }
@@ -667,7 +677,7 @@ export default {
           height: 36px;
           line-height: 36px;
           font-size:16px;
-          border: 1px solid #707070;
+          border: 1px solid #D3D3D3;
         }
       }
     }
@@ -762,6 +772,19 @@ export default {
     background-color: #46A2FD;
     border-radius:5px;
     padding:8px 33px;
+  }
+  .error {
+    float: left;
+    font-size: 12px;
+    line-height: normal;
+    padding-top: 2px;
+    color: red;
+    opacity: 0.6;
+  }
+  .highlight {
+    input {
+      border-color: red;
+    }
   }
 }
 </style>

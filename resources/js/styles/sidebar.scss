@@ -28,6 +28,12 @@
     }
     .el-menu-item{
       font-size: 16px !important;
+      padding-left: 49px !important;
+    }
+    .el-menu-item.is-active{
+      color: #088600 !important;
+      background: url('/images/menu.png') no-repeat 50%;
+      background-position: left;
     }
     .scrollbar-wrapper {
       overflow-x: hidden !important;
@@ -60,11 +66,17 @@
       height: 100%;
       width: 100% !important;
     }
+    .el-menu--inline{
+      span{
+        padding-left: 15.5px !important;
+      }
 
+    }
     // menu hover
     .submenu-title-noDropdown,
     .el-submenu__title {
       font-size: 16px;
+      padding-left: 49px !important;
       &:hover {
         background-color: #FFFFFF !important;
         color:#ffffff;

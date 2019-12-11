@@ -145,8 +145,22 @@
 .detail_trans{
       background:#FFFFFF;
       padding:16px;
-      width:100%;
+      width:800px;
       border-radius: 10px;
+      .vdp-datepicker {
+        input {
+          line-height: 35px;
+          color: #707070;
+          font-weight: 500;
+          font-size: 16px;
+          font-family: 'Ubuntu', sans-serif;
+          font-weight: 400;
+          line-height: 11px;
+          border-radius: 4px;
+          border: 1px solid #DCDFE6;
+          padding: 0 30px 0 15px;
+        }
+      }
       .title_detail{
         color: #707070;
         font-weight: 500;

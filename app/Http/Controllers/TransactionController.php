@@ -16,7 +16,7 @@ class TransactionController extends Controller
 
     public function index(Request $request)
     {
-        
+
         $searchParams = $request->all();
         $transactionQuery = Transaction::query();
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
@@ -25,14 +25,14 @@ class TransactionController extends Controller
         $keyword = Arr::get($searchParams, 'keyword', '');
         $month = Arr::get($searchParams, 'month', '');
         $role = Arr::get($searchParams, 'role', '');
-        
+
         $start_date = Arr::get($searchParams, 'start_date', '');
         $end_date = Arr::get($searchParams, 'end_date', '');
-        
+
         if (!empty($status)) {
             $transactionQuery->where('status',$status);
         }
-        
+
         if (!empty($vendor)) {
             $vendor_result = Vendor::where('parent_id',$vendor)->where('status',1)->pluck('id')->toArray();
             array_push($vendor_result,(int)($vendor));
@@ -74,11 +74,11 @@ class TransactionController extends Controller
         $vendor = Arr::get($searchParams, 'vendor', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
         $month = Arr::get($searchParams, 'month', '');
-        
+
         if (!empty($status)) {
             $transactionQuery->where('status',$status);
         }
-        
+
         if (!empty($vendor)) {
             $transactionQuery->where('vendor_id',$vendor);
         }
@@ -113,8 +113,8 @@ class TransactionController extends Controller
                 'vendor_id_form' => 'required',
                 'total_form' => 'required',
                 'date_form' => 'required',
-                'detail'=>'required'
-            ]
+                'detail'=>'required',
+            ],
         );
 
         if ($validator->fails()) {
@@ -148,13 +148,13 @@ class TransactionController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['errors' =>  "Failed Save Detail Transaction ".$th], 500);
         }
-        
+
         //save detail end
         return new TransactionResource($Transaction);
     }
 
     // public function changeStatus(Request $request, Transaction $transaction)
-    // {   
+    // {
     //     return "bacot";
     //     $transaction->status = $request->get('status_form');
     //     $transaction->save();
@@ -163,7 +163,7 @@ class TransactionController extends Controller
 
     public function update(Request $request, Transaction $transaction)
     {
-        
+
         if ($transaction === null) {
             return response()->json(['error' => 'Transaction not found'], 404);
         }
@@ -172,7 +172,7 @@ class TransactionController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-            
+
             try {
                 $transaction->transaction_no = $request->get('transaction_no_form');
                 $transaction->transaction_date = date("Y-m-d",strtotime($request->get('date_form')));
@@ -203,9 +203,9 @@ class TransactionController extends Controller
                 } catch (\Throwable $th) {
                     return response()->json(['errors' => "Failed Update Transaction Detail Data ".$th], 403);
                 }
-                
+
             }
-            
+
             return new TransactionResource($transaction);
         }
     }
@@ -220,7 +220,7 @@ class TransactionController extends Controller
 
         return response()->json(null, 204);
     }
-    
+
     private function getValidationRules($isNew = true)
     {
         return [

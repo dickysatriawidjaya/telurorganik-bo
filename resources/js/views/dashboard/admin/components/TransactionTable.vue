@@ -7,88 +7,57 @@
         </el-col>
         <el-col :span="16">
           <div class="button_print">
-            <router-link target="_blank" :to="{ path: '/pdf/internPrint/?vendor=' + query.vendor  +'&start_date='+ query.start_date +'&end_date='+ query.end_date +'&status='+ query.status}">
-              <el-button type="print" icon="el-icon-printer" style="font-size:15px">
-                INTERN PRINT
+            <router-link target="_blank" :to="{ path: '/pdf/internPrint/?vendor=' + query.vendor +'&start_date='+ query.start_date +'&end_date='+ query.end_date +'&status='+ query.status}">
+              <el-button type="print" icon="el-icon-printer">
+                Intern Print
               </el-button>
             </router-link>
-            <br/>
-            <router-link target="_blank" :to="{ path: '/pdf/externPrint/?vendor=' + query.vendor  +'&start_date='+ query.start_date +'&end_date='+ query.end_date +'&status='+ query.status}">
-              <el-button type="print" icon="el-icon-printer" style="font-size:15px">
-                EXTERN PRINT
+            <br>
+            <router-link target="_blank" :to="{ path: '/pdf/externPrint/?vendor=' + query.vendor +'&start_date='+ query.start_date +'&end_date='+ query.end_date +'&status='+ query.status}">
+              <el-button type="print" icon="el-icon-printer">
+                Extern Print
               </el-button>
             </router-link>
           </div>
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="2">
+        <el-col :span="7">
           <h3 class="text_normal">
             Vendor :
           </h3>
-        </el-col>
-        <el-col :span="16">
-          <el-select v-model="query.vendor" placeholder="Vendor Filter" clearable style="width: 235px; margin-top:13px" class="filter-item" @change="handleFilter">
+          <el-select v-model="query.vendor" placeholder="Vendor Filter" clearable style="width: 275px" class="filter-item" @change="handleFilter">
             <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
               <span style="float: left">{{ v.name }}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
             </el-option>
           </el-select>
         </el-col>
-      </el-row>
-      <!-- <el-row>
-        <el-col :span="3">
-          <h3 class="text_normal">
-            Date Month:
-          </h3>
-        </el-col>
-        <el-col :span="16">
-          <el-select v-model="query.month" placeholder="Date Month Filter" clearable style="width: 235px; margin-top:13px" class="filter-item" @change="handleFilter">
-            <el-option v-for="d in dateMonth" :key="d.value" :label="d.name" :value="d.value">
-              <span style="float: left">{{ d.name }}</span>
-            </el-option>
-          </el-select>
-        </el-col>
-      </el-row> -->
-      <el-row>
-        <el-col :span="3">
-          <h3 class="text_normal">
-            Start Date:
-          </h3>
-        </el-col>
-        <el-col :span="16">
-          <datepicker clear-button="true" v-model="query.start_date" name="uniquename" @selected="handleFilter"/>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="3">
-          <h3 class="text_normal">
-            End Date:
-          </h3>
-        </el-col>
-        <el-col :span="16">
-          <datepicker clear-button="true" v-model="query.end_date" name="uniquename" @selected="handleFilter"/>
-        </el-col>
-      </el-row>
-
-      <el-row>
-        <el-col :span="3">
+        <el-col :span="4">
           <h3 class="text_normal">
             Status :
           </h3>
-        </el-col>
-        <el-col :span="16">
           <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 100px" class="filter-item tabel_filter" @change="handleFilter">
-            <el-option key="1" label="Paid" value="1" />
-            <el-option key="-1" label="Unpaid" value="-1" />
+            <el-option key="1" label="Paid" class="paid" style="color:#46A2FD;font-size:16px;font-weight:500;" value="1" />
+            <el-option key="-1" label="Unpaid" class="unpaid" style="color:#FD4646;font-size:16px;font-weight:500;" value="-1" />
           </el-select>
         </el-col>
       </el-row>
-
-       
-
+      <el-row>
+        <el-col :span="4">
+          <h3 class="text_normal">
+            Start Date:
+          </h3>
+          <datepicker v-model="query.start_date" class="add-separator" clear-button="true" name="uniquename" @selected="handleFilter" />
+        </el-col>
+        <el-col :span="4">
+          <h3 class="text_normal">
+            End Date:
+          </h3>
+          <datepicker v-model="query.end_date" clear-button="true" name="uniquename" @selected="handleFilter" />
+        </el-col>
+      </el-row>
     </div>
-
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="left" label="No." prop="index" width="60">
         <template slot-scope="scope">
@@ -138,6 +107,49 @@
 </template>
 
 <style rel="stylesheet/scss" lang="scss">
+  .filter-container {
+    .el-button {
+      font-size: 14px;
+    }
+    .text_normal {
+      font-weight: 500 !important;
+      color: #707070;
+    }
+    .vdp-datepicker {
+      width: 140px;
+      margin-right: 16px;
+      &.add-separator::after {
+        content: "-";
+        font-size: 16px;
+        position: absolute;
+        top: 7px;
+        right: -17px;
+      }
+      input {
+        width: 100%;
+        height: 35px;
+        line-height: 35px;
+        color: #707070;
+        font-weight: 500;
+        font-size: 16px;
+        font-family: 'Ubuntu', sans-serif;
+        font-weight: 400;
+        line-height: 11px;
+        border-radius: 4px;
+        border: 1px solid #DCDFE6;
+        padding: 0 30px 0 15px;
+      }
+      .vdp-datepicker__clear-button {
+        position: absolute;
+        right: 6px;
+        top: 6px;
+        font-size: 18px;
+        span {
+          font-style: normal;
+        }
+      }
+    }
+  }
   .table-db-container{
     background:#FFFFFF;
     padding:16px;
@@ -146,10 +158,12 @@
     .text_normal{
       color: #707070;
       font-weight: 500;
-      font-size:16px;
+      font-size: 16px;
       font-family: 'Ubuntu', sans-serif;
       font-weight: 400;
-      line-height:29px;
+      line-height: 29px;
+      padding: 0;
+      margin: 0;
     }
     .el-input--medium .el-input__inner {
       height: 35px;
@@ -215,7 +229,7 @@
     font-size:33px;
     font-family: 'Abel', sans-serif;
     font-weight: 400;
-    line-height:34px;
+    line-height:40px;
   }
   .table_unpaid{
     color:#FD4646;
@@ -232,11 +246,12 @@
       background-color: #FFFFFF;
       font-size:16px;
       font-family: 'Ubuntu', sans-serif;
-      font-weight: 400;
+      font-weight: 500;
       line-height:11px;
+      width:160px;
       border: 1px solid #707070;
       padding: 7px 12px;
-      margin-top:20px;
+      margin-top:6px;
       border-radius:13px;
   }
 </style>
@@ -293,8 +308,8 @@ export default {
         role: '',
         status: 1,
         vendor: null,
-        start_date : moment().startOf('month').format('YYYY-MM-DD hh:mm'),
-        end_date : moment().endOf('month').format('YYYY-MM-DD hh:mm'),
+        start_date: moment().startOf('month').format('YYYY-MM-DD hh:mm'),
+        end_date: moment().endOf('month').format('YYYY-MM-DD hh:mm'),
       },
       total: 0,
     };

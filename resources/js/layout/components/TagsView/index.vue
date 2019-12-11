@@ -237,16 +237,6 @@ export default {
         color: #fff;
         border-color: #707070;
         border-radius:5px;
-        &::before {
-          content: '';
-          background: #fff;
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          position: relative;
-          margin-right: 2px;
-        }
       }
     }
   }

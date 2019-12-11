@@ -47,12 +47,13 @@ class UnitController extends Controller
             [
                 'name_form' => 'required',
                 'unit_code_form' => 'required',
+                'description_form' => 'required',
             ]
         );
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
-        } 
+        }
 
         $check = Unit::where('name',$request->name_form)->where('status',1)->first();
         if ($check) {
@@ -70,7 +71,7 @@ class UnitController extends Controller
 
     public function update(Request $request, Unit $unit)
     {
-        
+
         if ($unit === null) {
             return response()->json(['error' => 'unit not found'], 404);
         }
@@ -105,7 +106,7 @@ class UnitController extends Controller
 
         return response()->json(null, 204);
     }
-    
+
     private function getValidationRules($isNew = true)
     {
         return [

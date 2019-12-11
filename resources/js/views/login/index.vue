@@ -139,8 +139,12 @@ export default {
 $bg:#2d3a4b;
 $light_gray:#eee;
 .el-button--telur {
-    color: #FFFFFF;
-    background-color: #FDBF49;
+    font-size:17px;
+    line-height:19px;
+    font-weight:500;
+    color:#ffffff;
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(207,233,37,1) 0%, rgba(103,186,54,1) 100%);
     border: #FDBF49;
     padding: 0;
 }

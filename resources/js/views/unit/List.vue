@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @input="handleFilter" />
+      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;margin-right:16px;" class="filter-item" @input="handleFilter" />
       <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item" @change="handleFilter">
         <el-option key="1" label="Active" value="1" />
         <el-option key="-1" label="Deleted" value="-1" />
@@ -67,13 +67,16 @@
       <div v-loading="vendorCreating" class="form-container">
         <el-form ref="unitForm" :rules="rules" :model="newUnit" label-position="left" label-width="100px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
-            <el-input v-model="newUnit.name_form" />
+            <el-input v-model="newUnit.name_form" :class="{highlight:errors.name_form}" />
+            <span v-if="errors.name_form" class="error">{{ errors.name_form[0] }}</span>
           </el-form-item>
           <el-form-item label="Unit Code" prop="unit_code">
-            <el-input v-model="newUnit.unit_code_form" />
+            <el-input v-model="newUnit.unit_code_form" :class="{highlight:errors.unit_code_form}" />
+            <span v-if="errors.unit_code_form" class="error">{{ errors.unit_code_form[0] }}</span>
           </el-form-item>
           <el-form-item label="Description" prop="description">
-            <el-input v-model="newUnit.description_form" type="textarea" />
+            <el-input v-model="newUnit.description_form" type="textarea" :class="{highlight:errors.description_form}" />
+            <span v-if="errors.description_form" class="error">{{ errors.description_form[0] }}</span>
           </el-form-item>
           <el-form-item v-if="unitId > 0" label="Status" prop="status">
             <el-select v-model="newUnit.status_form" style="width: 150px" class="filter-item">
@@ -160,6 +163,7 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+      errors: [],
     };
   },
   computed: {
@@ -323,7 +327,10 @@ export default {
               this.handleFilter();
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
               this.vendorCreating = false;
@@ -367,7 +374,10 @@ export default {
               this.handleFilter();
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
               this.vendorCreating = false;
@@ -723,6 +733,19 @@ export default {
     background-color: #46A2FD;
     border-radius:5px;
     padding:8px 33px;
+  }
+  .error {
+    float: left;
+    font-size: 12px;
+    line-height: normal;
+    padding-top: 2px;
+    color: red;
+    opacity: 0.6;
+  }
+  .highlight {
+    input, textarea {
+      border-color: red;
+    }
   }
 }
 </style>

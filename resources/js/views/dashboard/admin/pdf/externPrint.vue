@@ -1,17 +1,17 @@
 <template>
   <div class="print">
     <div>
-      vendor : <span v-if="query.vendor">{{vendor.name}}</span> 
-               <span v-else> All </span>, 
-      start date : <span v-if="query.start_date"> {{query.start_date | moment("DD MMM YYYY")}} </span>
-                  <span v-else> All </span>
-                  ,
-      end date :  <span v-if="query.end_date"> {{query.end_date | moment("DD MMM YYYY")}} </span>
-                  <span v-else> All </span>
-                  ,
+      vendor : <span v-if="query.vendor">{{ vendor.name }}</span>
+      <span v-else> All </span>,
+      start date : <span v-if="query.start_date"> {{ query.start_date | moment("DD MMM YYYY") }} </span>
+      <span v-else> All </span>
+      ,
+      end date :  <span v-if="query.end_date"> {{ query.end_date | moment("DD MMM YYYY") }} </span>
+      <span v-else> All </span>
+      ,
       status : <span v-if="query.status == 1"> Paid </span>
-               <span v-else-if="query.status == -1"> Unpaid </span>
-               <span v-else> All </span>
+      <span v-else-if="query.status == -1"> Unpaid </span>
+      <span v-else> All </span>
     </div>
     <table style="width:100%" border="1">
       <thead>
@@ -23,31 +23,31 @@
           <th>Item</th>
           <th>Total</th>
         </tr>
-        
+
       </thead>
       <tbody>
         <tr v-for="(t,index) in list">
-          <td>{{index + 1}}</td>
-          <td>{{ t.transaction_date | moment("DD-MM-YYYY")  }}</td>
+          <td>{{ index + 1 }}</td>
+          <td>{{ t.transaction_date | moment("DD-MM-YYYY") }}</td>
           <td>{{ t.vendor.name }}</td>
           <td>{{ t.transaction_no }}</td>
           <table border="1" width="100%">
-          <td width="100%">
-            <tr v-if="t.detail_transaction.length > 0" v-for="(d,index_detail) in t.detail_transaction" width="100%">
-              <td width="100%">{{index_detail + 1}}</td>
-              <td width="100%">{{d.item.name}}</td>
-              <td width="100%">{{d.item.unit.name}}</td>
-              <td width="100%">{{d.quantity}}</td>
-              <td width="100%">{{d.discount}}</td>
-              <td width="100%">{{d.subtotal | toCurrency}}</td>
-            </tr>
-          </td width="100%">
+            <td width="100%">
+              <tr v-for="(d,index_detail) in t.detail_transaction" v-if="t.detail_transaction.length > 0" width="100%">
+                <td width="100%">{{ index_detail + 1 }}</td>
+                <td width="100%">{{ d.item.name }}</td>
+                <td width="100%">{{ d.item.unit.name }}</td>
+                <td width="100%">{{ d.quantity }}</td>
+                <td width="100%">{{ d.discount }}</td>
+                <td width="100%">{{ d.subtotal | toCurrency }}</td>
+              </tr>
+            </td width="100%">
           </table>
-          <td>{{t.total | toCurrency}}</td>
+          <td>{{ t.total | toCurrency }}</td>
         </tr>
       </tbody>
-      
-    </table> 
+
+    </table>
     <!-- <el-table v-loading="loading" :data="list" border fit style="width: 100%">
       <el-table-column align="center" label="No." prop="index"  width="80">
         <template slot-scope="scope">
@@ -103,7 +103,7 @@ const transactionResource = new TransactionResource();
 export default {
   data() {
     return {
-      grand_total : 0,
+      grand_total: 0,
       article: '',
       fullscreenLoading: true,
       vendor_id: 0,
@@ -113,7 +113,7 @@ export default {
       queryVendor: {
         paginate: false,
       },
-      vendor : null,
+      vendor: null,
       query: {
         page: 1,
         limit: 15,
@@ -121,35 +121,34 @@ export default {
         role: '',
         status: 1,
         vendor: null,
-        start_date : '',
-        end_date : '',
+        start_date: '',
+        end_date: '',
       },
       total: 0,
     };
   },
   mounted() {
-
-    if(this.$route.query.vendor == "null"){
+    if (this.$route.query.vendor == 'null'){
       this.query.vendor = 0;
-    }else{
+    } else {
       this.query.vendor = this.$route.query.vendor;
     }
 
-     if(this.$route.query.start_date == "null"){
+    if (this.$route.query.start_date == 'null'){
       this.query.start_date = null;
-    }else{
+    } else {
       this.query.start_date = this.$route.query.start_date;
     }
 
-    if(this.$route.query.end_date == "null"){
+    if (this.$route.query.end_date == 'null'){
       this.query.end_date = null;
-    }else{
+    } else {
       this.query.end_date = this.$route.query.end_date;
     }
 
-    if(this.$route.query.status == "null"){
+    if (this.$route.query.status == 'null'){
       this.query.status = null;
-    }else{
+    } else {
       this.query.status = this.$route.query.status;
     }
 
@@ -158,11 +157,11 @@ export default {
   },
   methods: {
     async getVendor() {
-      const { limit, page } = {'id' : this.query.vendor};
+      const { limit, page } = { 'id': this.query.vendor };
       this.loading = true;
-      const { data, meta } = await vendorResource.list({'id' : this.query.vendor});
+      const { data, meta } = await vendorResource.list({ 'id': this.query.vendor });
       this.vendor = data[0];
-      console.log(this.vendor)
+      console.log(this.vendor);
       this.total = meta.total;
       this.loading = false;
     },
@@ -187,13 +186,13 @@ export default {
 
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
-        sum += parseFloat(element.total)
+        sum += parseFloat(element.total);
       });
       this.grand_total = sum;
       this.total = meta.total;
       this.loading = false;
       // setTimeout(() => {
-       
+
       //   this.$nextTick(() => {
       //     window.print();
       //   });
