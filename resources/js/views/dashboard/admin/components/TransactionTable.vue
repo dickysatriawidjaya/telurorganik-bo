@@ -265,6 +265,9 @@ import VendorResource from '@/api/vendor';
 const transactionResource = new TransactionResource();
 const vendorResource = new VendorResource();
 
+import Cookies from 'js-cookie';
+
+
 export default {
   components: { Datepicker },
   filters: {
@@ -305,8 +308,8 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
-        role: '',
-        status: 1,
+        role: Cookies.get('Role'),
+        status: null,
         vendor: null,
         start_date: moment().startOf('month').format('YYYY-MM-DD hh:mm'),
         end_date: moment().endOf('month').format('YYYY-MM-DD hh:mm'),
@@ -317,6 +320,13 @@ export default {
   created() {
     this.getList();
     this.getVendorList();
+  },
+  mounted: function () {
+        this.$nextTick(function () {
+            window.setInterval(() => {
+                this.getList();
+            },60000);
+        })
   },
   methods: {
     handleFilter() {
