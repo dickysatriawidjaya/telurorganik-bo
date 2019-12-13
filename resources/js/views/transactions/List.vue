@@ -252,7 +252,9 @@ export default {
         role: Cookies.get('Role'),
       },
       queryVendor: {
-        paginate: false,
+        paginate: true,
+        page: 1,
+        limit: 99999,
       },
       queryItem: {
         paginate: false,

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\UnitResource;
 use Validator;
 use App\Laravue\Models\Unit;
+use App\Laravue\Models\Item;
 use Illuminate\Support\Arr;
 
 class UnitController extends Controller
@@ -21,14 +22,14 @@ class UnitController extends Controller
         $keyword = Arr::get($searchParams, 'keyword', '');
         $paginate = Arr::get($searchParams, 'paginate', '');
 
-        if (!empty($status)) {
-            $unitQuery->where('status',$status);
-        }
-
         if (!empty($keyword)) {
             $unitQuery->where('name', 'LIKE', '%' . $keyword . '%');
             $unitQuery->orWhere('unit_code', 'LIKE', '%' . $keyword . '%');
             $unitQuery->orWhere('description', 'LIKE', '%' . $keyword . '%');
+        }
+
+        if (!empty($status)) {
+            $unitQuery->where('status',$status);
         }
 
         $unitQuery->orderBy('status','DESC');
@@ -98,10 +99,16 @@ class UnitController extends Controller
 
     public function destroy(unit $unit)
     {
-        try {
-            $unit->update(['status'=>-1]);
-        } catch (\Exception $ex) {
-            response()->json(['error' => $ex->getMessage()], 403);
+        $check_item_with_this_unit = Item::where("unit_id",$unit->id)->where('status',1)->get();
+        
+        if (count($check_item_with_this_unit)>0) {
+           return response()->json(['error' =>"Unit cannot be delete, because there is Item relation with this unit"], 403);
+        }else{
+            try {
+                $unit->update(['status'=>-1]);
+            } catch (\Exception $ex) {
+               return response()->json(['error' => $ex->getMessage()], 403);
+            }
         }
 
         return response()->json(null, 204);

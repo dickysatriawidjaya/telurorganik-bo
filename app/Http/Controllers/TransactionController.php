@@ -29,6 +29,9 @@ class TransactionController extends Controller
         $start_date = Arr::get($searchParams, 'start_date', '');
         $end_date = Arr::get($searchParams, 'end_date', '');
 
+
+        // return  date("Y-m-d",strtotime($start_date)).'\n'.date("Y-m-d",strtotime($end_date));
+
         if (!empty($status)) {
             $transactionQuery->where('status',$status);
         }
@@ -119,6 +122,12 @@ class TransactionController extends Controller
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
+        }
+
+        $check_trans_no = Transaction::where("transaction_no",$request->transaction_no_form)->whereIn('status',[1,-1])->get();
+        
+        if(count($check_trans_no) > 0){
+            return response()->json(['errors' =>  "Transaction number already exist."],403);
         }
 
         try {

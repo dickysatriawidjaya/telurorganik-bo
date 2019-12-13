@@ -168,6 +168,8 @@ import checkPermission from '@/utils/permission'; // Permission checking
 const userResource = new UserResource();
 const vendorResource = new VendorResource();
 const permissionResource = new Resource('permissions');
+import Cookies from 'js-cookie';
+
 
 export default {
   name: 'UserList',
@@ -185,7 +187,7 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
-        role: '',
+        role: Cookies.get('Role'),
         paginate: true,
       },
       nonAdminRoles: ['editor', 'user', 'visitor'],

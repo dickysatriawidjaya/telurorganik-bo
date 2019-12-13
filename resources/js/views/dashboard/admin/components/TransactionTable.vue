@@ -358,3 +358,105 @@ export default {
     }
   }
 </style>
+
+<script>
+import Datepicker from 'vuejs-datepicker';
+
+import { fetchList } from '@/api/order';
+import TransactionResource from '@/api/transaction';
+import VendorResource from '@/api/vendor';
+
+const transactionResource = new TransactionResource();
+const vendorResource = new VendorResource();
+
+import Cookies from 'js-cookie';
+
+
+export default {
+  components: { Datepicker },
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        success: 'success',
+        pending: 'danger',
+      };
+      return statusMap[status];
+    },
+    orderNoFilter(str) {
+      return str;
+    },
+  },
+  data() {
+    return {
+      list: null,
+      loading: true,
+      vendorList: null,
+      queryVendor: {
+        paginate: false,
+      },
+      dateMonth: [
+        { value: 1, name: 'January' },
+        { value: 2, name: 'February' },
+        { value: 3, name: 'March' },
+        { value: 4, name: 'April' },
+        { value: 5, name: 'Mei' },
+        { value: 6, name: 'June' },
+        { value: 7, name: 'July' },
+        { value: 8, name: 'August' },
+        { value: 9, name: 'September' },
+        { value: 10, name: 'October' },
+        { value: 11, name: 'November' },
+        { value: 12, name: 'Desember' },
+      ],
+      query: {
+        page: 1,
+        limit: 15,
+        keyword: '',
+        role: Cookies.get('Role'),
+        status: null,
+        vendor: null,
+        start_date: moment().startOf('month').format('YYYY-MM-DD hh:mm'),
+        end_date: moment().endOf('month').format('YYYY-MM-DD hh:mm'),
+      },
+      total: 0,
+    };
+  },
+  created() {
+    this.getList();
+    this.getVendorList();
+  },
+  mounted: function () {
+        this.$nextTick(function () {
+            window.setInterval(() => {
+                this.getList();
+            },60000);
+        })
+  },
+  methods: {
+    handleFilter() {
+      this.query.page = 1;
+      this.getList();
+    },
+    async getVendorList() {
+      const { limit, page } = this.queryVendor;
+      this.loading = true;
+      const { data, meta } = await vendorResource.list(this.queryVendor);
+      this.vendorList = data;
+      this.total = meta.total;
+      this.loading = false;
+    },
+    async getList() {
+      const { limit, page } = this.query;
+      this.loading = true;
+      const { data, meta } = await transactionResource.list(this.query);
+      this.list = data;
+
+      this.list.forEach((element, index) => {
+        element['index'] = (page - 1) * limit + index + 1;
+      });
+      this.total = meta.total;
+      this.loading = false;
+    },
+  },
+};
+</script>
