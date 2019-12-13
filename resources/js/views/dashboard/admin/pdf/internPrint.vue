@@ -2,16 +2,18 @@
   <div class="print">
     <div>
       vendor : <span v-if="query.vendor">{{ vendor.name }}</span>
-      <span v-else> All </span>,
-      start date : <span v-if="query.start_date"> {{ query.start_date | moment("DD MMM YYYY") }} </span>
       <span v-else> All </span>
-      ,
-      end date :  <span v-if="query.end_date"> {{ query.end_date | moment("DD MMM YYYY") }} </span>
+      
+      <div style="float:right;">
+      <span v-if="query.start_date"> {{ query.start_date | moment("DD/MM/YYYY") }} </span>
       <span v-else> All </span>
-      ,
-      status : <span v-if="query.status == 1"> Paid </span>
+      -
+      <span v-if="query.end_date"> {{ query.end_date | moment("DD/MM/YYYY") }} </span>
+      <span v-else> All </span>
+      (<span v-if="query.status == 1"> Paid </span>
       <span v-else-if="query.status == -1"> Unpaid </span>
-      <span v-else> All </span>
+      <span v-else> All </span>)
+      </div>
     </div>
     <el-table v-loading="loading" :data="list" border fit style="width: 100%">
       <el-table-column align="center" label="No." prop="index" width="80">
@@ -55,7 +57,7 @@
         </template>
       </el-table-column>
     </el-table>
-    GRAND TOTAL : {{ grand_total | toCurrency }}
+    <div style="float:right;">Grand Total : {{ grand_total | toCurrency }}</div>
   </div>
 </template>
 

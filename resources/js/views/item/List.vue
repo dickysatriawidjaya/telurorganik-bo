@@ -24,15 +24,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Price" prop="price" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.price | toCurrency }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="Unit" prop="unit" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.unit.name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="Price" prop="price" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.price | toCurrency }}</span>
         </template>
       </el-table-column>
 
@@ -483,8 +483,7 @@ export default {
 </script>
 
 <style lang="scss">
-  .a{
-    .el-dialog{
+.el-dialog{
       width:410px;
       border-radius:10px;
       .el-dialog__header{
@@ -607,7 +606,6 @@ export default {
         }
       }
     }
-  }
 .edit-input {
   padding-right: 100px;
 }
@@ -740,7 +738,7 @@ export default {
     line-height: 11px;
     background-color: transparent;
     border-color: #707070;
-    border-radius: 13px;
+    border-radius: 19px;
     float: right;
     padding: 10px;
   }

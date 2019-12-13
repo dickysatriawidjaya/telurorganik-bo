@@ -111,8 +111,8 @@
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" :before-close="handleClose">
       <div v-loading="transactionCreating" class="form-container">
         <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="150px">
-          <el-row :gutter="20">
-            <el-col>
+          <el-row>
+            <el-col :span="12">
               <el-form-item label="Transaction No" prop="transaction_no">
                 <el-input v-model="newTransaction.transaction_no_form" :class="{highlight:errors.transaction_no_form}" style="width:200px" @input="forceupdate" />
                 <span v-if="errors.transaction_no_form" class="error">{{ errors.transaction_no_form[0] }}</span>
@@ -131,7 +131,7 @@
                 <span v-if="errors.vendor_id_form" class="error">{{ errors.vendor_id_form[0] }}</span>
               </el-form-item>
             </el-col>
-            <el-col :span="11">
+            <el-col :span="12">
               <el-form-item v-if="transactionId > 0" label="Status" prop="status">
                 <el-select v-model="newTransaction.status_form" :class="{highlight:errors.status_form}" style="width: 150px" class="filter-item" @change="forceupdate">
                   <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
@@ -158,7 +158,7 @@
               </thead>
               <tbody>
                 <tr v-for="(d,index) in newTransaction.detail">
-                  <td style="width:30px">
+                  <td style="width:40px">
                     {{ index + 1 }}
                   </td>
                   <td style="width:212px">
@@ -703,6 +703,18 @@ export default {
 </script>
 
 <style lang="scss">
+div[aria-label="Edit Transaction"] {
+  .el-dialog__body {
+    .total_price {
+      .el-form-item__label {
+        right: 192px !important;
+      }
+      .el-form-item__content {
+        right: 52px !important;
+      }
+    }
+  }
+}
 .el-dialog{
   width:850px;
   border-radius:10px;
@@ -737,10 +749,25 @@ export default {
         line-height:11px;
         margin-top: 13px;
       }
-      .el-input--medium .el-input__inner {
+      .el-input--medium .el-input__inner, input {
           height: 34px;
           line-height: 34px;
           font-size:16px;
+          background-color: #F4F4F4;
+      }
+      .total_price {
+        .el-form-item__label {
+          position: absolute;
+          right: 221px;
+          width: auto !important;
+        }
+        .el-form-item__content {
+          position: absolute;
+          right: 69px;
+          margin-left: 0 !important;
+          text-align: left;
+          width: 15%;
+        }
       }
       .div_tabel{
         .transaksi_tabel_add{
@@ -947,8 +974,8 @@ export default {
     line-height: 11px;
     background-color: transparent;
     border-color: #707070;
-    border-radius:13px;
-    padding: 7px 20px;
+    border-radius:19px;
+    padding: 12px 11px;
     margin-top: 3px;
   }
   .el-button--add {

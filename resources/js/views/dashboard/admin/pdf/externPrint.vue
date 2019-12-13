@@ -2,18 +2,21 @@
   <div class="print">
     <div>
       vendor : <span v-if="query.vendor">{{ vendor.name }}</span>
-      <span v-else> All </span>,
-      start date : <span v-if="query.start_date"> {{ query.start_date | moment("DD MMM YYYY") }} </span>
       <span v-else> All </span>
-      ,
-      end date :  <span v-if="query.end_date"> {{ query.end_date | moment("DD MMM YYYY") }} </span>
+
+      <div style="float:right;">
+      <span v-if="query.start_date"> {{ query.start_date | moment("DD/MM/YYYY") }} </span>
       <span v-else> All </span>
-      ,
-      status : <span v-if="query.status == 1"> Paid </span>
+      -
+      <span v-if="query.end_date"> {{ query.end_date | moment("DD/MM/YYYY") }} </span>
+      <span v-else> All </span>
+      (<span v-if="query.status == 1"> Paid </span>
       <span v-else-if="query.status == -1"> Unpaid </span>
-      <span v-else> All </span>
+      <span v-else> All </span>)
+      </div>
     </div>
-    <table style="width:100%" border="1">
+
+    <!-- <table style="width:100%" border="1">
       <thead>
         <tr>
           <th>No</th>
@@ -47,8 +50,10 @@
         </tr>
       </tbody>
 
-    </table>
-    <!-- <el-table v-loading="loading" :data="list" border fit style="width: 100%">
+    </table> -->
+
+
+    <el-table v-loading="loading" :data="list" border fit style="width: 100%">
       <el-table-column align="center" label="No." prop="index"  width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
@@ -56,7 +61,7 @@
       </el-table-column>
       <el-table-column class-name="status-col" label="Date" width="110" prop="created_at" >
         <template slot-scope="scope">
-          <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD-MM-YYYY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Vendor" prop="vendor" >
@@ -69,28 +74,27 @@
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
+       <el-table-column align="center" label="Item" prop="Item" >
+         <!-- <table border="1" width="100%">
+           <td width="100%">
+             <tr v-for="(d,index_detail) in t.detail_transaction" v-if="t.detail_transaction.length > 0" width="100%">
+               <td width="100%">{{ index_detail + 1 }}</td>
+               <td width="100%">{{ d.item.name }}</td>
+               <td width="100%">{{ d.item.unit.name }}</td>
+               <td width="100%">{{ d.quantity }}</td>
+               <td width="100%">{{ d.discount }}</td>
+               <td width="100%">{{ d.subtotal | toCurrency }}</td>
+             </tr>
+           </td width="100%">
+         </table> -->
+      </el-table-column>
       <el-table-column align="right" label="Total" prop="total" >
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
-       <el-table-column align="center" label="Retur" prop="retur" >
-        <template slot-scope="scope">
-          <span>{{ scope.row.retur }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" prop="status" >
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.status == 1" type="success">
-            Paid
-          </el-tag>
-          <el-tag v-if="scope.row.status == -1" type="warning">
-            Unpaid
-          </el-tag>
-        </template>
-      </el-table-column>
-    </el-table> -->
-    GRAND TOTAL : {{ grand_total | toCurrency }}
+    </el-table>
+    <div style="float:right;">Grand Total : {{ grand_total | toCurrency }}</div>
   </div>
 </template>
 

@@ -371,7 +371,6 @@ const vendorResource = new VendorResource();
 
 import Cookies from 'js-cookie';
 
-
 export default {
   components: { Datepicker },
   filters: {

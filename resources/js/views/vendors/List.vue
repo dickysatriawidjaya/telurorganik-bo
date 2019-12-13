@@ -79,6 +79,8 @@
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" width="850px" :before-close="handleClose">
       <div v-loading="vendorCreating" class="form-container">
         <el-form ref="vendorForm" :rules="rules" :model="newVendor" label-position="left" label-width="150px" style="max-width: 850px;">
+          <el-row>
+            <el-col :span="12">
           <el-form-item label="Name" prop="name">
             <el-input v-model="newVendor.name_form" :class="{highlight:errors.name_form}" />
             <span v-if="errors.name_form" class="error">{{ errors.name_form[0] }}</span>
@@ -91,14 +93,18 @@
             <span v-if="errors.phone_form" class="error">{{ errors.phone_form[0] }}</span>
           </el-form-item>
           <el-form-item label="Address" prop="address">
-            <el-input v-model="newVendor.address_form" :class="{highlight:errors.address_form}" />
+            <el-input type="textarea" rows=3 v-model="newVendor.address_form" :class="{highlight:errors.address_form}" />
             <span v-if="errors.address_form" class="error">{{ errors.address_form[0] }}</span>
           </el-form-item>
+        </el-col>
+        <el-col :span="12">
           <el-form-item v-if="vendorId > 0" label="Status" prop="status">
             <el-select v-model="newVendor.status_form" style="width: 150px" class="filter-item">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
           </el-form-item>
+        </el-col>
+      </el-row>
         </el-form>
 
         <div v-show="hasChild" class="div_tabel">
@@ -169,7 +175,6 @@ const userResource = new UserResource();
 const vendorResource = new VendorResource();
 const permissionResource = new Resource('permissions');
 import Cookies from 'js-cookie';
-
 
 export default {
   name: 'UserList',
@@ -589,6 +594,20 @@ export default {
         font-size: 20px;
         word-break: break-all;
         .form-container{
+          .el-form {
+            .el-row {
+              .el-col {
+                padding-right: 30px;
+              }
+            }
+          }
+          .div_tabel {
+            color: #707070;
+            font-size: 33px;
+            font-family: 'Abel', sans-serif;
+            font-weight: 400;
+            line-height: 43px;
+          }
           .el-form-item--medium .el-form-item__label {
             color:#707070;
             font-size:16px;
@@ -799,8 +818,8 @@ export default {
     line-height: 11px;
     background-color: transparent;
     border-color: #707070;
-    border-radius:13px;
-    padding: 7px 20px;
+    border-radius: 19px;
+    padding: 10px 11px;
     margin-top: 3px;
   }
   .el-button--add {
@@ -826,7 +845,7 @@ export default {
   }
   .el-button--canceltransaksi {
     color: #B2B2B2;
-    font-size: 13px;
+    font-size: 16px;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 300;
     line-height: 14px;
@@ -836,7 +855,7 @@ export default {
   }
   .el-button--addtransaksi {
     color: #FFFFFF;
-    font-size: 13px;
+    font-size: 16px;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 500;
     line-height: 14px;

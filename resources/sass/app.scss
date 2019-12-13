@@ -65,3 +65,13 @@
 .el-button--telur:hover {
   color: $purewhite !important;
 }
+
+//PRINT
+.print {
+  > div:first-child {
+    border-bottom: 1px solid #D3D3D3;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+}
