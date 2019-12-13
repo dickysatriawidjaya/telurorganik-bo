@@ -957,7 +957,7 @@ export default {
     line-height: 11px;
     background-color: transparent;
     border-color: #707070;
-    border-radius: 13px;
+    border-radius: 19px;
     float: right;
     padding: 10px;
   }

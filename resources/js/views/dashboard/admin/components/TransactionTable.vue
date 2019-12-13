@@ -22,11 +22,11 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="7">
+        <el-col class="element-vendor">
           <h3 class="text_normal">
             Vendor :
           </h3>
-          <el-select v-model="query.vendor" placeholder="Vendor Filter" clearable style="width: 275px" class="filter-item" @change="handleFilter">
+          <el-select v-model="query.vendor" placeholder="Vendor Filter" clearable class="filter-item" @change="handleFilter">
             <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
               <span style="float: left">{{ v.name }}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
@@ -44,13 +44,13 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="4">
+        <el-col class="element-datepicker">
           <h3 class="text_normal">
             Start Date:
           </h3>
           <datepicker v-model="query.start_date" class="add-separator" clear-button="true" name="uniquename" @selected="handleFilter" />
         </el-col>
-        <el-col :span="4">
+        <el-col class="element-datepicker">
           <h3 class="text_normal">
             End Date:
           </h3>
@@ -106,18 +106,109 @@
   </div>
 </template>
 
+<script>
+import Datepicker from 'vuejs-datepicker';
+
+import { fetchList } from '@/api/order';
+import TransactionResource from '@/api/transaction';
+import VendorResource from '@/api/vendor';
+
+const transactionResource = new TransactionResource();
+const vendorResource = new VendorResource();
+
+export default {
+  components: { Datepicker },
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        success: 'success',
+        pending: 'danger',
+      };
+      return statusMap[status];
+    },
+    orderNoFilter(str) {
+      return str;
+    },
+  },
+  data() {
+    return {
+      list: null,
+      loading: true,
+      vendorList: null,
+      queryVendor: {
+        paginate: false,
+      },
+      dateMonth: [
+        { value: 1, name: 'January' },
+        { value: 2, name: 'February' },
+        { value: 3, name: 'March' },
+        { value: 4, name: 'April' },
+        { value: 5, name: 'Mei' },
+        { value: 6, name: 'June' },
+        { value: 7, name: 'July' },
+        { value: 8, name: 'August' },
+        { value: 9, name: 'September' },
+        { value: 10, name: 'October' },
+        { value: 11, name: 'November' },
+        { value: 12, name: 'Desember' },
+      ],
+      query: {
+        page: 1,
+        limit: 15,
+        keyword: '',
+        role: '',
+        status: '',
+        vendor: null,
+        start_date: moment().startOf('month').format('YYYY-MM-DD hh:mm'),
+        end_date: moment().endOf('month').format('YYYY-MM-DD hh:mm'),
+      },
+      total: 0,
+    };
+  },
+  created() {
+    this.getList();
+    this.getVendorList();
+  },
+  methods: {
+    handleFilter() {
+      this.query.page = 1;
+      this.getList();
+    },
+    async getVendorList() {
+      const { limit, page } = this.queryVendor;
+      this.loading = true;
+      const { data, meta } = await vendorResource.list(this.queryVendor);
+      this.vendorList = data;
+      this.total = meta.total;
+      this.loading = false;
+    },
+    async getList() {
+      const { limit, page } = this.query;
+      this.loading = true;
+      const { data, meta } = await transactionResource.list(this.query);
+      this.list = data;
+
+      this.list.forEach((element, index) => {
+        element['index'] = (page - 1) * limit + index + 1;
+      });
+      this.total = meta.total;
+      this.loading = false;
+    },
+  },
+};
+</script>
+
 <style rel="stylesheet/scss" lang="scss">
   .filter-container {
     .el-button {
-      font-size: 14px;
+      font-size: 16px;
     }
     .text_normal {
       font-weight: 500 !important;
       color: #707070;
     }
     .vdp-datepicker {
-      width: 140px;
-      margin-right: 16px;
+      width: 100%;
       &.add-separator::after {
         content: "-";
         font-size: 16px;
@@ -129,6 +220,7 @@
         width: 100%;
         height: 35px;
         line-height: 35px;
+        background: #F4F4F4;
         color: #707070;
         font-weight: 500;
         font-size: 16px;
@@ -137,11 +229,11 @@
         line-height: 11px;
         border-radius: 4px;
         border: 1px solid #DCDFE6;
-        padding: 0 30px 0 15px;
+        padding: 0 20px 0 15px;
       }
       .vdp-datepicker__clear-button {
         position: absolute;
-        right: 6px;
+        right: 8px;
         top: 6px;
         font-size: 18px;
         span {
@@ -187,7 +279,7 @@
     }
     .el-select .el-input .el-select__caret.is-reverse {
       transform: rotateZ(0deg);
-      top: -24px;
+      top: -19px;
       left: -26px;
       position: absolute;
     }
@@ -252,97 +344,17 @@
       border: 1px solid #707070;
       padding: 7px 12px;
       margin-top:6px;
-      border-radius:13px;
+      border-radius:19px;
+  }
+  .element-datepicker {
+    width: 135px;
+    margin-right: 30px;
+  }
+  .element-vendor {
+    width: 345px;
+    margin-right: 14px;
+    .el-select {
+      width: 100%;
+    }
   }
 </style>
-<script>
-import Datepicker from 'vuejs-datepicker';
-
-import { fetchList } from '@/api/order';
-import TransactionResource from '@/api/transaction';
-import VendorResource from '@/api/vendor';
-
-const transactionResource = new TransactionResource();
-const vendorResource = new VendorResource();
-
-export default {
-  components: { Datepicker },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        success: 'success',
-        pending: 'danger',
-      };
-      return statusMap[status];
-    },
-    orderNoFilter(str) {
-      return str;
-    },
-  },
-  data() {
-    return {
-      list: null,
-      loading: true,
-      vendorList: null,
-      queryVendor: {
-        paginate: false,
-      },
-      dateMonth: [
-        { value: 1, name: 'January' },
-        { value: 2, name: 'February' },
-        { value: 3, name: 'March' },
-        { value: 4, name: 'April' },
-        { value: 5, name: 'Mei' },
-        { value: 6, name: 'June' },
-        { value: 7, name: 'July' },
-        { value: 8, name: 'August' },
-        { value: 9, name: 'September' },
-        { value: 10, name: 'October' },
-        { value: 11, name: 'November' },
-        { value: 12, name: 'Desember' },
-      ],
-      query: {
-        page: 1,
-        limit: 15,
-        keyword: '',
-        role: '',
-        status: 1,
-        vendor: null,
-        start_date: moment().startOf('month').format('YYYY-MM-DD hh:mm'),
-        end_date: moment().endOf('month').format('YYYY-MM-DD hh:mm'),
-      },
-      total: 0,
-    };
-  },
-  created() {
-    this.getList();
-    this.getVendorList();
-  },
-  methods: {
-    handleFilter() {
-      this.query.page = 1;
-      this.getList();
-    },
-    async getVendorList() {
-      const { limit, page } = this.queryVendor;
-      this.loading = true;
-      const { data, meta } = await vendorResource.list(this.queryVendor);
-      this.vendorList = data;
-      this.total = meta.total;
-      this.loading = false;
-    },
-    async getList() {
-      const { limit, page } = this.query;
-      this.loading = true;
-      const { data, meta } = await transactionResource.list(this.query);
-      this.list = data;
-
-      this.list.forEach((element, index) => {
-        element['index'] = (page - 1) * limit + index + 1;
-      });
-      this.total = meta.total;
-      this.loading = false;
-    },
-  },
-};
-</script>
