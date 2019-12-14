@@ -347,8 +347,8 @@ export default {
     },
     createUser() {
       this.attemptSubmit = true;
-      if(this.nameblurred || this.unitblurred || this.priceblurred) {
-        return true
+      if (this.nameblurred || this.unitblurred || this.priceblurred) {
+        return true;
       }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
@@ -382,8 +382,8 @@ export default {
     },
     onUpdate() {
       this.attemptSubmit = true;
-      if(this.nameblurred || this.unitblurred || this.priceblurred) {
-        return true
+      if (this.nameblurred || this.unitblurred || this.priceblurred) {
+        return true;
       }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {

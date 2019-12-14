@@ -86,7 +86,7 @@
                 <span v-if="venNameBlurred && attemptSubmit" class="error">Vendor name is required!</span>
               </el-form-item>
               <el-form-item label="PIC Name" prop="pic_name">
-                <el-input v-model="newVendor.pic_name_form" placeholder="PIC Name" :class="{'highlight':venPICBlurred && attemptSubmit}"/>
+                <el-input v-model="newVendor.pic_name_form" placeholder="PIC Name" :class="{'highlight':venPICBlurred && attemptSubmit}" />
                 <span v-if="venPICBlurred && attemptSubmit" class="error">PIC Name is required!</span>
               </el-form-item>
               <el-form-item label="Phone" prop="phone">
@@ -127,16 +127,16 @@
                   {{ index + 1 }}
                 </td>
                 <td>
-                  <el-input v-model="newVendor.child[index].name_form" placeholder="Name"/>
+                  <el-input v-model="newVendor.child[index].name_form" placeholder="Name" />
                 </td>
                 <td>
-                  <el-input v-model="newVendor.child[index].pic_name_form" placeholder="PIC Name"/>
+                  <el-input v-model="newVendor.child[index].pic_name_form" placeholder="PIC Name" />
                 </td>
                 <td>
-                  <el-input v-model="newVendor.child[index].phone_form" placeholder="Phone"/>
+                  <el-input v-model="newVendor.child[index].phone_form" placeholder="Phone" />
                 </td>
                 <td>
-                  <el-input v-model="newVendor.child[index].address_form" placeholder="Address"/>
+                  <el-input v-model="newVendor.child[index].address_form" placeholder="Address" />
                 </td>
                 <td>
                   <el-button type="danger" icon="el-icon-close" circle @click="spliceVendorChild(index)" />
@@ -439,8 +439,8 @@ export default {
     },
     createUser() {
       this.attemptSubmit = true;
-      if(this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
-        return true
+      if (this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
+        return true;
       }
       this.$refs['vendorForm'].validate((valid) => {
         if (valid) {
@@ -489,8 +489,8 @@ export default {
       //     this.vendorCreating = false;
       //   });
       this.attemptSubmit = true;
-      if(this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
-        return true
+      if (this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
+        return true;
       }
       this.$refs['vendorForm'].validate((valid) => {
         if (valid) {

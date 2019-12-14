@@ -322,8 +322,8 @@ export default {
     },
     createUnit() {
       this.attemptSubmit = true;
-      if(this.nameblurred || this.unitblurred || this.descblurred) {
-        return true
+      if (this.nameblurred || this.unitblurred || this.descblurred) {
+        return true;
       }
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {
@@ -357,8 +357,8 @@ export default {
     },
     onUpdate() {
       this.attemptSubmit = true;
-      if(this.nameblurred || this.unitblurred || this.descblurred) {
-        return true
+      if (this.nameblurred || this.unitblurred || this.descblurred) {
+        return true;
       }
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {

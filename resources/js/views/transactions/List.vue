@@ -309,7 +309,7 @@ export default {
       },
       errors: [],
       attemptSubmit: false,
-      itemIDform:'',
+      itemIDform: '',
     };
   },
   computed: {
@@ -563,8 +563,8 @@ export default {
     },
     createTransaction() {
       this.attemptSubmit = true;
-      if(this.notransblurred || this.dateblurred || this.vendorblurred || this.itemidblurred) {
-        return true
+      if (this.notransblurred || this.dateblurred || this.vendorblurred || this.itemidblurred) {
+        return true;
       }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
@@ -619,8 +619,8 @@ export default {
     // },
     onUpdate() {
       this.attemptSubmit = true;
-      if(this.notransblurred || this.dateblurred || this.vendorblurred || this.itemidblurred) {
-        return true
+      if (this.notransblurred || this.dateblurred || this.vendorblurred || this.itemidblurred) {
+        return true;
       }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
