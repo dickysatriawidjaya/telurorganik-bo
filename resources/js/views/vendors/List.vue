@@ -81,30 +81,31 @@
         <el-form ref="vendorForm" :rules="rules" :model="newVendor" label-position="left" label-width="150px" style="max-width: 850px;">
           <el-row>
             <el-col :span="12">
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="newVendor.name_form" :class="{highlight:errors.name_form}" />
-            <span v-if="errors.name_form" class="error">{{ errors.name_form[0] }}</span>
-          </el-form-item>
-          <el-form-item label="PIC Name" prop="pic_name">
-            <el-input v-model="newVendor.pic_name_form" />
-          </el-form-item>
-          <el-form-item label="Phone" prop="phone">
-            <el-input v-model="newVendor.phone_form" type="number" :class="{highlight:errors.phone_form}" />
-            <span v-if="errors.phone_form" class="error">{{ errors.phone_form[0] }}</span>
-          </el-form-item>
-          <el-form-item label="Address" prop="address">
-            <el-input type="textarea" rows=3 v-model="newVendor.address_form" :class="{highlight:errors.address_form}" />
-            <span v-if="errors.address_form" class="error">{{ errors.address_form[0] }}</span>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item v-if="vendorId > 0" label="Status" prop="status">
-            <el-select v-model="newVendor.status_form" style="width: 150px" class="filter-item">
-              <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
+              <el-form-item label="Name" prop="name">
+                <el-input v-model="newVendor.name_form" placeholder="Name" :class="{'highlight':venNameBlurred && attemptSubmit}" />
+                <span v-if="venNameBlurred && attemptSubmit" class="error">Vendor name is required!</span>
+              </el-form-item>
+              <el-form-item label="PIC Name" prop="pic_name">
+                <el-input v-model="newVendor.pic_name_form" placeholder="PIC Name" :class="{'highlight':venPICBlurred && attemptSubmit}"/>
+                <span v-if="venPICBlurred && attemptSubmit" class="error">PIC Name is required!</span>
+              </el-form-item>
+              <el-form-item label="Phone" prop="phone">
+                <el-input v-model="newVendor.phone_form" placeholder="Phone Number" type="number" :class="{'highlight':venPhoneBlurred && attemptSubmit}" />
+                <span v-if="venPhoneBlurred && attemptSubmit" class="error">Vendor phone is required!</span>
+              </el-form-item>
+              <el-form-item label="Address" prop="address">
+                <el-input v-model="newVendor.address_form" placeholder="Address" type="textarea" rows="3" :class="{'highlight':venAddressBlurred && attemptSubmit}" />
+                <span v-if="venAddressBlurred && attemptSubmit" class="error">Vendor phone is required!</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item v-if="vendorId > 0" label="Status" prop="status">
+                <el-select v-model="newVendor.status_form" style="width: 150px" class="filter-item">
+                  <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
 
         <div v-show="hasChild" class="div_tabel">
@@ -126,16 +127,16 @@
                   {{ index + 1 }}
                 </td>
                 <td>
-                  <el-input v-model="newVendor.child[index].name_form" />
+                  <el-input v-model="newVendor.child[index].name_form" placeholder="Name"/>
                 </td>
                 <td>
-                  <el-input v-model="newVendor.child[index].pic_name_form" />
+                  <el-input v-model="newVendor.child[index].pic_name_form" placeholder="PIC Name"/>
                 </td>
                 <td>
-                  <el-input v-model="newVendor.child[index].phone_form" />
+                  <el-input v-model="newVendor.child[index].phone_form" placeholder="Phone"/>
                 </td>
                 <td>
-                  <el-input v-model="newVendor.child[index].address_form" />
+                  <el-input v-model="newVendor.child[index].address_form" placeholder="Address"/>
                 </td>
                 <td>
                   <el-button type="danger" icon="el-icon-close" circle @click="spliceVendorChild(index)" />
@@ -236,6 +237,7 @@ export default {
       menuPermissions: [],
       otherPermissions: [],
       errors: [],
+      attemptSubmit: false,
     };
   },
   computed: {
@@ -299,6 +301,18 @@ export default {
     },
     userPermissions() {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
+    },
+    venNameBlurred: function() {
+      return this.newVendor.name_form == '' || this.newVendor.name_form == null;
+    },
+    venPhoneBlurred: function() {
+      return this.newVendor.phone_form == null || this.newVendor.phone_form == '' || this.newVendor.phone_form == 0;
+    },
+    venAddressBlurred: function() {
+      return this.newVendor.address_form == null || this.newVendor.address_form == '';
+    },
+    venPICBlurred: function() {
+      return this.newVendor.pic_name_form == null || this.newVendor.pic_name_form == '';
     },
   },
   created() {
@@ -424,6 +438,10 @@ export default {
       });
     },
     createUser() {
+      this.attemptSubmit = true;
+      if(this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
+        return true
+      }
       this.$refs['vendorForm'].validate((valid) => {
         if (valid) {
           this.vendorCreating = true;
@@ -470,7 +488,10 @@ export default {
       //     console.log(error);
       //     this.vendorCreating = false;
       //   });
-
+      this.attemptSubmit = true;
+      if(this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
+        return true
+      }
       this.$refs['vendorForm'].validate((valid) => {
         if (valid) {
           this.vendorCreating = true;
@@ -616,10 +637,11 @@ export default {
             line-height:11px;
             margin-top: 13px;
           }
-          .el-input--medium .el-input__inner {
+          .el-input--medium .el-input__inner, .el-textarea__inner {
               height: 34px;
               line-height: 34px;
               font-size: 16px;
+              background-color: #F4F4F4;
           }
           .div_tabel{
             .transaksi_tabel_add{
@@ -830,7 +852,7 @@ export default {
     line-height: 11px;
     background-color: transparent;
     border-color: #707070;
-    border-radius: 13px;
+    border-radius: 19px;
     float: right;
     padding: 10px;
   }
@@ -872,7 +894,7 @@ export default {
     opacity: 0.6;
   }
   .highlight {
-    input {
+    input, textarea {
       border-color: red;
     }
   }

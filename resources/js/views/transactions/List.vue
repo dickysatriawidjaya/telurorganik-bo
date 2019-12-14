@@ -114,29 +114,28 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="Transaction No" prop="transaction_no">
-                <el-input v-model="newTransaction.transaction_no_form" :class="{highlight:errors.transaction_no_form}" style="width:200px" @input="forceupdate" />
-                <span v-if="errors.transaction_no_form" class="error">{{ errors.transaction_no_form[0] }}</span>
+                <el-input v-model="newTransaction.transaction_no_form" placeholder="Input your transaction no." :class="{'highlight':notransblurred && attemptSubmit}" style="width:200px" @input="forceupdate" />
+                <span v-if="notransblurred && attemptSubmit" class="error">Transaction Number is required!</span>
               </el-form-item>
               <el-form-item class="custom-datepicker" label="Transaction Date" prop="transaction_date">
-                <datepicker v-model="newTransaction.date_form" :class="{highlight:errors.date_form}" name="uniquename" />
-                <span v-if="errors.date_form" class="error">{{ errors.date_form[0] }}</span>
+                <datepicker v-model="newTransaction.date_form" placeholder="input your transaction date" :class="{'highlight':dateblurred && attemptSubmit}" name="uniquename" />
+                <span v-if="dateblurred && attemptSubmit" class="error">Transaction date is required!</span>
               </el-form-item>
               <el-form-item label="Vendor" prop="vendor">
-                <el-select v-model="newTransaction.vendor_id_form" :class="{highlight:errors.vendor_id_form}" filterable class="filter-item" style="width:200px" @change="forceupdate">
+                <el-select v-model="newTransaction.vendor_id_form" placeholder="select your vendor..." :class="{'highlight':vendorblurred && attemptSubmit}" filterable class="filter-item" style="width:200px" @change="forceupdate">
                   <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
                     <span style="float: left">{{ v.name }}</span>
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
                   </el-option>
                 </el-select>
-                <span v-if="errors.vendor_id_form" class="error">{{ errors.vendor_id_form[0] }}</span>
+                <span v-if="vendorblurred && attemptSubmit" class="error">Vendor is required!</span>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item v-if="transactionId > 0" label="Status" prop="status">
-                <el-select v-model="newTransaction.status_form" :class="{highlight:errors.status_form}" style="width: 150px" class="filter-item" @change="forceupdate">
+                <el-select v-model="newTransaction.status_form" style="width: 150px" class="filter-item" @change="forceupdate">
                   <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
                 </el-select>
-                <span v-if="errors.status_form" class="error">{{ errors.status_form[0] }}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -162,7 +161,7 @@
                     {{ index + 1 }}
                   </td>
                   <td style="width:212px">
-                    <el-select v-model="newTransaction.detail[index].item_id_form" :class="{highlight:errors.total_form}" class="filter-item" required @change="setItemPrice(index)">
+                    <el-select v-model="newTransaction.detail[index].item_id_form" :class="{'highlight':itemidblurred && attemptSubmit}" class="filter-item" required @change="setItemPrice(index)">
                       <el-option v-for="i in itemList" :key="i.id" :label="i.name+'('+i.unit.name+')'" :value="i.id">{{ i.name }} ({{ i.unit.name }})</el-option>
                     </el-select>
                   </td>
@@ -170,7 +169,7 @@
                     {{ newTransaction.detail[index].price_form | toCurrency }}
                   </td>
                   <td style="width:100px">
-                    <el-input v-model="newTransaction.detail[index].quantity_form" min="1" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                    <el-input v-model="newTransaction.detail[index].quantity_form"min="1" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
                   <td v-if="transactionId > 0" style="width:100px">
                     <el-input v-model="newTransaction.detail[index].retur_form" min="0" :max="newTransaction.detail[index].quantity_form" type="number" />
@@ -309,6 +308,8 @@ export default {
 
       },
       errors: [],
+      attemptSubmit: false,
+      itemIDform:'',
     };
   },
   computed: {
@@ -372,6 +373,18 @@ export default {
     },
     userPermissions() {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
+    },
+    notransblurred: function() {
+      return this.newTransaction.transaction_no_form == '' || this.newTransaction.transaction_no_form == null;
+    },
+    dateblurred: function() {
+      return this.newTransaction.date_form == null || this.newTransaction.date_form == '';
+    },
+    vendorblurred: function() {
+      return this.newTransaction.vendor_id_form == null || this.newTransaction.vendor_id_form == '' || this.newTransaction.vendor_id_form == 0;
+    },
+    itemidblurred: function() {
+      return this.itemIDform == null || this.itemIDform == '' || this.itemIDform == 0;
     },
   },
   created() {
@@ -451,9 +464,10 @@ export default {
       this.loading = false;
     },
     setItemPrice(index){
-      const value = this.newTransaction.detail[index].item_id_form;
+      this.itemIDform = this.newTransaction.detail[index].item_id_form;
+      const _this = this;
       const filterItem = this.itemList.filter(function(i){
-        return i.id == value;
+        return i.id == _this.itemIDform;
       });
       this.newTransaction.detail[index].price_form = filterItem[0].price;
       this.countSubtotal(this.newTransaction.detail[index].quantity_form, this.newTransaction.detail[index].discount_form, index);
@@ -548,6 +562,10 @@ export default {
       });
     },
     createTransaction() {
+      this.attemptSubmit = true;
+      if(this.notransblurred || this.dateblurred || this.vendorblurred || this.itemidblurred) {
+        return true
+      }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.transactionCreating = true;
@@ -600,6 +618,10 @@ export default {
     //     });
     // },
     onUpdate() {
+      this.attemptSubmit = true;
+      if(this.notransblurred || this.dateblurred || this.vendorblurred || this.itemidblurred) {
+        return true
+      }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.transactionCreating = true;
@@ -1033,6 +1055,16 @@ div[aria-label="Edit Transaction"] {
       border-radius: 4px;
       border: 1px solid #DCDFE6;
       padding: 0 30px 0 15px;
+      &::placeholder {
+        color: #C3C4CC;
+        opacity: 1; /* Firefox */
+      }
+      &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+       color: #C3C4CC;
+      }
+      &::-ms-input-placeholder { /* Microsoft Edge */
+       color: #C3C4CC;
+      }
     }
   }
   .error {

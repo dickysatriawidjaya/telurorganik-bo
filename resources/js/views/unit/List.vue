@@ -67,16 +67,16 @@
       <div v-loading="vendorCreating" class="form-container">
         <el-form ref="unitForm" :rules="rules" :model="newUnit" label-position="left" label-width="100px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
-            <el-input v-model="newUnit.name_form" :class="{highlight:errors.name_form}" />
-            <span v-if="errors.name_form" class="error">{{ errors.name_form[0] }}</span>
+            <el-input v-model="newUnit.name_form" placeholder="Unit Name" :class="{'highlight':nameblurred && attemptSubmit}" />
+            <span v-if="nameblurred && attemptSubmit" class="error">Name field is required!</span>
           </el-form-item>
           <el-form-item label="Unit Code" prop="unit_code">
-            <el-input v-model="newUnit.unit_code_form" :class="{highlight:errors.unit_code_form}" />
-            <span v-if="errors.unit_code_form" class="error">{{ errors.unit_code_form[0] }}</span>
+            <el-input v-model="newUnit.unit_code_form" placeholder="Unit Code" :class="{'highlight':unitblurred && attemptSubmit}" />
+            <span v-if="unitblurred && attemptSubmit" class="error">Unit code is required!</span>
           </el-form-item>
           <el-form-item label="Description" prop="description">
-            <el-input v-model="newUnit.description_form" type="textarea" :class="{highlight:errors.description_form}" />
-            <span v-if="errors.description_form" class="error">{{ errors.description_form[0] }}</span>
+            <el-input v-model="newUnit.description_form" placeholder="Unit Description" type="textarea" :class="{'highlight':descblurred && attemptSubmit}" />
+            <span v-if="descblurred && attemptSubmit" class="error">Description unit is required!</span>
           </el-form-item>
           <el-form-item v-if="unitId > 0" label="Status" prop="status">
             <el-select v-model="newUnit.status_form" style="width: 150px" class="filter-item">
@@ -164,6 +164,7 @@ export default {
       menuPermissions: [],
       otherPermissions: [],
       errors: [],
+      attemptSubmit: false,
     };
   },
   computed: {
@@ -227,6 +228,15 @@ export default {
     },
     userPermissions() {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
+    },
+    nameblurred: function() {
+      return this.newUnit.name_form === '';
+    },
+    unitblurred: function() {
+      return this.newUnit.unit_code_form == null || this.newUnit.unit_code_form == '';
+    },
+    descblurred: function() {
+      return this.newUnit.description_form == null || this.newUnit.description_form == '';
     },
   },
   created() {
@@ -311,6 +321,10 @@ export default {
       });
     },
     createUnit() {
+      this.attemptSubmit = true;
+      if(this.nameblurred || this.unitblurred || this.descblurred) {
+        return true
+      }
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {
           this.vendorCreating = true;
@@ -342,22 +356,10 @@ export default {
       });
     },
     onUpdate() {
-      // this.vendorCreating = true;
-      // unitResource
-      //   .update(this.unitId, this.newUnit)
-      //   .then(response => {
-      //     this.vendorCreating = false;
-      //     this.$message({
-      //       message: 'Vendor information has been updated successfully',
-      //       type: 'success',
-      //       duration: 5 * 1000,
-      //     });
-      //   })
-      //   .catch(error => {
-      //     console.log(error);
-      //     this.vendorCreating = false;
-      //   });
-
+      this.attemptSubmit = true;
+      if(this.nameblurred || this.unitblurred || this.descblurred) {
+        return true
+      }
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {
           this.vendorCreating = true;
@@ -487,7 +489,7 @@ export default {
             line-height:11px;
             margin-top: 13px;
           }
-          .el-input--medium .el-input__inner {
+          .el-input--medium .el-input__inner,.el-textarea__inner {
               height: 34px;
               line-height: 34px;
               font-size: 16px;
@@ -701,7 +703,7 @@ export default {
     line-height: 11px;
     background-color: transparent;
     border-color: #707070;
-    border-radius: 13px;
+    border-radius: 19px;
     float: right;
     padding: 10px;
   }

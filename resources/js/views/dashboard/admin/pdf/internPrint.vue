@@ -3,16 +3,16 @@
     <div>
       vendor : <span v-if="query.vendor">{{ vendor.name }}</span>
       <span v-else> All </span>
-      
+
       <div style="float:right;">
-      <span v-if="query.start_date"> {{ query.start_date | moment("DD/MM/YYYY") }} </span>
-      <span v-else> All </span>
-      -
-      <span v-if="query.end_date"> {{ query.end_date | moment("DD/MM/YYYY") }} </span>
-      <span v-else> All </span>
-      (<span v-if="query.status == 1"> Paid </span>
-      <span v-else-if="query.status == -1"> Unpaid </span>
-      <span v-else> All </span>)
+        <span v-if="query.start_date"> {{ query.start_date | moment("DD/MM/YYYY") }} </span>
+        <span v-else> All </span>
+        -
+        <span v-if="query.end_date"> {{ query.end_date | moment("DD/MM/YYYY") }} </span>
+        <span v-else> All </span>
+        (<span v-if="query.status == 1"> Paid </span>
+        <span v-else-if="query.status == -1"> Unpaid </span>
+        <span v-else> All </span>)
       </div>
     </div>
     <el-table v-loading="loading" :data="list" border fit style="width: 100%">

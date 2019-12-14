@@ -67,18 +67,18 @@
       <div v-loading="itemCreating" class="form-container">
         <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="100px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
-            <el-input v-model="newItem.name_form" :class="{highlight:errors.name_form}" />
-            <span v-if="errors.name_form" class="error">{{ errors.name_form[0] }}</span>
+            <el-input v-model="newItem.name_form" placeholder="name" :class="{'highlight':nameblurred && attemptSubmit}" />
+            <span v-if="nameblurred && attemptSubmit" class="error">Name form is required!</span>
           </el-form-item>
           <el-form-item label="Unit" prop="unit">
-            <el-select v-model="newItem.unit_id_form" :class="{highlight:errors.unit_id_form}" style="width: 100%" class="filter-item" @change="forceUpdate">
+            <el-select v-model="newItem.unit_id_form" placeholder="select unit" :class="{'highlight':unitblurred && attemptSubmit}" style="width: 100%" class="filter-item" @change="forceUpdate">
               <el-option v-for="u in unitList" :key="u.id" :label="u.name" :value="u.id">{{ u.name }}</el-option>
             </el-select>
-            <span v-if="errors.unit_id_form" class="error">{{ errors.unit_id_form[0] }}</span>
+            <span v-if="unitblurred && attemptSubmit" class="error">Unit ID must be selected!</span>
           </el-form-item>
           <el-form-item label="Price" prop="price">
-            <el-input v-model="newItem.price_form" :class="{highlight:errors.price_form}" type="number" @input="forceUpdate" />
-            <span v-if="errors.price_form" class="error">{{ errors.price_form[0] }}</span>
+            <el-input v-model="newItem.price_form" placeholder="price" :class="{'highlight':priceblurred && attemptSubmit}" type="number" @input="forceUpdate" />
+            <span v-if="priceblurred && attemptSubmit" class="error">Price is required!</span>
           </el-form-item>
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
             <el-select v-model="newItem.status_form" style="width: 100%" class="filter-item">
@@ -173,6 +173,7 @@ export default {
       menuPermissions: [],
       otherPermissions: [],
       errors: [],
+      attemptSubmit: false,
     };
   },
   computed: {
@@ -237,6 +238,15 @@ export default {
     },
     userPermissions() {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
+    },
+    nameblurred: function() {
+      return this.newItem.name_form === '';
+    },
+    priceblurred: function() {
+      return this.newItem.price_form == 0 || this.newItem.price_form == null || this.newItem.price_form == '';
+    },
+    unitblurred: function() {
+      return this.newItem.unit_id_form == null || this.newItem.unit_id_form == '' || this.newItem.unit_id_form == 0;
     },
   },
   created() {
@@ -336,6 +346,10 @@ export default {
       });
     },
     createUser() {
+      this.attemptSubmit = true;
+      if(this.nameblurred || this.unitblurred || this.priceblurred) {
+        return true
+      }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.itemCreating = true;
@@ -367,22 +381,10 @@ export default {
       });
     },
     onUpdate() {
-      // this.itemCreating = true;
-      // itemResource
-      //   .update(this.itemId, this.newItem)
-      //   .then(response => {
-      //     this.itemCreating = false;
-      //     this.$message({
-      //       message: 'Vendor information has been updated successfully',
-      //       type: 'success',
-      //       duration: 5 * 1000,
-      //     });
-      //   })
-      //   .catch(error => {
-      //     console.log(error);
-      //     this.itemCreating = false;
-      //   });
-
+      this.attemptSubmit = true;
+      if(this.nameblurred || this.unitblurred || this.priceblurred) {
+        return true
+      }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.itemCreating = true;
