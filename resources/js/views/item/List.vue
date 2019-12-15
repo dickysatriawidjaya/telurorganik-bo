@@ -13,22 +13,22 @@
           </h3>
         </el-col>
       </el-row>
-        <el-row>
-          <el-col :span="9">
-            <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="padding-right:26px;" class="filter-item tabel_filter" @input="handleFilter" />
-          </el-col>
-          <el-col :span="3">
-            <el-select v-model="query.status" :placeholder="$t('table.status')" class="filter-item tabel_filter" @change="handleFilter">
-              <el-option key="1" label="Active" value="1" />
-              <el-option key="-1" label="Deleted" value="-1" />
-            </el-select>
-          </el-col>
-          <el-col :span="12">
-            <el-button class="filter-item" style="margin-left: 10px;" type="add" icon="el-icon-plus" @click="handleCreate">
-              {{ $t('table.add') }} Item
-            </el-button>
-          </el-col>
-        </el-row>
+      <el-row>
+        <el-col :span="9">
+          <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="padding-right:26px;" class="filter-item tabel_filter" @input="handleFilter" />
+        </el-col>
+        <el-col :span="3">
+          <el-select v-model="query.status" :placeholder="$t('table.status')" class="filter-item tabel_filter" @change="handleFilter">
+            <el-option key="1" label="Active" value="1" />
+            <el-option key="-1" label="Deleted" value="-1" />
+          </el-select>
+        </el-col>
+        <el-col :span="12">
+          <el-button class="filter-item" style="margin-left: 10px;" type="add" icon="el-icon-plus" @click="handleCreate">
+            {{ $t('table.add') }} Item
+          </el-button>
+        </el-col>
+      </el-row>
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">

@@ -165,14 +165,14 @@ export default {
       total: 0,
     };
   },
+  computed: {
+    test() {
+      return console.log('test');
+    },
+  },
   created() {
     this.getList();
     this.getVendorList();
-  },
-  computed: {
-    test() {
-      return console.log("test");
-    }
   },
   methods: {
     handleFilter() {

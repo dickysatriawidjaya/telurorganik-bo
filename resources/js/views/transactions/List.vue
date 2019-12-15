@@ -64,7 +64,7 @@
       <el-table-column align="left" label="Detail Transaction" prop="transaction_detail">
         <template slot-scope="scope">
           <ul class="detail_list">
-            <li v-for="value, in scope.row.detail_transaction" :key="value.id">{{value.quantity}} pcs, {{value.item.name}}</li>
+            <li v-for="value, in scope.row.detail_transaction" :key="value.id">{{ value.quantity }} pcs, {{ value.item.name }}</li>
           </ul>
         </template>
       </el-table-column>
@@ -483,7 +483,7 @@ export default {
       } else if (quantity) {
         result = this.newTransaction.detail[index].price_form * quantity;
       } else {
-        result = 0
+        result = 0;
       }
       this.newTransaction.detail[index].subtotal_form = result;
 
