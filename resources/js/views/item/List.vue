@@ -1,14 +1,34 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;margin-right:16px;" class="filter-item tabel_filter" @input="handleFilter" />
-      <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item tabel_filter" @change="handleFilter">
-        <el-option key="1" label="Active" value="1" />
-        <el-option key="-1" label="Deleted" value="-1" />
-      </el-select>
-      <el-button class="filter-item" style="margin-left: 10px;" type="add" icon="el-icon-plus" @click="handleCreate">
-        {{ $t('table.add') }} Item
-      </el-button>
+      <el-row>
+        <el-col :span="9">
+          <h3 class="text_normal">
+            Keyword
+          </h3>
+        </el-col>
+        <el-col :span="3">
+          <h3 class="text_normal">
+            Status
+          </h3>
+        </el-col>
+      </el-row>
+        <el-row>
+          <el-col :span="9">
+            <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="padding-right:26px;" class="filter-item tabel_filter" @input="handleFilter" />
+          </el-col>
+          <el-col :span="3">
+            <el-select v-model="query.status" :placeholder="$t('table.status')" class="filter-item tabel_filter" @change="handleFilter">
+              <el-option key="1" label="Active" value="1" />
+              <el-option key="-1" label="Deleted" value="-1" />
+            </el-select>
+          </el-col>
+          <el-col :span="12">
+            <el-button class="filter-item" style="margin-left: 10px;" type="add" icon="el-icon-plus" @click="handleCreate">
+              {{ $t('table.add') }} Item
+            </el-button>
+          </el-col>
+        </el-row>
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
@@ -515,6 +535,7 @@ export default {
             margin-top: 13px;
           }
           .el-input--medium .el-input__inner {
+            color:#707070;
               height: 34px;
               line-height: 34px;
               font-size: 16px;
@@ -635,6 +656,16 @@ export default {
     border: none;
   }
   .filter-container{
+    .text_normal{
+      font-weight: 500 !important;
+      color: #707070;
+      font-size: 16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 500;
+      line-height: 29px;
+      padding: 0;
+      margin: 0;
+    }
     .tabel_filter{
       color:#707070;
       font-size:16px;
@@ -642,6 +673,7 @@ export default {
       font-weight:300;
       line-height:16px;
       .el-input__inner {
+        color:#707070;
         height: 36px ;
         line-height: 36px;
         font-size:16px;
@@ -649,6 +681,7 @@ export default {
       }
       .el-input--medium{
         .el-input__inner {
+          color:#707070;
           height: 36px ;
           line-height: 36px;
           font-size:16px;
@@ -674,6 +707,7 @@ export default {
             margin: 3px;
         }
         .el-input__inner {
+          color:#707070;
           height: 36px;
           line-height: 36px;
           font-size:16px;

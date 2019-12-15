@@ -12,7 +12,7 @@
             Vendor
           </h3>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="3">
           <h3 class="text_normal">
             Status
           </h3>
@@ -20,23 +20,23 @@
       </el-row>
       <el-row>
         <el-col :span="6">
-          <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 230px;" class="filter-item tabel_filter" @input="handleFilter" />
+          <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="padding-right:26px;" class="filter-item tabel_filter" @input="handleFilter" />
         </el-col>
         <el-col :span="6">
-          <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 230px" class="filter-item tabel_filter" @change="handleFilter">
+          <el-select v-model="query.vendor" placeholder="Vendor" clearable style="padding-right:26px;" class="filter-item tabel_filter" @change="handleFilter">
             <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
               <span style="float: left">{{ v.name }}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
             </el-option>
           </el-select>
         </el-col>
-        <el-col :span="6">
-          <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 100px" class="filter-item tabel_filter" @change="handleFilter">
+        <el-col :span="3">
+          <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="padding-right:26px;" class="filter-item tabel_filter" @change="handleFilter">
             <el-option key="1" label="Paid" value="1" />
             <el-option key="-1" label="Unpaid" value="-1" />
           </el-select>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="9">
           <el-button class="filter-item is-right" type="add" icon="el-icon-plus" @click="handleCreate">
             {{ $t('table.add') }} Transaction
           </el-button>
@@ -45,14 +45,14 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="left" label="No." prop="index" width="60">
+      <el-table-column align="left" label="No." prop="index" width="50">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" sortable width="120">
+      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" sortable width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MM-YYYY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD-MM-YY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor" sortable>
@@ -61,22 +61,24 @@
           <span v-else>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Trans.ID" prop="transaction_no" sortable width="140">
+      <el-table-column align="left" label="Detail Transaction" prop="transaction_detail">
+        <template slot-scope="scope">
+          <ul class="detail_list">
+            <li v-for="value, in scope.row.detail_transaction" :key="value.id">{{value.quantity}} pcs, {{value.item.name}}</li>
+          </ul>
+        </template>
+      </el-table-column>
+      <el-table-column align="left" label="Trans.ID" prop="transaction_no" sortable width="110">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Total" prop="total" sortable>
+      <el-table-column align="left" label="Total" prop="total" width="140" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column align="center" label="detail" prop="transaction_detail" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.transaction_detail }}</span>
-        </template>
-      </el-table-column> -->
-      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="100">
+      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="80">
         <template slot-scope="scope">
           <span v-if="scope.row.status == 1" style="color:#46A2FD">
             Paid
@@ -165,16 +167,17 @@
                       <el-option v-for="i in itemList" :key="i.id" :label="i.name+'('+i.unit.name+')'" :value="i.id">{{ i.name }} ({{ i.unit.name }})</el-option>
                     </el-select>
                   </td>
-                  <td style="width:107px">
-                    {{ newTransaction.detail[index].price_form | toCurrency }}
+                  <td style="width:140px">
+                    <span v-if="newTransaction.detail[index].price_form">{{ newTransaction.detail[index].price_form | toCurrency }} / pcs</span>
+                    <span v-else>0 / pcs</span>
                   </td>
                   <td style="width:100px">
-                    <el-input v-model="newTransaction.detail[index].quantity_form"min="1" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                    <el-input v-model="newTransaction.detail[index].quantity_form" min="1" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
-                  <td v-if="transactionId > 0" style="width:100px">
+                  <td v-if="transactionId > 0" style="width:80px">
                     <el-input v-model="newTransaction.detail[index].retur_form" min="0" :max="newTransaction.detail[index].quantity_form" type="number" />
                   </td>
-                  <td style="width:106px">
+                  <td style="width:80px">
                     <el-input v-model="newTransaction.detail[index].discount_form" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
                   <td style="width:116px">{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
@@ -190,7 +193,8 @@
 
           <el-form-item class="total_price" label="Total Price" prop="total" style="float:right">
             <el-input v-show="false" v-model="newTransaction.total_form" class="total_price" />
-            {{ newTransaction.total_form | toCurrency }}
+            <span v-if="newTransaction.total_form">{{ newTransaction.total_form | toCurrency }}</span>
+            <span v-else>Rp -</span>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -476,8 +480,10 @@ export default {
       let result = 0;
       if (discount) {
         result = (quantity * this.newTransaction.detail[index].price_form) - (discount / 100 * quantity * this.newTransaction.detail[index].price_form);
-      } else {
+      } else if (quantity) {
         result = this.newTransaction.detail[index].price_form * quantity;
+      } else {
+        result = 0
       }
       this.newTransaction.detail[index].subtotal_form = result;
 
@@ -582,10 +588,7 @@ export default {
               this.handleFilter();
             })
             .catch(error => {
-              if (error.response.status == 403) {
-                this.errors = error.response.data.errors;
-                console.log(this.errors);
-              }
+              console.log(error);
             })
             .finally(() => {
               this.transactionCreating = false;
@@ -638,10 +641,7 @@ export default {
               this.handleFilter();
             })
             .catch(error => {
-              if (error.response.status == 403) {
-                this.errors = error.response.data.errors;
-                console.log(this.errors);
-              }
+              console.log(error);
             })
             .finally(() => {
               this.transactionCreating = false;
@@ -737,7 +737,7 @@ div[aria-label="Edit Transaction"] {
     }
   }
 }
-.el-dialog{
+.el-dialog[aria-label="Create New Transaction"]{
   width:850px;
   border-radius:10px;
   .el-dialog__header{
@@ -772,6 +772,7 @@ div[aria-label="Edit Transaction"] {
         margin-top: 13px;
       }
       .el-input--medium .el-input__inner, input {
+        color:#707070;
           height: 34px;
           line-height: 34px;
           font-size:16px;
@@ -896,7 +897,6 @@ div[aria-label="Edit Transaction"] {
 .app-container {
   flex: 1;
   justify-content: space-between;
-  width:1030px;
   font-size:16px;
   padding: 19px;
   margin:20px;
@@ -914,6 +914,7 @@ div[aria-label="Edit Transaction"] {
       font-weight:300;
       line-height:16px;
       .el-input__inner {
+        color:#707070;
         height: 36px ;
         line-height: 36px;
         font-size:16px;
@@ -921,6 +922,7 @@ div[aria-label="Edit Transaction"] {
       }
       .el-input--medium{
         .el-input__inner {
+          color:#707070;
           height: 36px ;
           line-height: 36px;
           font-size:16px;
@@ -937,6 +939,16 @@ div[aria-label="Edit Transaction"] {
         padding: 0;
         margin: 0;
       }
+    }
+    .text_normal{
+      font-weight: 500 !important;
+      color: #707070;
+      font-size: 16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 500;
+      line-height: 29px;
+      padding: 0;
+      margin: 0;
     }
     .el-select.tabel_filter{
       color:#707070;
@@ -956,6 +968,7 @@ div[aria-label="Edit Transaction"] {
             margin: 3px;
         }
         .el-input__inner {
+          color:#707070;
           height: 36px;
           line-height: 36px;
           font-size:16px;
@@ -1065,6 +1078,13 @@ div[aria-label="Edit Transaction"] {
       &::-ms-input-placeholder { /* Microsoft Edge */
        color: #C3C4CC;
       }
+    }
+  }
+  .detail_list {
+    padding-left: 18px;
+    li {
+      text-align: left;
+      list-style: '-  ';
     }
   }
   .error {

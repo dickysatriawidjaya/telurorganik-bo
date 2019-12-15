@@ -37,7 +37,7 @@
           <h3 class="text_normal">
             Status :
           </h3>
-          <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 100px" class="filter-item tabel_filter" @change="handleFilter">
+          <el-select v-model="test" :placeholder="$t('table.status')" clearable style="width: 100px" class="filter-item tabel_filter" @change="handleFilter">
             <el-option key="1" label="Paid" class="paid" style="color:#46A2FD;font-size:16px;font-weight:500;" value="1" />
             <el-option key="-1" label="Unpaid" class="unpaid" style="color:#FD4646;font-size:16px;font-weight:500;" value="-1" />
           </el-select>
@@ -64,9 +64,9 @@
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" width="120" sortable>
+      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" width="100" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MM-YYYY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD-MM-YY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor" sortable>
@@ -80,7 +80,7 @@
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Total" prop="total" sortable>
+      <el-table-column align="left" label="Total" prop="total" width="200" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
@@ -168,6 +168,11 @@ export default {
   created() {
     this.getList();
     this.getVendorList();
+  },
+  computed: {
+    test() {
+      return console.log("test");
+    }
   },
   methods: {
     handleFilter() {
