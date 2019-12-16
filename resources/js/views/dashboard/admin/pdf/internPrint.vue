@@ -16,37 +16,27 @@
       </div>
     </div>
     <el-table v-loading="loading" :data="list" border fit style="width: 100%">
-      <el-table-column align="center" label="No." prop="index" width="80">
+      <el-table-column align="left" label="No." prop="index" width="43">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="Date" width="110" prop="created_at">
+      <el-table-column class-name="status-col" align="left" label="Date" width="110" prop="created_at">
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MM-YYYY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD-MM-YY") }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Vendor" prop="vendor">
+      <el-table-column align="left" label="Vendor" prop="vendor">
         <template slot-scope="scope">
           <span>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Trans.ID" prop="transaction_no">
+      <el-table-column align="left" label="Trans.ID" prop="transaction_no">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="right" label="Total" prop="total">
-        <template slot-scope="scope">
-          <span>{{ scope.row.total | toCurrency }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Retur" prop="retur">
-        <template slot-scope="scope">
-          <span>{{ scope.row.retur }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" prop="status">
+      <el-table-column align="left" class-name="status-col" label="Status" width="110" prop="status">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">
             Paid
@@ -56,8 +46,18 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column align="left" label="Retur" prop="retur">
+        <template slot-scope="scope">
+          <span>{{ scope.row.retur }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="left" label="Total" prop="total" width="150">
+        <template slot-scope="scope">
+          <span>{{ scope.row.total | toCurrency }}</span>
+        </template>
+      </el-table-column>
     </el-table>
-    <div style="float:right;">Grand Total : {{ grand_total | toCurrency }}</div>
+    <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 37px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
   </div>
 </template>
 
@@ -173,7 +173,7 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
   .print{
     width:793px;
-
+    color: #707070;
     .el-table{
         color: #707070;
         font-size:13px;
@@ -181,7 +181,7 @@ export default {
         font-weight: 400;
         line-height:11px;
         padding:0px !important;
-        border: 0.5px solid #707070;
+        // border: 0.5px solid #707070;
         .el-tag {
             padding: 0 5px;
             line-height: 30px;

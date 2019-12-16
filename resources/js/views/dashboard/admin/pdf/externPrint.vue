@@ -1,7 +1,7 @@
 <template>
   <div class="print">
     <div>
-      vendor : <span v-if="query.vendor">{{ vendor.name }}</span>
+      Vendor : <span v-if="query.vendor">{{ vendor.name }}</span>
       <span v-else> All </span>
 
       <div style="float:right;">
@@ -53,27 +53,43 @@
     </table> -->
 
     <el-table v-loading="loading" :data="list" border fit style="width: 100%">
-      <el-table-column align="center" label="No." prop="index" width="80">
+      <el-table-column align="left" label="No." prop="index" width="43">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="Date" width="110" prop="created_at">
+      <el-table-column align="left" class-name="status-col" label="Date" width="90" prop="created_at">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_date | moment("DD-MM-YYYY") }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Vendor" prop="vendor">
+      <el-table-column align="left" label="Vendor" prop="vendor">
         <template slot-scope="scope">
           <span>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Trans.ID" prop="transaction_no">
+      <el-table-column align="left" label="Trans.ID" width="100" prop="transaction_no">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Item" prop="Item">
+      <el-table-column align="left" label="Item" prop="Item" width="300">
+        <template slot-scope="scope">
+          <tr>
+            <th width="30">No</th>
+            <th width="95">Barang</th>
+            <th width="50">Unit</th>
+            <th width="75">Discount</th>
+            <th width="80">Sub Total</th>
+          </tr>
+          <tr v-for="(d,index_detail) in scope.row.detail_transaction">
+            <td>{{ index_detail + 1 }}</td>
+            <td>{{ d.item.name }}</td>
+            <td>{{ d.item.unit.name }}</td>
+            <td>{{ d.discount }}</td>
+            <td>{{ d.subtotal | toCurrency }}</td>
+          </tr>
+        </template>
         <!-- <table border="1" width="100%">
            <td width="100%">
              <tr v-for="(d,index_detail) in t.detail_transaction" v-if="t.detail_transaction.length > 0" width="100%">
@@ -87,13 +103,13 @@
            </td width="100%">
          </table> -->
       </el-table-column>
-      <el-table-column align="right" label="Total" prop="total">
+      <el-table-column align="left" label="Total" width="150" prop="total">
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
     </el-table>
-    <div style="float:right;">Grand Total : {{ grand_total | toCurrency }}</div>
+    <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 37px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
   </div>
 </template>
 
@@ -208,15 +224,15 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
   .print{
     width:793px;
-
+    color: #707070;
     .el-table{
-        color: #707070;
+        color: #707070 !important;
         font-size:13px;
         font-family: 'Ubuntu', sans-serif;
         font-weight: 400;
         line-height:11px;
         padding:0px !important;
-        border: 0.5px solid #707070;
+        // border: 0.5px solid #707070;
         .el-tag {
             padding: 0 5px;
             line-height: 30px;
@@ -278,6 +294,23 @@ export default {
   font-weight: 600;
   color: #333;
   overflow: hidden;
+}
+
+.el-table_1_column_5 {
+  padding: 0 !important;
+  .cell {
+    padding: 0;
+    tr {
+      th {
+        padding: 0;
+        background: #D3D3D3;
+        color: #fff;
+      }
+      th,td {
+        border-right: none !important;
+      }
+    }
+  }
 }
 
 .node-article-content {

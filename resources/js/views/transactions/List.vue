@@ -737,7 +737,8 @@ div[aria-label="Edit Transaction"] {
     }
   }
 }
-.el-dialog[aria-label="Create New Transaction"]{
+.el-dialog[aria-label="Create New Transaction"],
+.el-dialog[aria-label="Edit Transaction"]{
   width:850px;
   border-radius:10px;
   .el-dialog__header{

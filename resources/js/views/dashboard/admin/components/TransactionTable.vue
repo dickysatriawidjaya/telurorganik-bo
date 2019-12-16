@@ -345,9 +345,9 @@ export default {
       font-family: 'Ubuntu', sans-serif;
       font-weight: 500;
       line-height:11px;
-      width:160px;
+      width:150px;
       border: 1px solid #707070;
-      padding: 7px 12px;
+      padding: 9px 11px;
       margin-top:6px;
       border-radius:19px;
   }

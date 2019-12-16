@@ -99,7 +99,7 @@
             <span v-if="descblurred && attemptSubmit" class="error">Description unit is required!</span>
           </el-form-item>
           <el-form-item v-if="unitId > 0" label="Status" prop="status">
-            <el-select v-model="newUnit.status_form" style="width: 150px" class="filter-item">
+            <el-select v-model="newUnit.status_form" class="filter-item">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
           </el-form-item>
