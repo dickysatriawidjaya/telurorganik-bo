@@ -168,7 +168,7 @@
           <el-button type="addtable" @click="addNewVendorForm">Add Child Vendor</el-button>
         </div>
         <div slot="footer" class="dialog-footer">
-          <el-button type="canceltransaksi" @click="dialogFormVisible = false">
+          <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false">
             {{ $t('table.cancel') }}
           </el-button>
           <el-button v-if="vendorId <= 0" type="addtransaksi" @click="createUser()">
@@ -476,6 +476,7 @@ export default {
               this.resetnewVendor();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
             })
             .catch(error => {
               if (error.response.status == 403) {
@@ -508,7 +509,6 @@ export default {
       //     console.log(error);
       //     this.vendorCreating = false;
       //   });
-      this.attemptSubmit = true;
       if (this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
         return true;
       }
@@ -526,6 +526,7 @@ export default {
               this.resetnewVendor();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
             })
             .catch(error => {
               if (error.response.status == 403) {

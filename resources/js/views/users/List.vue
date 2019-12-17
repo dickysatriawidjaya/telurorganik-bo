@@ -124,7 +124,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button type="canceltransaksi" @click="dialogFormVisible = false">
+          <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false">
             {{ $t('table.cancel') }}
           </el-button>
           <el-button type="addtransaksi" @click="createUser()">
@@ -382,6 +382,7 @@ export default {
               this.resetNewUser();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
             })
             .catch(error => {
               console.log(error);

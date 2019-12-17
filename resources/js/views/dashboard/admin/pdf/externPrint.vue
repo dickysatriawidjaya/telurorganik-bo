@@ -53,14 +53,14 @@
     </table> -->
 
     <el-table v-loading="loading" :data="list" border fit style="width: 100%">
-      <el-table-column align="left" label="No." prop="index" width="43">
+      <el-table-column align="center" label="No." prop="index" width="43">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" class-name="status-col" label="Date" width="90" prop="created_at">
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MM-YYYY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD-MM-YY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor">
@@ -73,19 +73,21 @@
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Item" prop="Item" width="300">
+      <el-table-column align="left" label="Item" prop="Item" width="320">
         <template slot-scope="scope">
           <tr>
             <th width="30">No</th>
-            <th width="95">Barang</th>
+            <th width="85">Barang</th>
             <th width="50">Unit</th>
-            <th width="75">Discount</th>
-            <th width="80">Sub Total</th>
+            <th width="30">Qty</th>
+            <th width="65">Discount</th>
+            <th width="90">Sub Total</th>
           </tr>
           <tr v-for="(d,index_detail) in scope.row.detail_transaction">
             <td>{{ index_detail + 1 }}</td>
             <td>{{ d.item.name }}</td>
             <td>{{ d.item.unit.name }}</td>
+            <td>{{ d.quantity }}</td>
             <td>{{ d.discount }}</td>
             <td>{{ d.subtotal | toCurrency }}</td>
           </tr>
@@ -103,13 +105,13 @@
            </td width="100%">
          </table> -->
       </el-table-column>
-      <el-table-column align="left" label="Total" width="150" prop="total">
+      <el-table-column align="right" label="Total" width="150" prop="total">
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
     </el-table>
-    <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 37px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
+    <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 9px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
   </div>
 </template>
 

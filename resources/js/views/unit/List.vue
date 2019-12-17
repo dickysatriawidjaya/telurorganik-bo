@@ -87,16 +87,13 @@
       <div v-loading="vendorCreating" class="form-container">
         <el-form ref="unitForm" :rules="rules" :model="newUnit" label-position="left" label-width="100px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name">
-            <el-input v-model="newUnit.name_form" placeholder="Unit Name" :class="{'highlight':nameblurred && attemptSubmit}" />
-            <span v-if="nameblurred && attemptSubmit" class="error">Name field is required!</span>
+            <el-input v-model="newUnit.name_form" placeholder="Unit Name" />
           </el-form-item>
           <el-form-item label="Unit Code" prop="unit_code">
-            <el-input v-model="newUnit.unit_code_form" placeholder="Unit Code" :class="{'highlight':unitblurred && attemptSubmit}" />
-            <span v-if="unitblurred && attemptSubmit" class="error">Unit code is required!</span>
+            <el-input v-model="newUnit.unit_code_form" placeholder="Unit Code" />
           </el-form-item>
           <el-form-item label="Description" prop="description">
-            <el-input v-model="newUnit.description_form" placeholder="Unit Description" type="textarea" :class="{'highlight':descblurred && attemptSubmit}" />
-            <span v-if="descblurred && attemptSubmit" class="error">Description unit is required!</span>
+            <el-input v-model="newUnit.description_form" placeholder="Unit Description" type="textarea" />
           </el-form-item>
           <el-form-item v-if="unitId > 0" label="Status" prop="status">
             <el-select v-model="newUnit.status_form" class="filter-item">
@@ -105,7 +102,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button type="canceltransaksi" @click="dialogFormVisible = false">
+          <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false">
             {{ $t('table.cancel') }}
           </el-button>
           <el-button v-if="unitId <= 0" type="addtransaksi" @click="createUnit()">
@@ -169,11 +166,9 @@ export default {
         rolePermissions: [],
       },
       rules: {
-        name_form: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        unit_code_form: [
-          { required: true, message: 'Unit Code is required', trigger: 'blur' },
-        ],
-
+        name: [{ required: true, message: 'Name is required', trigger: 'change' }],
+        unit_code: [{ required: true, message: 'Unit Code is required', trigger: 'change' }],
+        description_form: [{ required: true, message: 'Description is required', trigger: 'change' }],
       },
       permissionProps: {
         children: 'children',
@@ -184,7 +179,6 @@ export default {
       menuPermissions: [],
       otherPermissions: [],
       errors: [],
-      attemptSubmit: false,
     };
   },
   computed: {
@@ -250,7 +244,7 @@ export default {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
     },
     nameblurred: function() {
-      return this.newUnit.name_form === '';
+      return this.newUnit.name_form == '';
     },
     unitblurred: function() {
       return this.newUnit.unit_code_form == null || this.newUnit.unit_code_form == '';
@@ -341,10 +335,6 @@ export default {
       });
     },
     createUnit() {
-      this.attemptSubmit = true;
-      if (this.nameblurred || this.unitblurred || this.descblurred) {
-        return true;
-      }
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {
           this.vendorCreating = true;
@@ -359,6 +349,7 @@ export default {
               this.resetnewUnit();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
             })
             .catch(error => {
               if (error.response.status == 403) {
@@ -376,10 +367,6 @@ export default {
       });
     },
     onUpdate() {
-      this.attemptSubmit = true;
-      if (this.nameblurred || this.unitblurred || this.descblurred) {
-        return true;
-      }
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {
           this.vendorCreating = true;
@@ -394,6 +381,7 @@ export default {
               this.resetnewUnit();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
             })
             .catch(error => {
               if (error.response.status == 403) {

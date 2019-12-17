@@ -37,9 +37,9 @@
           <h3 class="text_normal">
             Status :
           </h3>
-          <el-select v-model="test" :placeholder="$t('table.status')" clearable style="width: 100px" class="filter-item tabel_filter" @change="handleFilter">
-            <el-option key="1" label="Paid" class="paid" style="color:#46A2FD;font-size:16px;font-weight:500;" value="1" />
-            <el-option key="-1" label="Unpaid" class="unpaid" style="color:#FD4646;font-size:16px;font-weight:500;" value="-1" />
+          <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 100px" class="filter-item tabel_filter" @change="handleFilter">
+            <el-option key="1" label="Paid" class="paid" style="font-size:16px;font-weight:500;" value="1" />
+            <el-option key="-1" label="Unpaid" class="unpaid" style="font-size:16px;font-weight:500;" value="-1" />
           </el-select>
         </el-col>
       </el-row>
@@ -105,103 +105,6 @@
     </el-table>
   </div>
 </template>
-
-<script>
-import Datepicker from 'vuejs-datepicker';
-
-import { fetchList } from '@/api/order';
-import TransactionResource from '@/api/transaction';
-import VendorResource from '@/api/vendor';
-
-const transactionResource = new TransactionResource();
-const vendorResource = new VendorResource();
-
-export default {
-  components: { Datepicker },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        success: 'success',
-        pending: 'danger',
-      };
-      return statusMap[status];
-    },
-    orderNoFilter(str) {
-      return str;
-    },
-  },
-  data() {
-    return {
-      list: null,
-      loading: true,
-      vendorList: null,
-      queryVendor: {
-        paginate: false,
-      },
-      dateMonth: [
-        { value: 1, name: 'January' },
-        { value: 2, name: 'February' },
-        { value: 3, name: 'March' },
-        { value: 4, name: 'April' },
-        { value: 5, name: 'Mei' },
-        { value: 6, name: 'June' },
-        { value: 7, name: 'July' },
-        { value: 8, name: 'August' },
-        { value: 9, name: 'September' },
-        { value: 10, name: 'October' },
-        { value: 11, name: 'November' },
-        { value: 12, name: 'Desember' },
-      ],
-      query: {
-        page: 1,
-        limit: 15,
-        keyword: '',
-        role: '',
-        status: '',
-        vendor: null,
-        start_date: moment().startOf('month').format('YYYY-MM-DD hh:mm'),
-        end_date: moment().endOf('month').format('YYYY-MM-DD hh:mm'),
-      },
-      total: 0,
-    };
-  },
-  computed: {
-    test() {
-      return console.log('test');
-    },
-  },
-  created() {
-    this.getList();
-    this.getVendorList();
-  },
-  methods: {
-    handleFilter() {
-      this.query.page = 1;
-      this.getList();
-    },
-    async getVendorList() {
-      const { limit, page } = this.queryVendor;
-      this.loading = true;
-      const { data, meta } = await vendorResource.list(this.queryVendor);
-      this.vendorList = data;
-      this.total = meta.total;
-      this.loading = false;
-    },
-    async getList() {
-      const { limit, page } = this.query;
-      this.loading = true;
-      const { data, meta } = await transactionResource.list(this.query);
-      this.list = data;
-
-      this.list.forEach((element, index) => {
-        element['index'] = (page - 1) * limit + index + 1;
-      });
-      this.total = meta.total;
-      this.loading = false;
-    },
-  },
-};
-</script>
 
 <style rel="stylesheet/scss" lang="scss">
   .filter-container {
@@ -422,6 +325,10 @@ export default {
         start_date: moment().startOf('month').format('YYYY-MM-DD hh:mm'),
         end_date: moment().endOf('month').format('YYYY-MM-DD hh:mm'),
       },
+      status: [
+        { label: 'Paid', value: 1 },
+        { label: 'Unpaid', value: -1 },
+      ],
       total: 0,
     };
   },

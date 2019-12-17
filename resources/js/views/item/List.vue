@@ -107,7 +107,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button type="canceltransaksi" @click="dialogFormVisible = false">
+          <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false">
             {{ $t('table.cancel') }}
           </el-button>
           <el-button v-if="itemId <= 0" type="addtransaksi" @click="createUser()">
@@ -197,7 +197,6 @@ export default {
     };
   },
   computed: {
-
     normalizedMenuPermissions() {
       let tmp = [];
       this.currentUser.permissions.role.forEach(permission => {
@@ -259,14 +258,20 @@ export default {
     userPermissions() {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
     },
-    nameblurred: function() {
-      return this.newItem.name_form === '';
+    nameblurred() {
+      if(this.newItem.name_form == '') {
+        return true
+      }
     },
-    priceblurred: function() {
-      return this.newItem.price_form == 0 || this.newItem.price_form == null || this.newItem.price_form == '';
+    priceblurred() {
+      if(this.newItem.price_form == 0 || this.newItem.price_form == null || this.newItem.price_form == '') {
+        return true
+      }
     },
     unitblurred: function() {
-      return this.newItem.unit_id_form == null || this.newItem.unit_id_form == '' || this.newItem.unit_id_form == 0;
+      if(this.newItem.unit_id_form == null || this.newItem.unit_id_form == '' || this.newItem.unit_id_form == 0) {
+        return true
+      }
     },
   },
   created() {
@@ -365,6 +370,42 @@ export default {
         });
       });
     },
+    onUpdate() {
+      this.attemptSubmit = false;
+      if (this.nameblurred || this.unitblurred || this.priceblurred) {
+        return true;
+      }
+      this.$refs['itemForm'].validate((valid) => {
+        if (valid) {
+          this.itemCreating = true;
+          itemResource
+            .update(this.itemId, this.newItem)
+            .then(response => {
+              this.$message({
+                message: 'Vendor information has been updated successfully',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.resetnewItem();
+              this.dialogFormVisible = false;
+              this.handleFilter();
+              this.attemptSubmit = false;
+            })
+            .catch(error => {
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
+            })
+            .finally(() => {
+              this.itemCreating = false;
+            });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
     createUser() {
       this.attemptSubmit = true;
       if (this.nameblurred || this.unitblurred || this.priceblurred) {
@@ -384,41 +425,7 @@ export default {
               this.resetnewItem();
               this.dialogFormVisible = false;
               this.handleFilter();
-            })
-            .catch(error => {
-              if (error.response.status == 403) {
-                this.errors = error.response.data.errors;
-                console.log(this.errors);
-              }
-            })
-            .finally(() => {
-              this.itemCreating = false;
-            });
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
-    },
-    onUpdate() {
-      this.attemptSubmit = true;
-      if (this.nameblurred || this.unitblurred || this.priceblurred) {
-        return true;
-      }
-      this.$refs['itemForm'].validate((valid) => {
-        if (valid) {
-          this.itemCreating = true;
-          itemResource
-            .update(this.itemId, this.newItem)
-            .then(response => {
-              this.$message({
-                message: 'Vendor information has been updated successfully',
-                type: 'success',
-                duration: 5 * 1000,
-              });
-              this.resetnewItem();
-              this.dialogFormVisible = false;
-              this.handleFilter();
+              this.attemptSubmit = false;
             })
             .catch(error => {
               if (error.response.status == 403) {

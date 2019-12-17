@@ -64,7 +64,7 @@
       <el-table-column align="left" label="Detail Transaction" prop="transaction_detail">
         <template slot-scope="scope">
           <ul class="detail_list">
-            <li v-for="value, in scope.row.detail_transaction" :key="value.id">{{ value.quantity }} pcs, {{ value.item.name }}</li>
+            <li v-for="value in scope.row.detail_transaction" :key="value.id">{{ value.quantity }} pcs, {{ value.item.name }}</li>
           </ul>
         </template>
       </el-table-column>
@@ -198,7 +198,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button type="canceltransaksi" @click="dialogFormVisible = false">
+          <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false;">
             {{ $t('table.cancel') }}
           </el-button>
           <el-button v-if="transactionId <= 0" type="addtransaksi" @click="createTransaction()">
@@ -511,6 +511,7 @@ export default {
       this.resetnewTransaction();
     },
     handleUpdate(data){
+      this.attemptSubmit = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['itemForm'].clearValidate();
@@ -586,6 +587,7 @@ export default {
               this.resetnewTransaction();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
             })
             .catch(error => {
               console.log(error);
@@ -621,10 +623,6 @@ export default {
     //     });
     // },
     onUpdate() {
-      this.attemptSubmit = true;
-      if (this.notransblurred || this.dateblurred || this.vendorblurred || this.itemidblurred) {
-        return true;
-      }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
           this.transactionCreating = true;
@@ -639,6 +637,7 @@ export default {
               this.resetnewTransaction();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
             })
             .catch(error => {
               console.log(error);

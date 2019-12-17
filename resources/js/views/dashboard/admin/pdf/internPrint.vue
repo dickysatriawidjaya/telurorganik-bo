@@ -16,7 +16,7 @@
       </div>
     </div>
     <el-table v-loading="loading" :data="list" border fit style="width: 100%">
-      <el-table-column align="left" label="No." prop="index" width="43">
+      <el-table-column align="center" label="No." prop="index" width="43">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
@@ -51,13 +51,13 @@
           <span>{{ scope.row.retur }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Total" prop="total" width="150">
+      <el-table-column align="right" label="Total" prop="total" width="130">
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
     </el-table>
-    <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 37px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
+    <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 9px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
   </div>
 </template>
 
