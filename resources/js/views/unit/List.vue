@@ -86,18 +86,22 @@
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" :before-close="handleClose">
       <div v-loading="vendorCreating" class="form-container">
         <el-form ref="unitForm" :rules="rules" :model="newUnit" label-position="left" label-width="100px" style="max-width: 500px;">
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="newUnit.name_form" placeholder="Unit Name" />
+          <el-form-item label="Name" prop="name_form">
+            <el-input v-model="newUnit.name_form" :class="{'highlight':nameblurred && nameEmpty}" placeholder="Unit Name" />
+            <!-- <span v-if="nameblurred && nameEmpty" class="error">Name form is required!</span> -->
           </el-form-item>
-          <el-form-item label="Unit Code" prop="unit_code">
-            <el-input v-model="newUnit.unit_code_form" placeholder="Unit Code" />
+          <el-form-item label="Unit Code" prop="unit_code_form">
+            <el-input v-model="newUnit.unit_code_form" placeholder="Unit Code" :class="{'highlight':unitblurred && unitEmpty}"/>
+            <!-- <span v-if="unitblurred && unitEmpty" class="error">Unit code must be selected!</span> -->
           </el-form-item>
-          <el-form-item label="Description" prop="description">
-            <el-input v-model="newUnit.description_form" placeholder="Unit Description" type="textarea" />
+          <el-form-item label="Description" prop="description_form">
+            <el-input v-model="newUnit.description_form" placeholder="Unit Description" :class="{'highlight':descblurred && descEmpty}" type="textarea" />
+            <!-- <span v-if="descblurred && descEmpty" class="error">Unit description must be selected!</span> -->
           </el-form-item>
-          <el-form-item v-if="unitId > 0" label="Status" prop="status">
+          <el-form-item v-if="unitId > 0" label="Status" prop="status_form">
             <el-select v-model="newUnit.status_form" class="filter-item">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
+              <!-- <span v-if="nameblurred && nameEmpty" class="error">Name form is required!</span> -->
             </el-select>
           </el-form-item>
         </el-form>
@@ -166,8 +170,8 @@ export default {
         rolePermissions: [],
       },
       rules: {
-        name: [{ required: true, message: 'Name is required', trigger: 'change' }],
-        unit_code: [{ required: true, message: 'Unit Code is required', trigger: 'change' }],
+        name_form: [{ required: true, message: 'Name is required', trigger: 'change' }],
+        unit_code_form: [{ required: true, message: 'Unit Code is required', trigger: 'change' }],
         description_form: [{ required: true, message: 'Description is required', trigger: 'change' }],
       },
       permissionProps: {
@@ -179,6 +183,9 @@ export default {
       menuPermissions: [],
       otherPermissions: [],
       errors: [],
+      nameEmpty: false,
+      unitEmpty: false,
+      descEmpty: false,
     };
   },
   computed: {
@@ -247,10 +254,10 @@ export default {
       return this.newUnit.name_form == '';
     },
     unitblurred: function() {
-      return this.newUnit.unit_code_form == null || this.newUnit.unit_code_form == '';
+      return this.newUnit.unit_code_form == '';
     },
     descblurred: function() {
-      return this.newUnit.description_form == null || this.newUnit.description_form == '';
+      return this.newUnit.description_form == '';
     },
   },
   created() {
@@ -292,6 +299,9 @@ export default {
       this.getList();
     },
     handleCreate() {
+      this.nameEmpty = false;
+      this.unitEmpty = false;
+      this.descEmpty = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['unitForm'].clearValidate();
@@ -301,6 +311,9 @@ export default {
       this.resetnewUnit();
     },
     handleUpdate(data){
+      this.nameEmpty = false;
+      this.unitEmpty = false;
+      this.descEmpty = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['unitForm'].clearValidate();
@@ -337,6 +350,12 @@ export default {
     createUnit() {
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {
+          this.nameEmpty = true;
+          this.unitEmpty = true;
+          this.descEmpty = true;
+          if (this.nameblurred || this.unitblurred || this.descblurred) {
+            return true;
+          }
           this.vendorCreating = true;
           unitResource
             .store(this.newUnit)
@@ -350,6 +369,9 @@ export default {
               this.dialogFormVisible = false;
               this.handleFilter();
               this.attemptSubmit = false;
+              this.nameEmpty = false;
+              this.unitEmpty = false;
+              this.descEmpty = false;
             })
             .catch(error => {
               if (error.response.status == 403) {
@@ -369,6 +391,12 @@ export default {
     onUpdate() {
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {
+          this.nameEmpty = true;
+          this.unitEmpty = true;
+          this.descEmpty = true;
+          if (this.nameblurred || this.unitblurred || this.descblurred) {
+            return true;
+          }
           this.vendorCreating = true;
           unitResource
             .update(this.unitId, this.newUnit)
@@ -382,6 +410,9 @@ export default {
               this.dialogFormVisible = false;
               this.handleFilter();
               this.attemptSubmit = false;
+              this.nameEmpty = false;
+              this.unitEmpty = false;
+              this.descEmpty = false;
             })
             .catch(error => {
               if (error.response.status == 403) {

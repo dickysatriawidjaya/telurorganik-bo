@@ -101,21 +101,21 @@
         <el-form ref="vendorForm" :rules="rules" :model="newVendor" label-position="left" label-width="150px" style="max-width: 850px;">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="Name" prop="name">
-                <el-input v-model="newVendor.name_form" placeholder="Name" :class="{'highlight':venNameBlurred && attemptSubmit}" />
-                <span v-if="venNameBlurred && attemptSubmit" class="error">Vendor name is required!</span>
+              <el-form-item label="Name" prop="name_form">
+                <el-input v-model="newVendor.name_form" placeholder="Name" :class="{'highlight':venNameBlurred && nameEmpty}" />
+                <!-- <span v-if="venNameBlurred && nameEmpty" class="error">Vendor name is required!</span> -->
               </el-form-item>
-              <el-form-item label="PIC Name" prop="pic_name">
-                <el-input v-model="newVendor.pic_name_form" placeholder="PIC Name" :class="{'highlight':venPICBlurred && attemptSubmit}" />
-                <span v-if="venPICBlurred && attemptSubmit" class="error">PIC Name is required!</span>
+              <el-form-item label="PIC Name" prop="pic_name_form">
+                <el-input v-model="newVendor.pic_name_form" placeholder="PIC Name" :class="{'highlight':venPICBlurred && picEmpty}" />
+                <!-- <span v-if="venPICBlurred && picEmpty" class="error">PIC Name is required!</span> -->
               </el-form-item>
-              <el-form-item label="Phone" prop="phone">
-                <el-input v-model="newVendor.phone_form" placeholder="Phone Number" type="number" :class="{'highlight':venPhoneBlurred && attemptSubmit}" />
-                <span v-if="venPhoneBlurred && attemptSubmit" class="error">Vendor phone is required!</span>
+              <el-form-item label="Phone" prop="phone_form">
+                <el-input v-model="newVendor.phone_form" placeholder="Phone Number" type="number" :class="{'highlight':venPhoneBlurred && phoneEmpty}" />
+                <!-- <span v-if="venPhoneBlurred && phoneEmpty" class="error">Vendor phone is required!</span> -->
               </el-form-item>
-              <el-form-item label="Address" prop="address">
-                <el-input v-model="newVendor.address_form" placeholder="Address" type="textarea" rows="3" :class="{'highlight':venAddressBlurred && attemptSubmit}" />
-                <span v-if="venAddressBlurred && attemptSubmit" class="error">Vendor phone is required!</span>
+              <el-form-item label="Address" prop="address_form">
+                <el-input v-model="newVendor.address_form" placeholder="Address" type="textarea" rows="3" :class="{'highlight':venAddressBlurred && addressEmpty}" />
+                <!-- <span v-if="venAddressBlurred && addressEmpty" class="error">Vendor phone is required!</span> -->
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -243,9 +243,8 @@ export default {
       },
       rules: {
         name_form: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        phone_form: [
-          { required: true, message: 'Phone number is required', trigger: 'blur' },
-        ],
+        pic_name_form: [{ required: true, message: 'PIC name is required', trigger: 'blur' }],
+        phone_form: [{ required: true, message: 'Phone number is required', trigger: 'blur' }],
         address_form: [{ required: true, message: 'Address is required', trigger: 'blur' }],
       },
       permissionProps: {
@@ -257,7 +256,10 @@ export default {
       menuPermissions: [],
       otherPermissions: [],
       errors: [],
-      attemptSubmit: false,
+      nameEmpty: false,
+      picEmpty: false,
+      addressEmpty: false,
+      phoneEmpty: false,
     };
   },
   computed: {
@@ -323,16 +325,16 @@ export default {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
     },
     venNameBlurred: function() {
-      return this.newVendor.name_form == '' || this.newVendor.name_form == null;
+      return this.newVendor.name_form == '';
     },
     venPhoneBlurred: function() {
-      return this.newVendor.phone_form == null || this.newVendor.phone_form == '' || this.newVendor.phone_form == 0;
+      return this.newVendor.phone_form == null || this.newVendor.phone_form == 0 || this.newVendor.phone_form == '';
     },
     venAddressBlurred: function() {
-      return this.newVendor.address_form == null || this.newVendor.address_form == '';
+      return this.newVendor.address_form == '';
     },
     venPICBlurred: function() {
-      return this.newVendor.pic_name_form == null || this.newVendor.pic_name_form == '';
+      return this.newVendor.pic_name_form == '';
     },
   },
   created() {
@@ -389,6 +391,10 @@ export default {
       this.getList();
     },
     handleCreate() {
+      this.nameEmpty = false;
+      this.phoneEmpty = false;
+      this.addressEmpty = false;
+      this.picEmpty = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['vendorForm'].clearValidate();
@@ -398,6 +404,10 @@ export default {
       this.resetnewVendor();
     },
     handleUpdate(data){
+      this.nameEmpty = false;
+      this.phoneEmpty = false;
+      this.addressEmpty = false;
+      this.picEmpty = false;
       this.newVendor.child = [];
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -458,12 +468,15 @@ export default {
       });
     },
     createUser() {
-      this.attemptSubmit = true;
-      if (this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
-        return true;
-      }
       this.$refs['vendorForm'].validate((valid) => {
         if (valid) {
+          this.nameEmpty = true;
+          this.phoneEmpty = true;
+          this.addressEmpty = true;
+          this.picEmpty = true;
+          if (this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
+            return true;
+          }
           this.vendorCreating = true;
           vendorResource
             .store(this.newVendor)
@@ -476,7 +489,10 @@ export default {
               this.resetnewVendor();
               this.dialogFormVisible = false;
               this.handleFilter();
-              this.attemptSubmit = false;
+              this.nameEmpty = false;
+              this.phoneEmpty = false;
+              this.addressEmpty = false;
+              this.picEmpty = false;
             })
             .catch(error => {
               if (error.response.status == 403) {
@@ -509,11 +525,15 @@ export default {
       //     console.log(error);
       //     this.vendorCreating = false;
       //   });
-      if (this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
-        return true;
-      }
       this.$refs['vendorForm'].validate((valid) => {
         if (valid) {
+          this.nameEmpty = true;
+          this.phoneEmpty = true;
+          this.addressEmpty = true;
+          this.picEmpty = true;
+          if (this.venNameBlurred || this.venPhoneBlurred || this.venAddressBlurred || this.venPICBlurred) {
+            return true;
+          }
           this.vendorCreating = true;
           vendorResource
             .update(this.vendorId, this.newVendor)
@@ -526,7 +546,10 @@ export default {
               this.resetnewVendor();
               this.dialogFormVisible = false;
               this.handleFilter();
-              this.attemptSubmit = false;
+              this.nameEmpty = false;
+              this.phoneEmpty = false;
+              this.addressEmpty = false;
+              this.picEmpty = false;
             })
             .catch(error => {
               if (error.response.status == 403) {

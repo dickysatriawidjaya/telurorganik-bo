@@ -115,22 +115,22 @@
         <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="150px">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="Transaction No" prop="transaction_no">
-                <el-input v-model="newTransaction.transaction_no_form" placeholder="Input your transaction no." :class="{'highlight':notransblurred && attemptSubmit}" style="width:200px" @input="forceupdate" />
-                <span v-if="notransblurred && attemptSubmit" class="error">Transaction Number is required!</span>
+              <el-form-item label="Transaction No" prop="transaction_no_form">
+                <el-input v-model="newTransaction.transaction_no_form" placeholder="Input your transaction no." :class="{'highlight':notransblurred && notransEmpty}" style="width:200px" @input="forceupdate" />
+                <!-- <span v-if="notransblurred && notransEmpty" class="error">Transaction Number is required!</span> -->
               </el-form-item>
-              <el-form-item class="custom-datepicker" label="Transaction Date" prop="transaction_date">
-                <datepicker v-model="newTransaction.date_form" placeholder="input your transaction date" :class="{'highlight':dateblurred && attemptSubmit}" name="uniquename" />
-                <span v-if="dateblurred && attemptSubmit" class="error">Transaction date is required!</span>
+              <el-form-item class="custom-datepicker" label="Transaction Date" prop="date_form">
+                <datepicker v-model="newTransaction.date_form" placeholder="input your transaction date" :class="{'highlight':dateblurred && dateEmpty}" name="uniquename" />
+                <!-- <span v-if="dateblurred && dateEmpty" class="error">Transaction date is required!</span> -->
               </el-form-item>
-              <el-form-item label="Vendor" prop="vendor">
-                <el-select v-model="newTransaction.vendor_id_form" placeholder="select your vendor..." :class="{'highlight':vendorblurred && attemptSubmit}" filterable class="filter-item" style="width:200px" @change="forceupdate">
+              <el-form-item label="Vendor" prop="vendor_id_form">
+                <el-select v-model="newTransaction.vendor_id_form" placeholder="select your vendor..." :class="{'highlight':vendorblurred && vendorEmpty}" filterable class="filter-item" style="width:200px" @change="forceupdate">
                   <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
                     <span style="float: left">{{ v.name }}</span>
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
                   </el-option>
                 </el-select>
-                <span v-if="vendorblurred && attemptSubmit" class="error">Vendor is required!</span>
+                <!-- <span v-if="vendorblurred && vendorEmpty" class="error">Vendor is required!</span> -->
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -163,7 +163,7 @@
                     {{ index + 1 }}
                   </td>
                   <td style="width:212px">
-                    <el-select v-model="newTransaction.detail[index].item_id_form" :class="{'highlight':itemidblurred && attemptSubmit}" class="filter-item" required @change="setItemPrice(index)">
+                    <el-select v-model="newTransaction.detail[index].item_id_form" :class="{'highlight':itemidblurred && itemidEmpty}" class="filter-item" @change="setItemPrice(index)">
                       <el-option v-for="i in itemList" :key="i.id" :label="i.name+'('+i.unit.name+')'" :value="i.id">{{ i.name }} ({{ i.unit.name }})</el-option>
                     </el-select>
                   </td>
@@ -288,12 +288,9 @@ export default {
         rolePermissions: [],
       },
       rules: {
-        name_form: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        created_at_form: [{ required: true, message: 'Date is required', trigger: 'blur' }],
-        phone_form: [
-          { required: true, message: 'Phone number is required', trigger: 'blur' },
-        ],
-        address_form: [{ required: true, message: 'Address is required', trigger: 'blur' }],
+        transaction_no_form: [{ required: true, message: 'Transaction number is required!', trigger: 'blur' }],
+        date_form: [{ required: true, message: 'date must be selected!', trigger: 'blur' }],
+        vendor_id_form: [{ required: true, message: 'Vendor ID is required!', trigger: 'change' }],
       },
       permissionProps: {
         children: 'children',
@@ -312,8 +309,10 @@ export default {
 
       },
       errors: [],
-      attemptSubmit: false,
-      itemIDform: '',
+      vendorEmpty: false,
+      notransEmpty: false,
+      itemidEmpty: false,
+      dateEmpty: false,
     };
   },
   computed: {
@@ -382,10 +381,10 @@ export default {
       return this.newTransaction.transaction_no_form == '' || this.newTransaction.transaction_no_form == null;
     },
     dateblurred: function() {
-      return this.newTransaction.date_form == null || this.newTransaction.date_form == '';
+      return this.newTransaction.date_form == '' || this.newTransaction.date_form == null;
     },
     vendorblurred: function() {
-      return this.newTransaction.vendor_id_form == null || this.newTransaction.vendor_id_form == '' || this.newTransaction.vendor_id_form == 0;
+      return this.newTransaction.vendor_id_form == null;
     },
     itemidblurred: function() {
       return this.itemIDform == null || this.itemIDform == '' || this.itemIDform == 0;
@@ -502,6 +501,10 @@ export default {
       this.getList();
     },
     handleCreate() {
+      // this.vendorEmpty = false;
+      // this.notransEmpty = false;
+      this.itemidEmpty = false;
+      // this.dateEmpty = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['itemForm'].clearValidate();
@@ -511,7 +514,8 @@ export default {
       this.resetnewTransaction();
     },
     handleUpdate(data){
-      this.attemptSubmit = false;
+      this.notransEmpty = false;
+      this.dateEmpty = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['itemForm'].clearValidate();
@@ -569,12 +573,15 @@ export default {
       });
     },
     createTransaction() {
-      this.attemptSubmit = true;
-      if (this.notransblurred || this.dateblurred || this.vendorblurred || this.itemidblurred) {
-        return true;
-      }
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
+          // this.vendorEmpty = true;
+          // this.notransEmpty = true;
+          // this.dateEmpty = true;
+          // this.itemidEmpty = true;
+          // if (this.itemidblurred) {
+          //   return true;
+          // }
           this.transactionCreating = true;
           transactionResource
             .store(this.newTransaction)
@@ -587,7 +594,10 @@ export default {
               this.resetnewTransaction();
               this.dialogFormVisible = false;
               this.handleFilter();
-              this.attemptSubmit = false;
+              this.vendorEmpty = false;
+              this.notransEmpty = false;
+              this.itemidEmpty = false;
+              this.dateEmpty = false;
             })
             .catch(error => {
               console.log(error);
@@ -601,30 +611,18 @@ export default {
         }
       });
     },
-    // handleUpdateStatus(id,status){
-    //   this.transactionCreating = true;
-    //   transactionResource
-    //     .changeStatus(id, {'status_form' : status})
-    //     .then(response => {
-    //       this.$message({
-    //         message: 'Transaction has been updated successfully',
-    //         type: 'success',
-    //         duration: 5 * 1000,
-    //       });
-    //       this.resetnewTransaction();
-    //       this.dialogFormVisible = false;
-    //       this.handleFilter();
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     })
-    //     .finally(() => {
-    //       this.transactionCreating = false;
-    //     });
-    // },
     onUpdate() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
+          // this.notransEmpty = true;
+          // this.itemidEmpty = true;
+          // if (this.notransblurred || this.itemidblurred) {
+          //   return true;
+          // }
+          // this.itemidEmpty = true;
+          // if (this.itemidblurred) {
+          //   return true;
+          // }
           this.transactionCreating = true;
           transactionResource
             .update(this.transactionId, this.newTransaction)
@@ -638,6 +636,10 @@ export default {
               this.dialogFormVisible = false;
               this.handleFilter();
               this.attemptSubmit = false;
+              this.vendorEmpty = false;
+              this.notransEmpty = false;
+              this.itemidEmpty = false;
+              this.dateEmpty = false;
             })
             .catch(error => {
               console.log(error);

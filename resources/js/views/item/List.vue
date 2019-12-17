@@ -86,19 +86,19 @@
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" :before-close="handleClose">
       <div v-loading="itemCreating" class="form-container">
         <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="100px" style="max-width: 500px;">
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="newItem.name_form" placeholder="name" :class="{'highlight':nameblurred && attemptSubmit}" />
-            <span v-if="nameblurred && attemptSubmit" class="error">Name form is required!</span>
+          <el-form-item label="Name" prop="name_form">
+            <el-input v-model="newItem.name_form" placeholder="name"/>
+            <!-- <span v-if="nameblurred && nameEmpty" class="error">Name form is required!</span> -->
           </el-form-item>
-          <el-form-item label="Unit" prop="unit">
-            <el-select v-model="newItem.unit_id_form" placeholder="select unit" :class="{'highlight':unitblurred && attemptSubmit}" style="width: 100%" class="filter-item" @change="forceUpdate">
+          <el-form-item label="Unit" prop="unit_id_form">
+            <el-select v-model="newItem.unit_id_form" placeholder="select unit" style="width: 100%" class="filter-item" @change="forceUpdate">
               <el-option v-for="u in unitList" :key="u.id" :label="u.name" :value="u.id">{{ u.name }}</el-option>
             </el-select>
-            <span v-if="unitblurred && attemptSubmit" class="error">Unit ID must be selected!</span>
+            <!-- <span v-if="unitblurred && unitEmpty" class="error">Unit ID must be selected!</span> -->
           </el-form-item>
-          <el-form-item label="Price" prop="price">
-            <el-input v-model="newItem.price_form" placeholder="price" :class="{'highlight':priceblurred && attemptSubmit}" type="number" @input="forceUpdate" />
-            <span v-if="priceblurred && attemptSubmit" class="error">Price is required!</span>
+          <el-form-item label="Price" prop="price_form">
+            <el-input v-model="newItem.price_form" placeholder="price" @input="forceUpdate" />
+            <!-- <span v-if="priceblurred && priceEmpty" class="error">Price is required!</span> -->
           </el-form-item>
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
             <el-select v-model="newItem.status_form" style="width: 100%" class="filter-item">
@@ -177,12 +177,9 @@ export default {
         rolePermissions: [],
       },
       rules: {
-        name_form: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        phone_form: [
-          { required: true, message: 'Phone number is required', trigger: 'blur' },
-        ],
-        price_form: [{ required: true, message: 'Price is required', trigger: 'blur' }],
-        address_form: [{ required: true, message: 'Address is required', trigger: 'blur' }],
+        name_form: [{ required: true, message: 'Name form is required!', trigger: 'blur' }],
+        unit_id_form: [{ required: true, message: 'Unit ID must be selected!', trigger: 'change' }],
+        price_form: [{ required: true, message: 'Price is required!', trigger: 'blur' }],
       },
       permissionProps: {
         children: 'children',
@@ -193,10 +190,13 @@ export default {
       menuPermissions: [],
       otherPermissions: [],
       errors: [],
-      attemptSubmit: false,
+      priceEmpty: false,
+      nameEmpty: false,
+      unitEmpty: false,
     };
   },
   computed: {
+
     normalizedMenuPermissions() {
       let tmp = [];
       this.currentUser.permissions.role.forEach(permission => {
@@ -258,20 +258,14 @@ export default {
     userPermissions() {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
     },
-    nameblurred() {
-      if (this.newItem.name_form == '') {
-        return true;
-      }
+    nameblurred: function() {
+      return this.newItem.name_form == '';
     },
-    priceblurred() {
-      if (this.newItem.price_form == 0 || this.newItem.price_form == null || this.newItem.price_form == '') {
-        return true;
-      }
+    priceblurred: function() {
+      return this.newItem.price_form == null || this.newItem.price_form == '' || this.newItem.price_form == 0;
     },
     unitblurred: function() {
-      if (this.newItem.unit_id_form == null || this.newItem.unit_id_form == '' || this.newItem.unit_id_form == 0) {
-        return true;
-      }
+      return this.newItem.unit_id_form == null;
     },
   },
   created() {
@@ -370,26 +364,30 @@ export default {
         });
       });
     },
-    onUpdate() {
-      this.attemptSubmit = false;
-      if (this.nameblurred || this.unitblurred || this.priceblurred) {
-        return true;
-      }
+    createUser() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
+          // this.priceEmpty = true;
+          // this.nameEmpty = true;
+          // this.unitEmpty = true;
+          // if (this.priceblurred || this.nameblurred || this.unitblurred) {
+          //   return true;
+          // }
           this.itemCreating = true;
           itemResource
-            .update(this.itemId, this.newItem)
+            .store(this.newItem)
             .then(response => {
               this.$message({
-                message: 'Vendor information has been updated successfully',
+                message: 'New item ' + this.newItem.name + ' has been created successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
               this.resetnewItem();
               this.dialogFormVisible = false;
               this.handleFilter();
-              this.attemptSubmit = false;
+              this.priceEmpty = false;
+              this.nameEmpty = false;
+              this.unitEmpty = false;
             })
             .catch(error => {
               if (error.response.status == 403) {
@@ -406,19 +404,20 @@ export default {
         }
       });
     },
-    createUser() {
-      this.attemptSubmit = true;
-      if (this.nameblurred || this.unitblurred || this.priceblurred) {
-        return true;
-      }
+    onUpdate() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
+          // this.priceEmpty = true;
+          // this.nameEmpty = true;
+          // if (this.priceblurred || this.nameblurred) {
+          //   return true;
+          // }
           this.itemCreating = true;
           itemResource
-            .store(this.newItem)
+            .update(this.itemId, this.newItem)
             .then(response => {
               this.$message({
-                message: 'New item ' + this.newItem.name + ' has been created successfully.',
+                message: 'Vendor information has been updated successfully',
                 type: 'success',
                 duration: 5 * 1000,
               });
