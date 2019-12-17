@@ -336,12 +336,12 @@ export default {
     this.getList();
     this.getVendorList();
   },
-  mounted: function () {
-        this.$nextTick(function () {
-            window.setInterval(() => {
-                this.getList();
-            },60000);
-        })
+  mounted: function() {
+    this.$nextTick(function() {
+      window.setInterval(() => {
+        this.getList();
+      }, 60000);
+    });
   },
   methods: {
     handleFilter() {

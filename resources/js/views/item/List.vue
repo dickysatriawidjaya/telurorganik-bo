@@ -259,18 +259,18 @@ export default {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
     },
     nameblurred() {
-      if(this.newItem.name_form == '') {
-        return true
+      if (this.newItem.name_form == '') {
+        return true;
       }
     },
     priceblurred() {
-      if(this.newItem.price_form == 0 || this.newItem.price_form == null || this.newItem.price_form == '') {
-        return true
+      if (this.newItem.price_form == 0 || this.newItem.price_form == null || this.newItem.price_form == '') {
+        return true;
       }
     },
     unitblurred: function() {
-      if(this.newItem.unit_id_form == null || this.newItem.unit_id_form == '' || this.newItem.unit_id_form == 0) {
-        return true
+      if (this.newItem.unit_id_form == null || this.newItem.unit_id_form == '' || this.newItem.unit_id_form == 0) {
+        return true;
       }
     },
   },
