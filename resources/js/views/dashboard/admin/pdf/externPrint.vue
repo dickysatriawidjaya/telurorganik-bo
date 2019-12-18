@@ -84,12 +84,12 @@
             <th width="90">Sub Total</th>
           </tr>
           <tr v-for="(d,index_detail) in scope.row.detail_transaction">
-            <td>{{ index_detail + 1 }}</td>
-            <td>{{ d.item.name }}</td>
-            <td>{{ d.item.unit.name }}</td>
-            <td>{{ d.quantity }}</td>
-            <td>{{ d.discount }}</td>
-            <td>{{ d.subtotal | toCurrency }}</td>
+            <td width="30">{{ index_detail + 1 }}</td>
+            <td width="85">{{ d.item.name }}</td>
+            <td width="50">{{ d.item.unit.name }}</td>
+            <td width="30">{{ d.quantity }}</td>
+            <td width="65">{{ d.discount }}</td>
+            <td width="90">{{ d.subtotal | toCurrency }}</td>
           </tr>
         </template>
         <!-- <table border="1" width="100%">
@@ -253,6 +253,11 @@ export default {
           border: solid #000 !important;
           border-width: 0 1px 1px 0 !important;
       }
+      tr {
+        &:first-child {
+          display:none;
+        }
+      }
     }
   }
 @mixin clearfix {
@@ -297,23 +302,57 @@ export default {
   color: #333;
   overflow: hidden;
 }
-
-.el-table_1_column_5 {
-  padding: 0 !important;
-  .cell {
-    padding: 0;
-    tr {
-      th {
-        padding: 0;
-        background: #D3D3D3;
-        color: #fff;
+.el-table__row {
+  td {
+    padding: 2px 0 !important;
+  }
+  .el-table_1_column_5 {
+    padding: 0 !important;
+    .cell {
+      padding: 0;
+      tr {
+        &:first-child {
+          display:none;
+        }
+        &:last-child {
+          td {
+            border-bottom: none !important;
+          }
+        }
+        th {
+          padding: 0;
+          background: #D3D3D3;
+          color: #fff;
+        }
+        th,td {
+          border-right: none !important;
+        }
       }
-      th,td {
-        border-right: none !important;
+    }
+  }
+  &:first-child {
+    .el-table_1_column_5 {
+      padding: 0 !important;
+      .cell {
+        padding: 0;
+        tr {
+          &:first-child {
+            display:table-row !important;
+          }
+          th {
+            padding: 0;
+            background: #D3D3D3;
+            color: #fff;
+          }
+          th,td {
+            border-right: none !important;
+          }
+        }
       }
     }
   }
 }
+
 
 .node-article-content {
   margin: 20px 0 0;

@@ -245,6 +245,12 @@ export default {
   overflow: hidden;
 }
 
+.el-table__row {
+  td {
+    padding: 2px 0 !important;
+  }
+}
+
 .node-article-content {
   margin: 20px 0 0;
   @include clearfix;
