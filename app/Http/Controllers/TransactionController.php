@@ -125,7 +125,7 @@ class TransactionController extends Controller
         }
 
         $check_trans_no = Transaction::where("transaction_no",$request->transaction_no_form)->whereIn('status',[1,-1])->get();
-        
+
         if(count($check_trans_no) > 0){
             return response()->json(['errors' =>  "Transaction number already exist."],403);
         }
@@ -140,14 +140,18 @@ class TransactionController extends Controller
             $params['status']=-1;
             $Transaction = Transaction::create($params);
         } catch (\Throwable $th) {
-            return response()->json(['errors' =>  "Failed Save Transaction ".$th], 500);
+            return response()->json(['errors' =>  "Failed Save Transaction "], 500);
         }
         //save detail
         try {
             foreach ($request->detail as $key => $d) {
                 $newdetail = New Transaction_Detail;
                 $newdetail->transaction_id = $Transaction->id;
-                $newdetail->item_id = $d['item_id_form'];
+                if (isset($d['item_id_form'])) {
+                  $newdetail->item_id = $d['item_id_form'];
+                }else{
+                  return response()->json(['errors' =>  "item is required"], 500);
+                }
                 $newdetail->quantity = $d['quantity_form'];
                 $newdetail->discount = $d['discount_form'];
                 $newdetail->subtotal = $d['subtotal_form'];
@@ -155,7 +159,7 @@ class TransactionController extends Controller
                 $newdetail->save();
              }
         } catch (\Throwable $th) {
-            return response()->json(['errors' =>  "Failed Save Detail Transaction ".$th], 500);
+            return response()->json(['errors' =>  "Failed Save Detail Transaction "], 500);
         }
 
         //save detail end
@@ -190,16 +194,21 @@ class TransactionController extends Controller
                 $transaction->status = $request->get('status_form');
                 $transaction->save();
             } catch (\Throwable $th) {
-                return response()->json(['errors' => "Failed Update Transaction Data ".$th], 403);
+                return response()->json(['errors' => "Failed Update Transaction Data "], 403);
             }
 
             if ($request->detail) {
                 $update = Transaction_Detail::where('transaction_id',$transaction->id)->update(['status' => -1]);
-                try {
+                // try {
                     foreach ($request->detail as $key => $d) {
+                      if (isset($d['id'])) {
                         $newdetail = Transaction_Detail::find($d['id']);
                         $newdetail->transaction_id = $transaction->id;
-                        $newdetail->item_id = $d['item_id_form'];
+                        if (isset($d['item_id_form'])) {
+                          $newdetail->item_id = $d['item_id_form'];
+                        }else{
+                          return response()->json(['errors' =>  "Item Cannot Be Null"], 500);
+                        }
                         $newdetail->quantity = $d['quantity_form'];
                         $newdetail->discount = $d['discount_form'];
                         if (isset($d['retur_form'])) {
@@ -208,10 +217,24 @@ class TransactionController extends Controller
                         $newdetail->subtotal = $d['subtotal_form'];
                         $newdetail->status = 1;
                         $newdetail->save();
+                      }else{
+                        $newdetail = New Transaction_Detail;
+                        $newdetail->transaction_id = $transaction->id;
+                        if (isset($d['item_id_form'])) {
+                          $newdetail->item_id = $d['item_id_form'];
+                        }else{
+                          return response()->json(['errors' =>  "Item Cannot Be Null"], 500);
+                        }
+                        $newdetail->quantity = $d['quantity_form'];
+                        $newdetail->discount = $d['discount_form'];
+                        $newdetail->subtotal = $d['subtotal_form'];
+                        $newdetail->status = 1;
+                        $newdetail->save();
+                      }
                     }
-                } catch (\Throwable $th) {
-                    return response()->json(['errors' => "Failed Update Transaction Detail Data ".$th], 403);
-                }
+                // } catch (\Throwable $th) {
+                //     return response()->json(['errors' => "Failed Update Transaction Detail Data"], 403);
+                // }
 
             }
 

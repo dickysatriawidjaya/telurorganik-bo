@@ -163,8 +163,10 @@
                     {{ index + 1 }}
                   </td>
                   <td style="width:212px">
-                    <el-select v-model="newTransaction.detail[index].item_id_form" :class="{'highlight':itemidblurred && itemidEmpty}" class="filter-item" @change="setItemPrice(index)">
-                      <el-option v-for="i in itemList" :key="i.id" :label="i.name+'('+i.unit.name+')'" :value="i.id">{{ i.name }} ({{ i.unit.name }})</el-option>
+                    <el-select v-model="newTransaction.detail[index].item_id_form" :class="{'highlight':itemidblurred && itemidEmpty}" class="filter-item" @change="setItemPrice(index,'item')">
+                      <el-option v-for="i in itemList" :key="i.id" :label="i.name+'('+i.unit.name+')'" :value="i.id">
+                        {{ i.name }} ({{ i.unit.name }})
+                      </el-option>
                     </el-select>
                   </td>
                   <td style="width:140px">
@@ -180,7 +182,7 @@
                   <td style="width:80px">
                     <el-input v-model="newTransaction.detail[index].discount_form" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
                   </td>
-                  <td style="width:116px">{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
+                  <td style="width:146px;text-align:right" align="right">{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
                   <td>
                     <el-button type="danger" icon="el-icon-close" circle @click="spliceTransactionDetail(index)" />
                   </td>
@@ -189,7 +191,8 @@
             </table>
             <hr>
           </div>
-          <el-button type="addtable" @click="addNewItemForm">Add Item</el-button>
+
+          <el-button :disabled="validate_error" type="addtable" @click="addNewItemForm">Add Item</el-button>
 
           <el-form-item class="total_price" label="Total Price" prop="total" style="float:right">
             <el-input v-show="false" v-model="newTransaction.total_form" class="total_price" />
@@ -201,10 +204,10 @@
           <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false;">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button v-if="transactionId <= 0" type="addtransaksi" @click="createTransaction()">
+          <el-button v-if="transactionId <= 0" :disabled="validate_error" type="addtransaksi" @click="createTransaction()">
             {{ $t('table.confirm') }}
           </el-button>
-          <el-button v-if="transactionId > 0" type="addtransaksi" @click="onUpdate()">
+          <el-button v-if="transactionId > 0" :disabled="validate_error" type="addtransaksi" @click="onUpdate()">
             Update
           </el-button>
         </div>
@@ -263,6 +266,7 @@ export default {
         paginate: false,
       },
       nonAdminRoles: ['editor', 'user', 'visitor'],
+      validate_error : false,
       newTransaction: {
         transaction_no: '',
         date_form: '',
@@ -401,6 +405,10 @@ export default {
     console.log(this.role);
   },
   methods: {
+    checkItemName(athis){
+      let vm = athis;
+      alert(vm);
+    },
     handleClose(done) {
       this.$confirm('Are you sure to close this dialog?')
         .then(_ => {
@@ -466,7 +474,27 @@ export default {
       this.total = meta.total;
       this.loading = false;
     },
-    setItemPrice(index){
+    setItemPrice(index,string){
+
+      if (string == "item") {
+        var array = this.newTransaction.detail;
+        // var newArray = this.newTransaction.detail.filter(function (el,index,array) {
+        //   return el.item_id_form
+        // });
+        const newArray = this.newTransaction.detail.map(item => item.item_id_form);
+        newArray.splice(index,1);
+        let boolean = newArray.includes(this.newTransaction.detail[index].item_id_form);
+        if (boolean) {
+          this.validate_error = true;
+          this.$message({
+            type: 'error',
+            message: 'Duplicate Item',
+          });
+        }else {
+          this.validate_error = false;
+        }
+      }
+
       this.itemIDform = this.newTransaction.detail[index].item_id_form;
       const _this = this;
       const filterItem = this.itemList.filter(function(i){
@@ -489,9 +517,9 @@ export default {
       // countTOTAL
       let total = 0;
       this.newTransaction.detail.forEach(element => {
-        total += element.subtotal_form;
+        total += parseFloat(element.subtotal_form);
+        console.log(element.subtotal_form);
       });
-      console.log(total);
       this.newTransaction.total_form = total;
       // countTOTALEND
       console.log({ quantity, discount, result });
@@ -612,8 +640,8 @@ export default {
       });
     },
     onUpdate() {
-      this.$refs['itemForm'].validate((valid) => {
-        if (valid) {
+      // this.$refs['itemForm'].validate((valid) => {
+      //   if (valid) {
           // this.notransEmpty = true;
           // this.itemidEmpty = true;
           // if (this.notransblurred || this.itemidblurred) {
@@ -647,11 +675,11 @@ export default {
             .finally(() => {
               this.transactionCreating = false;
             });
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+        // } else {
+        //   console.log('error submit!!');
+        //   return false;
+        // }
+      // });
     },
     resetnewTransaction() {
       this.newTransaction = {
@@ -740,7 +768,7 @@ div[aria-label="Edit Transaction"] {
 }
 .el-dialog[aria-label="Create New Transaction"],
 .el-dialog[aria-label="Edit Transaction"]{
-  width:850px;
+  width:980px;
   border-radius:10px;
   .el-dialog__header{
     margin: 26px 30px 0px;

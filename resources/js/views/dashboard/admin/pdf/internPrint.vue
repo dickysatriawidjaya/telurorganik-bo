@@ -16,14 +16,14 @@
       </div>
     </div>
     <el-table v-loading="loading" :data="list" border fit style="width: 100%">
-      <el-table-column align="center" label="No." prop="index" width="43">
+      <el-table-column align="center" label="No." prop="index" width="28">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" align="left" label="Date" width="110" prop="created_at">
+      <el-table-column class-name="status-col" align="left" label="Date" width="55" prop="created_at">
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MMM-YY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD/MMM/YY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor">
@@ -36,14 +36,14 @@
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Status" width="110" prop="status">
+      <el-table-column align="left" label="Status" width="110" prop="status">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status == 1" type="success">
+          <p v-if="scope.row.status == 1" type="success">
             Paid
-          </el-tag>
-          <el-tag v-if="scope.row.status == -1" type="warning">
+          </p>
+          <p v-if="scope.row.status == -1" type="warning">
             Unpaid
-          </el-tag>
+          </p>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Retur" prop="retur">
@@ -176,12 +176,42 @@ export default {
     color: #707070;
     .el-table{
         color: #707070;
-        font-size:13px;
+        font-size:10px;
         font-family: 'Ubuntu', sans-serif;
         font-weight: 400;
         line-height:11px;
         padding:0px !important;
         // border: 0.5px solid #707070;
+        thead {
+          tr {
+            th {
+              border: 1px solid #dfe6ec;
+              background-color: #f4f4f4 !important;
+              padding: 0;
+            }
+          }
+        }
+        tbody {
+          tr {
+            td {
+              border: 1px solid #dfe6ec;
+              padding: 0 2px !important;
+            }
+          }
+        }
+        .el-table__header-wrapper {
+          .cell {
+            padding: 0;
+            text-align: center;
+          }
+        }
+        .el-table__body-wrapper {
+          .el-table__row {
+            .cell {
+              padding:0;
+            }
+          }
+        }
         .el-tag {
             padding: 0 5px;
             line-height: 30px;

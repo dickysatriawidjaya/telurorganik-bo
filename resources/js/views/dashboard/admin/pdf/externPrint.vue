@@ -16,51 +16,57 @@
       </div>
     </div>
 
-    <!-- <table style="width:100%" border="1">
+    <table class="cust-table" style="width:100%" border="1">
+      <col>
+      <colgroup span="2"></colgroup>
       <thead>
         <tr>
-          <th>No</th>
-          <th>Date</th>
-          <th>Vendor</th>
-          <th>Trans.ID</th>
-          <th>Item</th>
-          <th>Total</th>
+          <th rowspan="2" width="28">No</th>
+          <th rowspan="2" width="55">Date</th>
+          <th rowspan="2" width="100">Vendor</th>
+          <th rowspan="2" width="100">Trans.ID</th>
+          <th colspan="5" width="320">Item</th>
+          <th rowspan="2" width="150">Total</th>
+        </tr>
+        <tr>
+          <th width="105">Barang</th>
+          <th width="50">Unit</th>
+          <th width="50">Qty</th>
+          <th width="65">Disc</th>
+          <th width="90" style="text-align:right;padding-right:4px;">Sub Total</th>
         </tr>
 
       </thead>
       <tbody>
-        <tr v-for="(t,index) in list">
-          <td>{{ index + 1 }}</td>
-          <td>{{ t.transaction_date | moment("DD-MM-YYYY") }}</td>
-          <td>{{ t.vendor.name }}</td>
-          <td>{{ t.transaction_no }}</td>
-          <table border="1" width="100%">
-            <td width="100%">
-              <tr v-for="(d,index_detail) in t.detail_transaction" v-if="t.detail_transaction.length > 0" width="100%">
-                <td width="100%">{{ index_detail + 1 }}</td>
-                <td width="100%">{{ d.item.name }}</td>
-                <td width="100%">{{ d.item.unit.name }}</td>
-                <td width="100%">{{ d.quantity }}</td>
-                <td width="100%">{{ d.discount }}</td>
-                <td width="100%">{{ d.subtotal | toCurrency }}</td>
-              </tr>
-            </td width="100%">
-          </table>
-          <td>{{ t.total | toCurrency }}</td>
+        <tr v-for="(t,index) in list" :key="index">
+          <td width="28" style="text-align:center;">{{ index + 1 }}</td>
+          <td width="55">{{ t.transaction_date | moment("DD/MMM/YY") }}</td>
+          <td width="100">{{ t.vendor.name }}</td>
+          <td width="100">{{ t.transaction_no }}</td>
+          <td class="no-padding" colspan="5" width="320">
+            <tr v-for="(d,index_detail) in t.detail_transaction" :key="index_detail" v-if="t.detail_transaction.length > 0" width="100%">
+              <td width="105">{{ d.item.name }}</td>
+              <td width="50">{{ d.item.unit.name }}</td>
+              <td style="text-align:right;padding-right:4px;" width="50">{{ d.quantity }}</td>
+              <td style="text-align:right;padding-right:4px;" width="65">{{ d.discount }} %</td>
+              <td width="90" style="text-align:right;padding-right:4px;">{{ d.subtotal | toCurrency }}</td>
+            </tr>
+          </td>
+          <td width="90" style="text-align:right;padding-right:4px;">{{ t.total | toCurrency }}</td>
         </tr>
       </tbody>
 
-    </table> -->
+    </table>
 
-    <el-table v-loading="loading" :data="list" border fit style="width: 100%">
-      <el-table-column align="center" label="No." prop="index" width="43">
+    <!-- <el-table v-loading="loading" :data="list" border fit style="width: 100%">
+      <el-table-column align="center" label="No." prop="index" width="28" style="">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Date" width="90" prop="created_at">
+      <el-table-column align="left" class-name="status-col" label="Date" width="55" prop="created_at">
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MMM-YY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD/MMM/YY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor">
@@ -73,45 +79,33 @@
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Item" prop="Item" width="320">
+      <el-table-column align="left" prop="Item" width="320">
         <template slot-scope="scope">
-          <tr>
-            <th width="30">No</th>
-            <th width="85">Barang</th>
-            <th width="50">Unit</th>
-            <th width="30">Qty</th>
-            <th width="65">Discount</th>
-            <th width="90" style="text-align:right;">Sub Total</th>
-          </tr>
+          <div>
+            <tr>
+              <th width="105">Barang</th>
+              <th width="50">Unit</th>
+              <th width="50">Qty</th>
+              <th width="65">Disc</th>
+              <th width="90" style="text-align:right;">Sub Total</th>
+            </tr>
+          </div>
           <tr v-for="(d,index_detail) in scope.row.detail_transaction">
-            <td width="30">{{ index_detail + 1 }}</td>
-            <td width="85">{{ d.item.name }}</td>
+            <td width="105">{{ d.item.name }}</td>
             <td width="50">{{ d.item.unit.name }}</td>
-            <td width="30">{{ d.quantity }}</td>
-            <td width="65">{{ d.discount }}</td>
+            <td width="50">{{ d.quantity }}</td>
+            <td width="65">{{ d.discount }} %</td>
             <td width="90" style="text-align:right;">{{ d.subtotal | toCurrency }}</td>
           </tr>
         </template>
-        <!-- <table border="1" width="100%">
-           <td width="100%">
-             <tr v-for="(d,index_detail) in t.detail_transaction" v-if="t.detail_transaction.length > 0" width="100%">
-               <td width="100%">{{ index_detail + 1 }}</td>
-               <td width="100%">{{ d.item.name }}</td>
-               <td width="100%">{{ d.item.unit.name }}</td>
-               <td width="100%">{{ d.quantity }}</td>
-               <td width="100%">{{ d.discount }}</td>
-               <td width="100%">{{ d.subtotal | toCurrency }}</td>
-             </tr>
-           </td width="100%">
-         </table> -->
       </el-table-column>
       <el-table-column align="right" label="Total" width="150" prop="total">
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
-    </el-table>
-    <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 9px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
+    </el-table> -->
+    <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 4px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
   </div>
 </template>
 
@@ -227,37 +221,100 @@ export default {
   .print{
     width:793px;
     color: #707070;
-    .el-table{
+    .cust-table{
         color: #707070 !important;
-        font-size:13px;
+        font-size:10px;
         font-family: 'Ubuntu', sans-serif;
         font-weight: 400;
         line-height:11px;
         padding:0px !important;
-        // border: 0.5px solid #707070;
-        .el-tag {
-            padding: 0 5px;
-            line-height: 30px;
-            font-family: 'Ubuntu', sans-serif;
-            font-size: 13px;
+        border-collapse: collapse;
+        border: 1px solid #dfe6ec;
+        thead {
+          tr {
+            th {
+              border: 1px solid #dfe6ec;
+              background-color: #f4f4f4 !important;
+            }
+          }
+        }
+        tbody {
+          tr {
+            td {
+              border: 1px solid #dfe6ec;
+              padding: 0 2px;
+              td {
+                border-right: 1px solid #dfe6ec;
+                border-bottom: none;
+                border-top: none;
+                border-left: none;
+                padding: 2px;
+                &:last-child {
+                  border-right: 0;
+                }
+              }
+            }
+            .no-padding {
+              padding: 0;
+            }
+          }
         }
     }
     @media print {
-      table {
-          border: solid #000 !important;
-          border-width: 1px 0 0 1px !important;
-          border-bottom: 1px solid #000 !important;
-          border-right: 1px solid #000 !important;
+      .cust-table{
+          color: #707070 !important;
+          font-size:10px;
+          font-family: 'Ubuntu', sans-serif;
+          font-weight: 400;
+          line-height:11px;
+          padding:0px !important;
+          border-collapse: collapse;
+          border: 1px solid #000;
+          thead {
+            tr {
+              th {
+                border: 1px solid #000;
+                background-color: #f4f4f4 !important;
+              }
+            }
+          }
+          tbody {
+            tr {
+              td {
+                border: 1px solid #000;
+                padding: 0 2px;
+                td {
+                  border-right: 1px solid #000;
+                  border-bottom: none;
+                  border-top: none;
+                  border-left: none;
+                  padding: 2px;
+                  &:last-child {
+                    border-right: 0;
+                  }
+                }
+              }
+              .no-padding {
+                padding: 0;
+              }
+            }
+          }
       }
-      tr, td {
-          border: solid #000 !important;
-          border-width: 0 1px 1px 0 !important;
-      }
-      tr {
-        &:first-child {
-          display:none;
-        }
-      }
+      // table {
+      //     border: solid #000 !important;
+      //     border-width: 1px 0 0 1px !important;
+      //     border-bottom: 1px solid #000 !important;
+      //     border-right: 1px solid #000 !important;
+      // }
+      // tr, td {
+      //     border: solid #000 !important;
+      //     border-width: 0 1px 1px 0 !important;
+      // }
+      // tr {
+      //   &:first-child {
+      //     display:none;
+      //   }
+      // }
     }
   }
 @mixin clearfix {

@@ -405,8 +405,8 @@ export default {
       });
     },
     onUpdate() {
-      this.$refs['itemForm'].validate((valid) => {
-        if (valid) {
+      // this.$refs['itemForm'].validate((valid) => {
+      //   if (valid) {
           // this.priceEmpty = true;
           // this.nameEmpty = true;
           // if (this.priceblurred || this.nameblurred) {
@@ -435,11 +435,11 @@ export default {
             .finally(() => {
               this.itemCreating = false;
             });
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+      //   } else {
+      //     console.log('error submit!!');
+      //     return false;
+      //   }
+      // });
     },
     resetnewItem() {
       this.newItem = {
