@@ -5,10 +5,10 @@
       <span v-else> All </span>
 
       <div style="float:right;">
-        <span v-if="query.start_date"> {{ query.start_date | moment("DD/MM/YYYY") }} </span>
+        <span v-if="query.start_date"> {{ query.start_date | moment("DD/MMM/YYYY") }} </span>
         <span v-else> All </span>
         -
-        <span v-if="query.end_date"> {{ query.end_date | moment("DD/MM/YYYY") }} </span>
+        <span v-if="query.end_date"> {{ query.end_date | moment("DD/MMM/YYYY") }} </span>
         <span v-else> All </span>
         (<span v-if="query.status == 1"> Paid </span>
         <span v-else-if="query.status == -1"> Unpaid </span>
@@ -60,7 +60,7 @@
       </el-table-column>
       <el-table-column align="left" class-name="status-col" label="Date" width="90" prop="created_at">
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MM-YY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD-MMM-YY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor">
@@ -81,7 +81,7 @@
             <th width="50">Unit</th>
             <th width="30">Qty</th>
             <th width="65">Discount</th>
-            <th width="90">Sub Total</th>
+            <th width="90" style="text-align:right;">Sub Total</th>
           </tr>
           <tr v-for="(d,index_detail) in scope.row.detail_transaction">
             <td width="30">{{ index_detail + 1 }}</td>
@@ -89,7 +89,7 @@
             <td width="50">{{ d.item.unit.name }}</td>
             <td width="30">{{ d.quantity }}</td>
             <td width="65">{{ d.discount }}</td>
-            <td width="90">{{ d.subtotal | toCurrency }}</td>
+            <td width="90" style="text-align:right;">{{ d.subtotal | toCurrency }}</td>
           </tr>
         </template>
         <!-- <table border="1" width="100%">

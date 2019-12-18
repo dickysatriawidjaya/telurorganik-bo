@@ -5,10 +5,10 @@
       <span v-else> All </span>
 
       <div style="float:right;">
-        <span v-if="query.start_date"> {{ query.start_date | moment("DD/MM/YYYY") }} </span>
+        <span v-if="query.start_date"> {{ query.start_date | moment("DD/MMM/YYYY") }} </span>
         <span v-else> All </span>
         -
-        <span v-if="query.end_date"> {{ query.end_date | moment("DD/MM/YYYY") }} </span>
+        <span v-if="query.end_date"> {{ query.end_date | moment("DD/MMM/YYYY") }} </span>
         <span v-else> All </span>
         (<span v-if="query.status == 1"> Paid </span>
         <span v-else-if="query.status == -1"> Unpaid </span>
@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column class-name="status-col" align="left" label="Date" width="110" prop="created_at">
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MM-YY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD-MMM-YY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor">
