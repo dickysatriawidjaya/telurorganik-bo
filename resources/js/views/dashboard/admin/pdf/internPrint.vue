@@ -31,7 +31,7 @@
           <span>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Trans.ID" prop="transaction_no">
+      <el-table-column align="left" label="Trans.ID" prop="transaction_no" width="140">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
@@ -46,18 +46,19 @@
           </p>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Retur" prop="retur">
+      <el-table-column align="left" label="Retur" prop="retur" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.retur }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="right" label="Total" prop="total" width="130">
+      <el-table-column align="right" label="Total" prop="total" width="140">
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
     </el-table>
     <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 9px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
+    <button class="printButton" onclick="window.print()">Print this page</button>
   </div>
 </template>
 
@@ -160,7 +161,7 @@ export default {
       this.total = meta.total;
       this.loading = false;
       // setTimeout(() => {
-
+      //
       //   this.$nextTick(() => {
       //     window.print();
       //   });
@@ -171,6 +172,15 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+  .printButton {
+    position: absolute;
+    right: 30%;
+    top: 3%;
+    border: 1px solid #000;
+    background: #000;
+    color: #fff;
+    padding: 5px 10px;
+  }
   .print{
     width:790px;
     color: #707070;
@@ -220,6 +230,9 @@ export default {
         }
     }
     @media print {
+      .printButton {
+        display: none;
+      }
       .el-table {
           border: 2px solid #000 !important;
           border-bottom: 2px solid #000 !important;
