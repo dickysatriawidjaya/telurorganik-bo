@@ -101,7 +101,7 @@
             <!-- <span v-if="priceblurred && priceEmpty" class="error">Price is required!</span> -->
           </el-form-item>
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
-            <el-select v-model="newItem.status_form" style="width: 100%" class="filter-item">
+            <el-select v-model="newItem.status_form" style="width: 100%" class="filter-item" @change="forceupdate">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
           </el-form-item>
@@ -286,6 +286,12 @@ export default {
     },
     forceUpdate(){
       this.$forceUpdate();
+    },
+    forceUpdate2(){
+      this.$forceUpdate();
+      this.$nextTick(() => {
+        this.$refs['itemForm'].clearValidate();
+      });
     },
     checkPermission,
     async getPermissions() {

@@ -30,7 +30,7 @@
         </tr>
         <tr>
           <th width="103">Barang</th>
-          <th width="49">Unit</th>
+          <th width="59">Unit</th>
           <th width="49">Qty</th>
           <th width="64">Disc</th>
           <th width="88" style="text-align:right;padding-right:4px;">Sub Total</th>
@@ -46,7 +46,7 @@
           <td class="no-padding" colspan="5" width="320">
             <tr v-for="(d,index_detail) in t.detail_transaction" :key="index_detail" v-if="t.detail_transaction.length > 0" width="100%">
               <td width="105">{{ d.item.name }}</td>
-              <td width="50">{{ d.item.unit.name }}</td>
+              <td width="60">{{ d.item.unit.name }}</td>
               <td style="text-align:right;padding-right:4px;" width="50">{{ d.quantity }}</td>
               <td style="text-align:right;padding-right:4px;" width="65">{{ d.discount }} %</td>
               <td width="90" style="text-align:right;padding-right:4px;">{{ d.subtotal | toCurrency }}</td>
