@@ -26,13 +26,12 @@ class TransactionController extends Controller
         $month = Arr::get($searchParams, 'month', '');
         $role = Arr::get($searchParams, 'role', '');
         $print = Arr::get($searchParams, 'print', '');
-
+        $paginate = Arr::get($searchParams, 'paginate', '');
 
         $start_date = Arr::get($searchParams, 'start_date', '');
         $end_date = Arr::get($searchParams, 'end_date', '');
 
         if (!empty($status)) {
-            return "masuk";
             $transactionQuery->where('status',$status);
         }
 
@@ -65,8 +64,12 @@ class TransactionController extends Controller
         // }else{
         $transactionQuery->with('vendor','detail_transaction.item.unit')->orderBy('id','DESC');
         // }
+        // if ($paginate == true) {
+          return TransactionResource::collection($transactionQuery->paginate($limit));
+        // }else{
+        //   return TransactionResource::collection($transactionQuery);
+        // }
 
-        return TransactionResource::collection($transactionQuery->paginate($limit));
     }
 
     public function print(){

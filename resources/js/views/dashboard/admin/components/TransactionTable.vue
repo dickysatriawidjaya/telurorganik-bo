@@ -318,7 +318,7 @@ export default {
       ],
       query: {
         page: 1,
-        limit: 20,
+        limit: 9999,
         keyword: '',
         role: Cookies.get('Role'),
         status: null,

@@ -25,7 +25,7 @@
           <th rowspan="2" width="55">Date</th>
           <th rowspan="2" width="150">Vendor</th>
           <th rowspan="2" width="85">Trans.ID</th>
-          <th colspan="5" width="320">Item</th>
+          <th colspan="6" width="320">Item</th>
           <th rowspan="2" width="100">Total</th>
         </tr>
         <tr>
@@ -33,6 +33,7 @@
           <th width="49">Unit</th>
           <th width="49">Qty</th>
           <th width="64">Disc</th>
+          <th width="64">Retur</th>
           <th width="88" style="text-align:right;padding-right:4px;">Sub Total</th>
         </tr>
 
@@ -43,12 +44,13 @@
           <td width="55">{{ t.transaction_date | moment("DD/MMM/YY") }}</td>
           <td width="150">{{ t.vendor.name }}</td>
           <td width="85">{{ t.transaction_no }}</td>
-          <td class="no-padding" colspan="5" width="320">
+          <td class="no-padding" colspan="6" width="320">
             <tr v-for="(d,index_detail) in t.detail_transaction" :key="index_detail" v-if="t.detail_transaction.length > 0" width="100%">
               <td width="105">{{ d.item.name }}</td>
               <td width="50">{{ d.item.unit.name }}</td>
               <td style="text-align:right;padding-right:4px;" width="50">{{ d.quantity }}</td>
               <td style="text-align:right;padding-right:4px;" width="65">{{ d.discount }} %</td>
+              <td style="text-align:right;padding-right:4px;" width="65">{{ d.retur }}</td>
               <td width="90" style="text-align:right;padding-right:4px;">{{ d.subtotal | toCurrency }}</td>
             </tr>
           </td>
@@ -116,6 +118,9 @@ import VendorResource from '@/api/vendor';
 
 const vendorResource = new VendorResource();
 const transactionResource = new TransactionResource();
+
+import Cookies from 'js-cookie';
+
 export default {
   data() {
     return {
@@ -132,10 +137,10 @@ export default {
       vendor: null,
       query: {
         page: 1,
-        limit: 15,
+        limit: 9999,
         keyword: '',
-        role: '',
-        status: 1,
+        role: Cookies.get('Role'),
+        status: null,
         vendor: null,
         start_date: '',
         end_date: '',

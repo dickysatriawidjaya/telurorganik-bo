@@ -111,19 +111,24 @@
             <span>{{ scope.row.quantity }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="Discount" prop="discount" sortable>
+        <el-table-column align="left" label="Disc" prop="discount" sortable>
           <template slot-scope="scope">
             <span>{{ scope.row.discount }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="Total" prop="total" sortable>
+        <el-table-column align="left" label="Retur" prop="retur" sortable>
+          <template slot-scope="scope">
+            <span>{{ scope.row.retur }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="right" label="Total" prop="total" sortable width="150">
           <template slot-scope="scope">
             <span>{{ scope.row.subtotal | toCurrency }}</span>
           </template>
         </el-table-column>
       </el-table>
       <el-row>
-        <el-col :span="12" style="margin-left: 80%">
+        <el-col :span="12" style="margin-left: 75%">
           <el-row>
             <el-col :span="5">
               <h3 class="text_normal">
