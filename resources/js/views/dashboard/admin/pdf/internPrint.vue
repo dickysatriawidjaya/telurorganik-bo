@@ -58,7 +58,7 @@
       </el-table-column>
     </el-table>
     <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 9px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
-    <button class="printButton" onclick="window.print()">Print this page</button>
+    <el-button class="printButton" icon="el-icon-printer" onclick="window.print()">Print page</el-button>
   </div>
 </template>
 
