@@ -86,11 +86,11 @@
         <el-col :span="12" />
       </el-row>
       <el-table v-loading="loading" :data="transaction.detail_transaction" border fit highlight-current-row style="width: 100%">
-        <el-table-column align="left" label="No." prop="index" width="60">
+        <!-- <el-table-column align="left" label="No." prop="index" width="60">
           <template slot-scope="scope">
             <span>{{ scope.row.index }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" width="120" sortable>
           <template slot-scope="scope">
             <span>{{ scope.row.created_at | moment("DD-MMM-YYYY") }}</span>

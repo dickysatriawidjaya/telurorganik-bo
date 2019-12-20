@@ -21,7 +21,7 @@
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" align="left" label="Date" width="55" prop="created_at">
+      <el-table-column class-name="status-col" align="left" label="Date" width="65" prop="created_at">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_date | moment("DD/MMM/YY") }}</span>
         </template>
@@ -31,12 +31,12 @@
           <span>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Trans.ID" prop="transaction_no">
+      <el-table-column align="left" label="Trans.ID" prop="transaction_no" width="140">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Status" width="110" prop="status">
+      <el-table-column align="left" label="Status" width="100" prop="status">
         <template slot-scope="scope">
           <p v-if="scope.row.status == 1" type="success">
             Paid
@@ -46,18 +46,19 @@
           </p>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Retur" prop="retur">
+      <el-table-column align="left" label="Retur" prop="retur" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.retur }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="right" label="Total" prop="total" width="130">
+      <el-table-column align="right" label="Total" prop="total" width="140">
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
     </el-table>
     <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 9px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
+    <el-button class="printButton" icon="el-icon-printer" onclick="window.print()">Print page</el-button>
   </div>
 </template>
 
@@ -160,7 +161,7 @@ export default {
       this.total = meta.total;
       this.loading = false;
       // setTimeout(() => {
-
+      //
       //   this.$nextTick(() => {
       //     window.print();
       //   });
@@ -171,8 +172,17 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+  .printButton {
+    position: absolute;
+    right: 30%;
+    top: 3%;
+    border: 1px solid #000;
+    background: #000;
+    color: #fff;
+    padding: 5px 10px;
+  }
   .print{
-    width:793px;
+    width:790px;
     color: #707070;
     .el-table{
         color: #707070;
@@ -182,6 +192,9 @@ export default {
         line-height:11px;
         padding:0px !important;
         // border: 0.5px solid #707070;
+        .cell {
+          line-height: 14px;
+        }
         thead {
           tr {
             th {
@@ -196,6 +209,9 @@ export default {
             td {
               border: 1px solid #dfe6ec;
               padding: 0 2px !important;
+              p {
+                margin: 0;
+              }
             }
           }
         }
@@ -212,22 +228,41 @@ export default {
             }
           }
         }
-        .el-tag {
-            padding: 0 5px;
-            line-height: 30px;
-            font-family: 'Ubuntu', sans-serif;
-            font-size: 13px;
-        }
     }
     @media print {
-      table {
-          border: solid #000 !important;
-          border-width: 1px 0 0 1px !important;
-          border-bottom: 1px solid #000 !important;
-          border-right: 1px solid #000 !important;
+      .printButton {
+        display: none;
+      }
+      .el-table {
+          border: 2px solid #000 !important;
+          border-bottom: 2px solid #000 !important;
+          border-right: 2px solid #000 !important;
+          .cell {
+            line-height: 14px;
+          }
+          thead {
+            tr {
+              th {
+                border: 1px solid #dfe6ec;
+                background-color: #f4f4f4 !important;
+                padding: 0;
+              }
+            }
+          }
+          tbody {
+            tr {
+              td {
+                border: 1px solid #dfe6ec;
+                padding: 0 4px !important;
+                p {
+                  margin: 0;
+                }
+              }
+            }
+          }
       }
       th, td {
-          border: solid #000 !important;
+          border: 1px solid #000 !important;
           border-width: 0 1px 1px 0 !important;
       }
     }

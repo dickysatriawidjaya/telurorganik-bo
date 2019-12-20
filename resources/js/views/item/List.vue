@@ -50,7 +50,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Price" prop="price" sortable>
+      <el-table-column align="right" label="Price" prop="price" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.price | toCurrency }}</span>
         </template>
@@ -58,7 +58,7 @@
 
       <el-table-column align="center" label="Created Date" prop="created_at" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.created_at | moment("DD-MM-YYYY") }}</span>
+          <span>{{ scope.row.created_at | moment("DD/MMM/YY") }}</span>
         </template>
       </el-table-column>
 

@@ -23,17 +23,17 @@
         <tr>
           <th rowspan="2" width="28">No</th>
           <th rowspan="2" width="55">Date</th>
-          <th rowspan="2" width="100">Vendor</th>
-          <th rowspan="2" width="100">Trans.ID</th>
+          <th rowspan="2" width="150">Vendor</th>
+          <th rowspan="2" width="85">Trans.ID</th>
           <th colspan="5" width="320">Item</th>
-          <th rowspan="2" width="150">Total</th>
+          <th rowspan="2" width="100">Total</th>
         </tr>
         <tr>
-          <th width="105">Barang</th>
-          <th width="50">Unit</th>
-          <th width="50">Qty</th>
-          <th width="65">Disc</th>
-          <th width="90" style="text-align:right;padding-right:4px;">Sub Total</th>
+          <th width="103">Barang</th>
+          <th width="49">Unit</th>
+          <th width="49">Qty</th>
+          <th width="64">Disc</th>
+          <th width="88" style="text-align:right;padding-right:4px;">Sub Total</th>
         </tr>
 
       </thead>
@@ -41,8 +41,8 @@
         <tr v-for="(t,index) in list" :key="index">
           <td width="28" style="text-align:center;">{{ index + 1 }}</td>
           <td width="55">{{ t.transaction_date | moment("DD/MMM/YY") }}</td>
-          <td width="100">{{ t.vendor.name }}</td>
-          <td width="100">{{ t.transaction_no }}</td>
+          <td width="150">{{ t.vendor.name }}</td>
+          <td width="85">{{ t.transaction_no }}</td>
           <td class="no-padding" colspan="5" width="320">
             <tr v-for="(d,index_detail) in t.detail_transaction" :key="index_detail" v-if="t.detail_transaction.length > 0" width="100%">
               <td width="105">{{ d.item.name }}</td>
@@ -52,7 +52,7 @@
               <td width="90" style="text-align:right;padding-right:4px;">{{ d.subtotal | toCurrency }}</td>
             </tr>
           </td>
-          <td width="90" style="text-align:right;padding-right:4px;">{{ t.total | toCurrency }}</td>
+          <td width="100" style="text-align:right;padding-right:4px;">{{ t.total | toCurrency }}</td>
         </tr>
       </tbody>
 
@@ -106,6 +106,7 @@
       </el-table-column>
     </el-table> -->
     <div style="float:right; font-weight: 500; margin-top: 4px; position: relative; right: 4px;color: #707070;"><span style="position: relative;right: 25px;">Grand Total</span> {{ grand_total | toCurrency }}</div>
+    <el-button class="printButton" icon="el-icon-printer" onclick="window.print()">Print page</el-button>
   </div>
 </template>
 
@@ -207,7 +208,7 @@ export default {
       this.total = meta.total;
       this.loading = false;
       // setTimeout(() => {
-
+      //
       //   this.$nextTick(() => {
       //     window.print();
       //   });
@@ -218,6 +219,15 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+  .printButton {
+    position: absolute;
+    right: 30%;
+    top: 3%;
+    border: 1px solid #000;
+    background: #000;
+    color: #fff;
+    padding: 5px 10px;
+  }
   .print{
     width:793px;
     color: #707070;
@@ -261,6 +271,9 @@ export default {
         }
     }
     @media print {
+      .printButton {
+        display: none;
+      }
       .cust-table{
           color: #707070 !important;
           font-size:10px;

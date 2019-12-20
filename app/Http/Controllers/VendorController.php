@@ -38,7 +38,7 @@ class VendorController extends Controller
             $vendorQuery->orWhere('phone', 'LIKE', '%' . $keyword . '%');
         }
 
-        $vendorQuery->orderBy('status','DESC')->with('parent');
+        $vendorQuery->orderBy('id','DESC')->with('parent');
         if ($paginate == "true") {
             return VendorResource::collection($vendorQuery->paginate($limit));
         } else {
@@ -126,7 +126,7 @@ class VendorController extends Controller
 
 
                 //UPDATE CHILD
-                if ($request->child) {
+                if (count($request->child) > 0) {
                     $check_child = Vendor::where('parent_id',$vendor->id)->update(['status' => -1]);
                     try {
                         foreach ($request->child as $key => $c) {
@@ -144,7 +144,7 @@ class VendorController extends Controller
                             $child->save(); // update
                         }
                     } catch (\Throwable $th) {
-                        return response()->json(['errors' => "Failed Update Vendor Child Data ".$th], 403);
+                        return response()->json(['errors' => "Failed Update Vendor Child Data "], 403);
                     }
 
                 }

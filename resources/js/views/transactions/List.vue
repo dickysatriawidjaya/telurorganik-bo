@@ -52,12 +52,12 @@
       </el-table-column>
       <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" sortable width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MM-YY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD/MMM/YY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor" sortable>
         <template slot-scope="scope">
-          <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
+          <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }}</span>
           <span v-else>{{ scope.row.vendor.name }}</span>
         </template>
       </el-table-column>
@@ -68,12 +68,12 @@
           </ul>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Trans.ID" prop="transaction_no" sortable width="110">
+      <el-table-column align="left" label="Trans.ID" prop="transaction_no" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Total" prop="total" width="140" sortable>
+      <el-table-column align="right" label="Total" prop="total" width="140" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
@@ -253,7 +253,7 @@ export default {
       transactionId: 0,
       query: {
         page: 1,
-        limit: 15,
+        limit: 20,
         keyword: '',
         role: Cookies.get('Role'),
       },
@@ -402,28 +402,43 @@ export default {
     if (checkPermission(['manage permission'])) {
       this.getPermissions();
     }
-    console.log(this.role);
+    //console.log(this.role);
   },
   methods: {
     checkItemName(athis){
       let vm = athis;
       alert(vm);
     },
+
     handleClose(done) {
       this.$confirm('Are you sure to close this dialog?')
         .then(_ => {
           done();
         })
         .catch(_ => {});
+      this.validate_error = false;
     },
 
     forceupdate(event){
-      console.log(event);
-      console.log(this.newTransaction.date_form);
+      //console.log(event);
+      //console.log(this.newTransaction.date_form);
       this.$forceUpdate();
     },
     spliceTransactionDetail(index){
       this.newTransaction.detail.splice(index, 1);
+
+      //check duplicate child array
+      var array = this.newTransaction.detail;
+      const newArray = this.newTransaction.detail.map(item => item.item_id_form);
+      let findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) != index)
+      console.log(findDuplicates(newArray));
+      let array_check = findDuplicates(newArray);
+      if (array_check.length > 0) {
+        this.validate_error = true;
+      }else{
+        this.validate_error = false;
+      }
+      //end check duplicate child array
     },
     addNewItemForm(){
       this.newTransaction.detail.push(
@@ -435,7 +450,7 @@ export default {
           retur_form: 0,
         }
       );
-      console.log(this.newTransaction.detail);
+      //console.log(this.newTransaction.detail);
     },
     checkPermission,
     async getPermissions() {
@@ -466,7 +481,7 @@ export default {
       this.loading = true;
       const { data, meta } = await transactionResource.list(this.query);
       this.list = data;
-      console.log(this.list);
+      //console.log(this.list);
 
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
@@ -518,11 +533,11 @@ export default {
       let total = 0;
       this.newTransaction.detail.forEach(element => {
         total += parseFloat(element.subtotal_form);
-        console.log(element.subtotal_form);
+        //console.log(element.subtotal_form);
       });
       this.newTransaction.total_form = total;
       // countTOTALEND
-      console.log({ quantity, discount, result });
+      //console.log({ quantity, discount, result });
     },
     handleFilter() {
       this.query.page = 1;
@@ -542,6 +557,7 @@ export default {
       this.resetnewTransaction();
     },
     handleUpdate(data){
+      this.validate_error = false;
       this.notransEmpty = false;
       this.dateEmpty = false;
       this.dialogFormVisible = true;
@@ -549,7 +565,7 @@ export default {
         this.$refs['itemForm'].clearValidate();
       });
       this.titleForm = 'Edit Transaction';
-      console.log(data);
+      //console.log(data);
       this.transactionId = data.id;
       this.newTransaction.transaction_no_form = data.transaction_no;
       this.newTransaction.vendor_id_form = data.vendor_id;
@@ -557,7 +573,7 @@ export default {
       this.newTransaction.status_form = data.status;
       this.newTransaction.date_form = data.created_at;
 
-      console.log(this.newTransaction.status_form);
+      //console.log(this.newTransaction.status_form);
 
       const tmp = [];
       data.detail_transaction.forEach(function(element, i) {
@@ -567,7 +583,7 @@ export default {
             'transaction_id_form': element.transaction_id,
             'item_id_form': element.item_id,
             'price_form': element.item.price,
-            'retur_form': element.retur,
+            'retur_form': (element.retur)?element.retur:"0",
             'quantity_form': element.quantity,
             'discount_form': element.discount,
             'subtotal_form': element.subtotal,
@@ -591,7 +607,7 @@ export default {
           });
           this.handleFilter();
         }).catch(error => {
-          console.log(error);
+          //console.log(error);
         });
       }).catch(() => {
         this.$message({
@@ -628,13 +644,13 @@ export default {
               this.dateEmpty = false;
             })
             .catch(error => {
-              console.log(error);
+              //console.log(error);
             })
             .finally(() => {
               this.transactionCreating = false;
             });
         } else {
-          console.log('error submit!!');
+          //console.log('error submit!!');
           return false;
         }
       });
@@ -670,13 +686,13 @@ export default {
               this.dateEmpty = false;
             })
             .catch(error => {
-              console.log(error);
+              //console.log(error);
             })
             .finally(() => {
               this.transactionCreating = false;
             });
         // } else {
-        //   console.log('error submit!!');
+        //   //console.log('error submit!!');
         //   return false;
         // }
       // });
