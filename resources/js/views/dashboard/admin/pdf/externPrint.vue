@@ -29,12 +29,12 @@
           <th rowspan="2" width="100">Total</th>
         </tr>
         <tr>
-          <th width="103">Barang</th>
-          <th width="59">Unit</th>
-          <th width="49">Qty</th>
-          <th width="64">Disc</th>
-          <th width="64">Retur</th>
-          <th width="88" style="text-align:right;padding-right:4px;">Sub Total</th>
+          <th width="74">Barang</th>
+          <th width="55">Unit</th>
+          <th width="42">Qty</th>
+          <th width="48">Disc</th>
+          <th width="59">Retur</th>
+          <th width="100" style="text-align:right;padding-right:4px;">Sub Total</th>
         </tr>
 
       </thead>
@@ -45,14 +45,16 @@
           <td width="150">{{ t.vendor.name }}</td>
           <td width="85">{{ t.transaction_no }}</td>
           <td class="no-padding" colspan="6" width="320">
-            <tr v-for="(d,index_detail) in t.detail_transaction" :key="index_detail" v-if="t.detail_transaction.length > 0" width="100%">
-              <td width="105">{{ d.item.name }}</td>
-              <td width="60">{{ d.item.unit.name }}</td>
-              <td style="text-align:right;padding-right:4px;" width="50">{{ d.quantity }}</td>
-              <td style="text-align:right;padding-right:4px;" width="65">{{ d.discount }} %</td>
-              <td style="text-align:right;padding-right:4px;" width="65">{{ d.retur }}</td>
-              <td width="90" style="text-align:right;padding-right:4px;">{{ d.subtotal | toCurrency }}</td>
-            </tr>
+            <tbody>
+              <tr v-for="(d,index_detail) in t.detail_transaction" :key="index_detail" v-if="t.detail_transaction.length > 0" width="320">
+                <td width="74">{{ d.item.name }}</td>
+                <td width="55">{{ d.item.unit.name }}</td>
+                <td style="text-align:right;padding-right:4px;" width="42">{{ d.quantity }}</td>
+                <td style="text-align:right;padding-right:4px;" width="48">{{ d.discount }} %</td>
+                <td style="text-align:right;padding-right:4px;" width="59">{{ d.retur }}</td>
+                <td width="100" style="text-align:right;padding-right:4px;">{{ d.subtotal | toCurrency }}</td>
+              </tr>
+            </tbody>
           </td>
           <td width="100" style="text-align:right;padding-right:4px;">{{ t.total | toCurrency }}</td>
         </tr>
