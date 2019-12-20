@@ -138,6 +138,7 @@ export default {
       },
       vendor: null,
       query: {
+        print : true,
         page: 1,
         limit: 9999,
         keyword: '',

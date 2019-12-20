@@ -59,13 +59,16 @@ class TransactionController extends Controller
             $transactionQuery->where('created_at', '>=', date("Y-m-d",strtotime("-30 day")));
         }
 
-        // if (!empty($print)) {
-        //   $transactionQuery->orderBy('vendor_id','ASC')->orderBy('id','DESC');
-        // }else{
+        if (!empty($print)) {
+          $transactionQuery->orderBy('transaction_date','ASC');
+        }else{
+          $transactionQuery->orderBy('id','DESC');
+        }
+
         $transactionQuery->with('vendor','detail_transaction.item.unit')->orderBy('id','DESC');
-        // }
+
         // if ($paginate == true) {
-          return TransactionResource::collection($transactionQuery->paginate($limit));
+        return TransactionResource::collection($transactionQuery->paginate($limit));
         // }else{
         //   return TransactionResource::collection($transactionQuery);
         // }

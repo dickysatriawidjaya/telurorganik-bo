@@ -50,7 +50,7 @@
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" sortable width="100">
+      <el-table-column align="left" class-name="status-col" label="Trans Date" prop="created_at" sortable width="140">
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_date | moment("DD/MMM/YY") }}</span>
         </template>
@@ -64,7 +64,7 @@
       <el-table-column align="left" label="Detail Transaction" prop="transaction_detail">
         <template slot-scope="scope">
           <ul class="detail_list">
-            <li v-for="value in scope.row.detail_transaction" :key="value.id">{{ value.quantity }} pcs, {{ value.item.name }}</li>
+            <li v-for="value in scope.row.detail_transaction" :key="value.id">{{ value.quantity }} ({{ value.item.unit.name }}) , {{ value.item.name }}</li>
           </ul>
         </template>
       </el-table-column>
@@ -256,6 +256,10 @@ export default {
         limit: 20,
         keyword: '',
         role: Cookies.get('Role'),
+        status: null,
+        vendor: null,
+        start_date: '',
+        end_date: '',
       },
       queryVendor: {
         paginate: true,
@@ -396,12 +400,13 @@ export default {
   },
   created() {
     this.resetnewTransaction();
-    this.getList();
+
     this.getVendorList();
     this.getItemList();
-    if (checkPermission(['manage permission'])) {
-      this.getPermissions();
-    }
+    // if (checkPermission(['manage permission'])) {
+    //   this.getPermissions();
+    // }
+    this.getList();
     //console.log(this.role);
   },
   methods: {
