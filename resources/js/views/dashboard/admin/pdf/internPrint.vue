@@ -69,6 +69,9 @@ import VendorResource from '@/api/vendor';
 const vendorResource = new VendorResource();
 const transactionResource = new TransactionResource();
 
+import Cookies from 'js-cookie';
+
+
 export default {
   data() {
     return {
@@ -85,10 +88,10 @@ export default {
       },
       query: {
         page: 1,
-        limit: 15,
+        limit: 9999,
         keyword: '',
-        role: '',
-        status: 1,
+        role: Cookies.get('Role'),
+        status: null,
         vendor: null,
         start_date: '',
         end_date: '',

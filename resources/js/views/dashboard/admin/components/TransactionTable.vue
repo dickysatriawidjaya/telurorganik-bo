@@ -64,9 +64,9 @@
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" class-name="status-col" label="Date" prop="created_at" width="100" sortable>
+      <el-table-column align="left" class-name="status-col" label="Trans Date" prop="created_at" width="130" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_date | moment("DD-MM-YY") }}</span>
+          <span>{{ scope.row.transaction_date | moment("DD/MMM/YY") }}</span>
         </template>
       </el-table-column>
       <el-table-column align="left" label="Vendor" prop="vendor" sortable>
@@ -103,6 +103,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" class="is-right" @pagination="getList" />
   </div>
 </template>
 
@@ -317,7 +318,7 @@ export default {
       ],
       query: {
         page: 1,
-        limit: 15,
+        limit: 9999,
         keyword: '',
         role: Cookies.get('Role'),
         status: null,

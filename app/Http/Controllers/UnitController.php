@@ -32,7 +32,7 @@ class UnitController extends Controller
             $unitQuery->where('status',$status);
         }
 
-        $unitQuery->orderBy('status','DESC');
+        $unitQuery->orderBy('id','DESC');
         if ($paginate == "true") {
             return UnitResource::collection($unitQuery->paginate($limit));
         } else {
@@ -100,7 +100,7 @@ class UnitController extends Controller
     public function destroy(unit $unit)
     {
         $check_item_with_this_unit = Item::where("unit_id",$unit->id)->where('status',1)->get();
-        
+
         if (count($check_item_with_this_unit)>0) {
            return response()->json(['error' =>"Unit cannot be delete, because there is Item relation with this unit"], 403);
         }else{

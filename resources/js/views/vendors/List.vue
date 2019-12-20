@@ -47,7 +47,11 @@
       <el-table-column align="left" label="Parent" prop="parent" sortable>
         <template slot-scope="scope">
           <span v-if="scope.row.parent != null">{{ scope.row.parent.name }}</span>
-          <span v-else>Is Parent</span>
+          <span v-else>
+            <el-tag type="info">
+              IS PARENT
+            </el-tag>
+          </span>
         </template>
       </el-table-column>
 

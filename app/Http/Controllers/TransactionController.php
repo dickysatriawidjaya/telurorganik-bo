@@ -25,12 +25,11 @@ class TransactionController extends Controller
         $keyword = Arr::get($searchParams, 'keyword', '');
         $month = Arr::get($searchParams, 'month', '');
         $role = Arr::get($searchParams, 'role', '');
+        $print = Arr::get($searchParams, 'print', '');
+        $paginate = Arr::get($searchParams, 'paginate', '');
 
         $start_date = Arr::get($searchParams, 'start_date', '');
         $end_date = Arr::get($searchParams, 'end_date', '');
-
-
-        // return  date("Y-m-d",strtotime($start_date)).'\n'.date("Y-m-d",strtotime($end_date));
 
         if (!empty($status)) {
             $transactionQuery->where('status',$status);
@@ -41,10 +40,6 @@ class TransactionController extends Controller
             array_push($vendor_result,(int)($vendor));
             $transactionQuery->whereIn('vendor_id',$vendor_result);
         }
-
-        // if (!empty($month)) {
-        //     $transactionQuery->whereMonth('transaction_date', '=', $month);
-        // }
 
         if (!empty($start_date)) {
             $transactionQuery->where('transaction_date', '>=', date("Y-m-d",strtotime($start_date)));
@@ -59,14 +54,22 @@ class TransactionController extends Controller
             $transactionQuery->orWhere('total', 'LIKE', '%' . $keyword . '%');
         }
 
-        $transactionQuery->with('vendor','detail_transaction.item.unit');
-
         if ($role != 'admin') {
             $transactionQuery->where('created_at', '<=', date("Y-m-d"));
             $transactionQuery->where('created_at', '>=', date("Y-m-d",strtotime("-30 day")));
         }
 
-        return TransactionResource::collection($transactionQuery->paginate($limit));
+        // if (!empty($print)) {
+        //   $transactionQuery->orderBy('vendor_id','ASC')->orderBy('id','DESC');
+        // }else{
+        $transactionQuery->with('vendor','detail_transaction.item.unit')->orderBy('id','DESC');
+        // }
+        // if ($paginate == true) {
+          return TransactionResource::collection($transactionQuery->paginate($limit));
+        // }else{
+        //   return TransactionResource::collection($transactionQuery);
+        // }
+
     }
 
     public function print(){

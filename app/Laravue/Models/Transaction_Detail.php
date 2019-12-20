@@ -13,7 +13,7 @@ class Transaction_Detail extends Model
     protected $table = "transaction_detail";
 
     public function item(){
-        return $this->belongsTo('App\Laravue\Models\Item')->where('status',1);
+        return $this->belongsTo('App\Laravue\Models\Item');
     }
 
 }
