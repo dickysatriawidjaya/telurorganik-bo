@@ -263,9 +263,9 @@ export default {
   created() {
     this.resetnewUnit();
     this.getList();
-    if (checkPermission(['manage permission'])) {
-      this.getPermissions();
-    }
+    // if (checkPermission(['manage permission'])) {
+    //   this.getPermissions();
+    // }
   },
   methods: {
     handleClose(done) {

@@ -116,10 +116,10 @@
           <el-form-item :label="$t('user.email')" prop="email">
             <el-input v-model="newUser.email" />
           </el-form-item>
-          <el-form-item :label="$t('user.password')" prop="password">
+          <el-form-item :label="$t('user.password')">
             <el-input v-model="newUser.password" show-password />
           </el-form-item>
-          <el-form-item :label="$t('user.confirmPassword')" prop="confirmPassword">
+          <el-form-item :label="$t('user.confirmPassword')" >
             <el-input v-model="newUser.confirmPassword" show-password />
           </el-form-item>
         </el-form>
@@ -127,8 +127,11 @@
           <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button type="addtransaksi" @click="createUser()">
+          <el-button v-if="userId <= 0" type="addtransaksi" @click="createUser()">
             {{ $t('table.confirm') }}
+          </el-button>
+          <el-button v-if="userId > 0" type="addtransaksi" @click="onUpdate()">
+            Update
           </el-button>
         </div>
       </div>
@@ -205,6 +208,7 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+      userId:0,
     };
   },
   computed: {
@@ -273,9 +277,9 @@ export default {
   created() {
     this.resetNewUser();
     this.getList();
-    if (checkPermission(['manage permission'])) {
-      this.getPermissions();
-    }
+    // if (checkPermission(['manage permission'])) {
+    //   this.getPermissions();
+    // }
   },
   methods: {
     handleClose(done) {
@@ -291,6 +295,7 @@ export default {
       this.$nextTick(() => {
         this.$refs['userForm'].clearValidate();
       });
+      this.userId = data.id;
       this.titleForm = 'Edit User';
       this.newUser.role = data.roles;
       this.newUser.name = data.name;
@@ -322,6 +327,7 @@ export default {
     },
     handleCreate() {
       this.resetNewUser();
+      this.userId = 0;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['userForm'].clearValidate();
@@ -376,6 +382,36 @@ export default {
             .then(response => {
               this.$message({
                 message: 'New user ' + this.newUser.name + '(' + this.newUser.email + ') has been created successfully.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.resetNewUser();
+              this.dialogFormVisible = false;
+              this.handleFilter();
+              this.attemptSubmit = false;
+            })
+            .catch(error => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.userCreating = false;
+            });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    onUpdate() {
+      this.$refs['userForm'].validate((valid) => {
+        if (valid) {
+          this.newUser.roles = [this.newUser.role];
+          this.userCreating = true;
+          userResource
+            .update(this.userId, this.newUser)
+            .then(response => {
+              this.$message({
+                message: 'User information has been updated successfully',
                 type: 'success',
                 duration: 5 * 1000,
               });

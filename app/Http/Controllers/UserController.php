@@ -131,7 +131,9 @@ class UserController extends Controller
             if ($found && $found->id !== $user->id) {
                 return response()->json(['error' => 'Email has been taken'], 403);
             }
-
+            if($request->get('password') != null || $request->get('password') != ""){
+              $user->password =  Hash::make( $request->get('password'));
+            }
             $user->name = $request->get('name');
             $user->email = $email;
             $user->save();
