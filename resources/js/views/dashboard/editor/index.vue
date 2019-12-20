@@ -11,9 +11,9 @@
         <span style="font-size:20px;padding-top:20px;display:inline-block;">{{ roles.join('|') }}'s Dashboard</span>
       </div>
     </div>
-    <div>
+    <!-- <div>
       <img :src="emptyGif" class="emptyGif">
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -68,6 +68,32 @@ export default {
         color: #212121;
         position: absolute;
         top: 25px;
+      }
+    }
+  }
+  .filter-container {
+    .el-button {
+      font-size: 14px;
+    }
+    .text_normal {
+      font-weight: 500 !important;
+      color: #707070;
+    }
+    .vdp-datepicker {
+      width: 140px;
+      margin-right: 16px;
+      input {
+        width: 100%;
+        height: 35px;
+      }
+      .vdp-datepicker__clear-button {
+        position: absolute;
+        right: 6px;
+        top: 6px;
+        font-size: 18px;
+        span {
+          font-style: normal;
+        }
       }
     }
   }

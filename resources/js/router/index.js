@@ -115,19 +115,19 @@ if (Cookies.get('Role') == 'admin'){
           path: 'item',
           component: () => import('@/views/item/List'),
           name: 'itemlist',
-          meta: { title: 'Item', icon: 'user', permissions: ['manage item'] },
+          meta: { title: 'Item', icon: 'clipboard', permissions: ['manage item'] },
         },
         {
           path: 'unit',
           component: () => import('@/views/unit/List'),
           name: 'unitlist',
-          meta: { title: 'Unit', icon: 'user', permissions: ['manage unit'] },
+          meta: { title: 'Unit', icon: 'layout', permissions: ['manage unit'] },
         },
         {
           path: 'vendor',
           component: () => import('@/views/vendors/List'),
           name: 'vendorlist',
-          meta: { title: 'Vendor', icon: 'user', permissions: ['manage vendor'] },
+          meta: { title: 'Vendor', icon: 'create-user', permissions: ['manage vendor'] },
         },
       ],
     },
@@ -215,13 +215,13 @@ export const constantRoutes = Routes;
 
 export const asyncRoutes = [
   {
-    path: '/pdf/transactionLUNAS/:vendor_id',
-    component: () => import('@/views/dashboard/admin/pdf/TransactionLUNAS'),
+    path: '/pdf/internPrint/',
+    component: () => import('@/views/dashboard/admin/pdf/internPrint'),
     hidden: true,
   },
   {
-    path: '/pdf/transactionBELUMLUNAS/:vendor_id',
-    component: () => import('@/views/dashboard/admin/pdf/transactionBELUMLUNAS'),
+    path: '/pdf/externPrint/',
+    component: () => import('@/views/dashboard/admin/pdf/externPrint'),
     hidden: true,
   },
 ];

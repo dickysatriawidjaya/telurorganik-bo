@@ -20,7 +20,7 @@ class ItemController extends Controller
         $status = Arr::get($searchParams, 'status', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
         $paginate = Arr::get($searchParams, 'paginate', '');
-        
+
         if (!empty($status)) {
             $itemQuery->where('status',$status);
         }
@@ -29,14 +29,14 @@ class ItemController extends Controller
             $itemQuery->where('name', 'LIKE', '%' . $keyword . '%');
         }
 
-        $itemQuery->orderBy('status','DESC')->with('unit');
+        $itemQuery->orderBy('id','DESC')->with('unit');
         // return response()->json($itemQuery->paginate($limit);
-        if ($paginate == true) {
+        if ($paginate == "true") {
             return ItemResource::collection($itemQuery->paginate($limit));
         } else {
-            return ItemResource::collection($itemQuery->get());
+            return ItemResource::collection($itemQuery->where("status",1)->get());
         }
-        
+
     }
 
     public function store(Request $request)
@@ -53,7 +53,7 @@ class ItemController extends Controller
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
-        } 
+        }
 
         $check = Item::where('name',$request->name_form)->where('status',1)->first();
         if ($check) {
@@ -71,7 +71,7 @@ class ItemController extends Controller
 
     public function update(Request $request, Item $item)
     {
-        
+
         if ($item === null) {
             return response()->json(['error' => 'Item not found'], 404);
         }
@@ -106,7 +106,7 @@ class ItemController extends Controller
 
         return response()->json(null, 204);
     }
-    
+
     private function getValidationRules($isNew = true)
     {
         return [

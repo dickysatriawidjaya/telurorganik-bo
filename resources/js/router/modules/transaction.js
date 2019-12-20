@@ -11,7 +11,7 @@ const transactionRoutes = {
       path: 'detail/:id(\\d+)',
       component: () => import('@/views/transactions/Detail'),
       name: 'TransactionDetail',
-      meta: { title: 'transactionDetail', noCache: true, permissions: ['manage user'] },
+      meta: { title: 'Transaction Detail', noCache: true, permissions: ['manage user'] },
       hidden: true,
     },
     {

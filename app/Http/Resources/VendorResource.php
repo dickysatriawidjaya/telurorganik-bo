@@ -16,12 +16,15 @@ class VendorResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'parent_id' => $this->parent_id,
+            'parent' => $this->parent,
             'name' => $this->name,
             'address' => $this->address,
             'pic_name' => $this->pic_name,
             'phone' => $this->phone,
             'status' => $this->status,
             'created_at' => $this->created_at,
+            'child' => $this->child,
         ];
     }
 }

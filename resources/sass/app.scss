@@ -9,3 +9,69 @@
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
+
+.el-table {
+  &__header-wrapper {
+    th {
+      background-color: $grey !important;
+      .cell {
+        font-weight: 500;
+        color: $grey7070;
+      }
+    }
+  }
+}
+
+.menu-wrapper {
+  .el-menu-item, .el-submenu__title {
+    height: 38px;
+    line-height: 34px;
+  }
+  .el-submenu .el-menu-item {
+    height: 38px;
+    line-height: 34px;
+  }
+  .router-link-active {
+    .is-active {
+      span {
+        font-weight: 500 !important;
+        color: $green0886 !important;
+      }
+    }
+  }
+  span {
+    font-weight: 300;
+    color: $greyA0A0;
+  }
+}
+
+.tags-view-container {
+  .tags-view-wrapper {
+    height: inherit;
+    span.tags-view-item[data-v-29103d73] {
+      font-weight: 300;
+      color: $greyA0A0;
+      border-color: $greyD3D3;
+      &.active {
+        font-weight: 500;
+      }
+      .el-icon-close, .el-icon-close:before {
+        vertical-align: 0px !important;
+      }
+    }
+  }
+}
+
+.el-button--telur:hover {
+  color: $purewhite !important;
+}
+
+//PRINT
+.print {
+  > div:first-child {
+    border-bottom: 1px solid #D3D3D3;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+}

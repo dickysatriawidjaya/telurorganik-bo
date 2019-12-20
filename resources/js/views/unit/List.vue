@@ -1,21 +1,38 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @input="handleFilter" />
-      <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item" @change="handleFilter">
-        <el-option key="1" label="Active" value="1" />
-        <el-option key="-1" label="Deleted" value="-1" />
-      </el-select>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-      <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }} Excel <svg-icon icon-class="excel" />
-      </el-button>
+      <el-row>
+        <el-col :span="9">
+          <h3 class="text_normal">
+            Keyword
+          </h3>
+        </el-col>
+        <el-col :span="3">
+          <h3 class="text_normal">
+            Status
+          </h3>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="9">
+          <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="padding-right:26px;" class="filter-item" @input="handleFilter" />
+        </el-col>
+        <el-col :span="3">
+          <el-select v-model="query.status" :placeholder="$t('table.status')" clearable class="filter-item" @change="handleFilter">
+            <el-option key="1" label="Active" value="1" />
+            <el-option key="-1" label="Deleted" value="-1" />
+          </el-select>
+        </el-col>
+        <el-col :span="12">
+          <el-button class="filter-item" style="margin-left: 10px;" type="add" icon="el-icon-plus" @click="handleCreate">
+            {{ $t('table.add') }} Unit
+          </el-button>
+        </el-col>
+      </el-row>
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" prop="index" sortable width="80">
+      <el-table-column align="center" label="No." prop="index" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
@@ -39,9 +56,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Created Date" prop="created_at" sortable>
+      <el-table-column align="center" label="Date" prop="created_at" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
+          <span>{{ scope.row.created_at | moment("DD-MM-YY") }}</span>
         </template>
       </el-table-column>
 
@@ -56,46 +73,46 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="350">
+      <el-table-column align="center" label="Actions" width="150">
         <template slot-scope="scope">
-          <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">
-            Edit
-          </el-button>
-          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
-            Delete
-          </el-button>
+          <el-button v-permission="['manage user']" size="medium" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
+          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" size="medium" icon="el-icon-delete" circle @click="handleDelete(scope.row.id, scope.row.name);" />
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" :before-close="handleClose">
       <div v-loading="vendorCreating" class="form-container">
         <el-form ref="unitForm" :rules="rules" :model="newUnit" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="newUnit.name_form" />
+          <el-form-item label="Name" prop="name_form">
+            <el-input v-model="newUnit.name_form" :class="{'highlight':nameblurred && nameEmpty}" placeholder="Unit Name" />
+            <!-- <span v-if="nameblurred && nameEmpty" class="error">Name form is required!</span> -->
           </el-form-item>
-          <el-form-item label="Unit Code" prop="unit_code">
-            <el-input v-model="newUnit.unit_code_form" />
+          <el-form-item label="Unit Code" prop="unit_code_form">
+            <el-input v-model="newUnit.unit_code_form" placeholder="Unit Code" :class="{'highlight':unitblurred && unitEmpty}"/>
+            <!-- <span v-if="unitblurred && unitEmpty" class="error">Unit code must be selected!</span> -->
           </el-form-item>
-          <el-form-item label="Description" prop="description">
-            <el-input v-model="newUnit.description_form" type="textarea" />
+          <el-form-item label="Description" prop="description_form">
+            <el-input v-model="newUnit.description_form" placeholder="Unit Description" :class="{'highlight':descblurred && descEmpty}" type="textarea" />
+            <!-- <span v-if="descblurred && descEmpty" class="error">Unit description must be selected!</span> -->
           </el-form-item>
-          <el-form-item v-if="unitId > 0" label="Status" prop="status">
-            <el-select v-model="newUnit.status_form" style="width: 150px" class="filter-item">
+          <el-form-item v-if="unitId > 0" label="Status" prop="status_form">
+            <el-select v-model="newUnit.status_form" class="filter-item">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
+              <!-- <span v-if="nameblurred && nameEmpty" class="error">Name form is required!</span> -->
             </el-select>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">
+          <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button v-if="unitId <= 0" type="primary" @click="createUnit()">
+          <el-button v-if="unitId <= 0" type="addtransaksi" @click="createUnit()">
             {{ $t('table.confirm') }}
           </el-button>
-          <el-button v-if="unitId > 0" type="primary" @click="onUpdate()">
+          <el-button v-if="unitId > 0" type="addtransaksi" @click="onUpdate()">
             Update
           </el-button>
         </div>
@@ -153,11 +170,9 @@ export default {
         rolePermissions: [],
       },
       rules: {
-        name_form: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        unit_code_form: [
-          { required: true, message: 'Unit Code is required', trigger: 'blur' },
-        ],
-
+        name_form: [{ required: true, message: 'Name is required', trigger: 'change' }],
+        unit_code_form: [{ required: true, message: 'Unit Code is required', trigger: 'change' }],
+        description_form: [{ required: true, message: 'Description is required', trigger: 'change' }],
       },
       permissionProps: {
         children: 'children',
@@ -167,6 +182,10 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+      errors: [],
+      nameEmpty: false,
+      unitEmpty: false,
+      descEmpty: false,
     };
   },
   computed: {
@@ -231,6 +250,15 @@ export default {
     userPermissions() {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
     },
+    nameblurred: function() {
+      return this.newUnit.name_form == '';
+    },
+    unitblurred: function() {
+      return this.newUnit.unit_code_form == '';
+    },
+    descblurred: function() {
+      return this.newUnit.description_form == '';
+    },
   },
   created() {
     this.resetnewUnit();
@@ -240,6 +268,13 @@ export default {
     }
   },
   methods: {
+    handleClose(done) {
+      this.$confirm('Are you sure to close this dialog?')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
+    },
     checkPermission,
     async getPermissions() {
       const { data } = await permissionResource.list({});
@@ -264,6 +299,9 @@ export default {
       this.getList();
     },
     handleCreate() {
+      this.nameEmpty = false;
+      this.unitEmpty = false;
+      this.descEmpty = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['unitForm'].clearValidate();
@@ -273,6 +311,9 @@ export default {
       this.resetnewUnit();
     },
     handleUpdate(data){
+      this.nameEmpty = false;
+      this.unitEmpty = false;
+      this.descEmpty = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['unitForm'].clearValidate();
@@ -309,6 +350,12 @@ export default {
     createUnit() {
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {
+          this.nameEmpty = true;
+          this.unitEmpty = true;
+          this.descEmpty = true;
+          if (this.nameblurred || this.unitblurred || this.descblurred) {
+            return true;
+          }
           this.vendorCreating = true;
           unitResource
             .store(this.newUnit)
@@ -321,9 +368,16 @@ export default {
               this.resetnewUnit();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
+              this.nameEmpty = false;
+              this.unitEmpty = false;
+              this.descEmpty = false;
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
               this.vendorCreating = false;
@@ -335,24 +389,14 @@ export default {
       });
     },
     onUpdate() {
-      // this.vendorCreating = true;
-      // unitResource
-      //   .update(this.unitId, this.newUnit)
-      //   .then(response => {
-      //     this.vendorCreating = false;
-      //     this.$message({
-      //       message: 'Vendor information has been updated successfully',
-      //       type: 'success',
-      //       duration: 5 * 1000,
-      //     });
-      //   })
-      //   .catch(error => {
-      //     console.log(error);
-      //     this.vendorCreating = false;
-      //   });
-
       this.$refs['unitForm'].validate((valid) => {
         if (valid) {
+          this.nameEmpty = true;
+          this.unitEmpty = true;
+          this.descEmpty = true;
+          if (this.nameblurred || this.unitblurred || this.descblurred) {
+            return true;
+          }
           this.vendorCreating = true;
           unitResource
             .update(this.unitId, this.newUnit)
@@ -365,9 +409,16 @@ export default {
               this.resetnewUnit();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
+              this.nameEmpty = false;
+              this.unitEmpty = false;
+              this.descEmpty = false;
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
               this.vendorCreating = false;
@@ -446,7 +497,133 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
+  .a{
+    .el-dialog{
+      width:410px;
+      border-radius:10px;
+      .el-dialog__header{
+        margin: 26px 30px 0px;
+        border-bottom: 1px solid #D3D3D3;
+        padding: 24px 0 5.5px 0;
+        .el-dialog__title {
+          color:#707070;
+          font-size:33px;
+          font-family: 'Abel', sans-serif;
+          font-weight:400;
+          line-height:43px;
+        }
+      }
+      .el-dialog__body {
+        padding: 21px 30px;
+        color: #606266;
+        font-size: 20px;
+        word-break: break-all;
+        .form-container{
+          .el-form-item--medium .el-form-item__label {
+            color:#707070;
+            font-size:16px;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight:500;
+            line-height:11px;
+            margin-top: 13px;
+          }
+          .el-input--medium .el-input__inner,.el-textarea__inner {
+            color:#707070;
+              height: 34px;
+              line-height: 34px;
+              font-size: 16px;
+          }
+          .div_tabel{
+            .transaksi_tabel_add{
+              width:687px;
+              border-spacing: 10px;
+              border-collapse: separate;
+               thead{
+                color:#707070;
+                font-size:13px;
+                font-family: 'Ubuntu', sans-serif;
+                font-weight:400;
+                line-height:11px;
+                text-align:left;
+              }
+              tbody{
+               color:#707070;
+               font-size:13px;
+               font-family: 'Ubuntu', sans-serif;
+               font-weight:400;
+               line-height:11px;
+               .el-select-dropdown{
+                 .el-scrollbar{
+                   .el-select-dropdown__wrap{
+                     .el-select-dropdown__item {
+                          font-size: 10px;
+                          padding: 0 15px;
+                          position: relative;
+                          white-space: nowrap;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          color: #606266;
+                          height: 20px;
+                          line-height: 20px;
+                          box-sizing: border-box;
+                          cursor: pointer;
+                      }
+                   }
+                 }
+
+               }
+
+             }
+            }
+          }
+          .el-select__caret {
+              color: #C0C4CC;
+              font-size: 14px;
+              transition: transform .3s;
+              transform: rotateZ(180deg);
+              cursor: pointer;
+              margin: 3px;
+          }
+          .el-select-dropdown{
+            .el-select-dropdown__list {
+                list-style: none;
+                padding: 0px 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            .el-select-dropdown__item {
+                 font-size: 16px;
+                 padding: 0 15px;
+                 position: relative;
+                 white-space: nowrap;
+                 overflow: hidden;
+                 text-overflow: ellipsis;
+                 color: #606266;
+                 height: 20px;
+                 line-height: 20px;
+                 box-sizing: border-box;
+                 cursor: pointer;
+             }
+          }
+        }
+        .total_price{
+          color:#707070;
+          font-size:16px;
+          font-family: 'Ubuntu', sans-serif;
+          font-weight:500;
+          line-height:14px;
+          text-align:left;
+        }
+        .dialog-footer{
+          text-align:center;
+          padding-top: 30px;
+          margin-top: 1px;
+          margin-left: 0px;
+        }
+      }
+    }
+  }
 .edit-input {
   padding-right: 100px;
 }
@@ -460,17 +637,170 @@ export default {
   padding-top: 0;
   margin-left: 150px;
 }
+
 .app-container {
   flex: 1;
   justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
+  width:96%;
+  font-size:16px;
+  padding: 16px;
+  margin:20px;
+  background:#FFFFFF;
+  border-radius:10px;
+  .el-button--medium.is-circle {
+    padding: 8px;
+    border: none;
+  }
+  .filter-container{
+    .text_normal{
+      font-weight: 500 !important;
+      color: #707070;
+      font-size: 16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 500;
+      line-height: 29px;
+      padding: 0;
+      margin: 0;
+    }
+    .tabel_filter{
+      color:#707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:16px;
+      .el-input__inner {
+        color:#707070;
+        height: 36px ;
+        line-height: 36px;
+        font-size:16px;
+        border: 1px solid #707070;
+      }
+      .el-input--medium{
+        .el-input__inner {
+          color:#707070;
+          height: 36px ;
+          line-height: 36px;
+          font-size:16px;
+          border: 1px solid #707070;
+        }
+      }
+    }
+    .el-select.tabel_filter{
+      color:#707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:11px;
+      .el-input{
+        height: 36px;
+        line-height: 36px;
+        .el-select__caret {
+            color: #C0C4CC;
+            font-size: 14px;
+            transition: transform .3s;
+            /* transform: rotateZ(180deg); */
+            cursor: pointer;
+            margin: 3px;
+        }
+        .el-input__inner {
+          color:#707070;
+          height: 36px;
+          line-height: 36px;
+          font-size:16px;
+          border: 1px solid #707070;
+        }
+      }
+    }
+  }
+  .el-table{
+      color: #707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 400;
+      line-height:11px;
+      padding:0px !important;
+      .el-tag {
+          padding: 0 5px;
+          line-height: 30px;
+          font-family: 'Ubuntu', sans-serif;
+          font-size:16px;
+      }
+  }
   .block {
     float: left;
     min-width: 250px;
   }
   .clear-left {
     clear: left;
+  }
+  .el-button--medium.is-circle {
+    padding: 8px;
+  }
+  .el-button--addtable {
+    color: #707070;
+    font-size:16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius:13px;
+    padding: 7px 20px;
+    margin-top: 3px;
+  }
+  .el-button--add {
+    color: #707070;
+    font-size: 16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius: 19px;
+    float: right;
+    padding: 10px;
+  }
+  .el-button--expexcel {
+    color: #FFFFFF;
+    font-size:16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: #85E67F;
+    border-radius:13px;
+  }
+  .el-button--canceltransaksi {
+    color: #B2B2B2;
+    font-size: 13px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 300;
+    line-height: 14px;
+    background-color: #F4F4F4;
+    border-radius:5px;
+    padding:8px 33px;
+  }
+  .el-button--addtransaksi {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 14px;
+    background-color: #46A2FD;
+    border-radius:5px;
+    padding:8px 33px;
+  }
+  .error {
+    float: left;
+    font-size: 12px;
+    line-height: normal;
+    padding-top: 2px;
+    color: red;
+    opacity: 0.6;
+  }
+  .highlight {
+    input, textarea {
+      border-color: red;
+    }
   }
 }
 </style>

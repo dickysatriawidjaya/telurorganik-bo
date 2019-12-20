@@ -1,90 +1,100 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @input="handleFilter" />
-
-      <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item" @change="handleFilter">
-        <el-option key="1" label="LUNAS" value="1" />
-        <el-option key="-1" label="BELUM LUNAS" value="-1" />
-      </el-select>
-
-      <el-select v-model="query.vendor" placeholder="Vendor" clearable style="width: 150px" class="filter-item" @change="handleFilter">
-        <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
-          <span style="float: left">{{ v.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
-        </el-option>
-      </el-select>
-
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-
-      <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }} Excel <svg-icon icon-class="excel" />
-      </el-button>
-
+      <el-row>
+        <el-col :span="6">
+          <h3 class="text_normal">
+            Keyword
+          </h3>
+        </el-col>
+        <el-col :span="6">
+          <h3 class="text_normal">
+            Vendor
+          </h3>
+        </el-col>
+        <el-col :span="3">
+          <h3 class="text_normal">
+            Status
+          </h3>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">
+          <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="padding-right:26px;" class="filter-item tabel_filter" @input="handleFilter" />
+        </el-col>
+        <el-col :span="6">
+          <el-select v-model="query.vendor" placeholder="Vendor" clearable style="padding-right:26px;" class="filter-item tabel_filter" @change="handleFilter">
+            <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
+              <span style="float: left">{{ v.name }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="3">
+          <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="padding-right:26px;" class="filter-item tabel_filter" @change="handleFilter">
+            <el-option key="1" label="Paid" value="1" />
+            <el-option key="-1" label="Unpaid" value="-1" />
+          </el-select>
+        </el-col>
+        <el-col :span="9">
+          <el-button class="filter-item is-right" type="add" icon="el-icon-plus" @click="handleCreate">
+            {{ $t('table.add') }} Transaction
+          </el-button>
+        </el-col>
+      </el-row>
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" prop="index" sortable width="80">
+      <el-table-column align="left" label="No." prop="index" width="50">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column align="center" label="Transaction No." prop="transaction_no" sortable>
+      <el-table-column align="left" class-name="status-col" label="Trans Date" prop="created_at" sortable width="140">
+        <template slot-scope="scope">
+          <span>{{ scope.row.transaction_date | moment("DD/MMM/YY") }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="left" label="Vendor" prop="vendor" sortable>
+        <template slot-scope="scope">
+          <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }}</span>
+          <span v-else>{{ scope.row.vendor.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="left" label="Detail Transaction" prop="transaction_detail">
+        <template slot-scope="scope">
+          <ul class="detail_list">
+            <li v-for="value in scope.row.detail_transaction" :key="value.id">{{ value.quantity }} ({{ value.item.unit.name }}) , {{ value.item.name }}</li>
+          </ul>
+        </template>
+      </el-table-column>
+      <el-table-column align="left" label="Trans.ID" prop="transaction_no" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.transaction_no }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column align="center" label="Vendor" prop="vendor" sortable>
-        <template slot-scope="scope">
-          <span v-if="scope.row.vendor.pic_name != '' || scope.row.vendor.pic_name">{{ scope.row.vendor.name }} ( {{ scope.row.vendor.pic_name }} )</span>
-          <span v-else>{{ scope.row.vendor.name }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Total" prop="total" sortable>
+      <el-table-column align="right" label="Total" prop="total" width="140" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.total | toCurrency }}</span>
         </template>
       </el-table-column>
-
-      <!-- <el-table-column align="center" label="detail" prop="transaction_detail" sortable>
+      <el-table-column align="left" class-name="status-col" label="Status" prop="status" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.transaction_detail }}</span>
-        </template>
-      </el-table-column> -->
-
-      <el-table-column align="center" label="Created Date" prop="created_at" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
+          <span v-if="scope.row.status == 1" style="color:#46A2FD">
+            Paid
+          </span>
+          <span v-if="scope.row.status == -1" style="color:#FD4646 !important">
+            Unpaid
+          </span>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="Status" width="110" prop="status" sortable>
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.status == 1" type="success">
-            LUNAS
-          </el-tag>
-          <el-tag v-if="scope.row.status == -1" type="warning">
-            BELUM LUNAS
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Actions" width="350">
+      <el-table-column align="left" label="Actions" width="100">
         <template slot-scope="scope">
           <router-link :to="'/transaction/detail/'+scope.row.id">
-            <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit">
-              Detail
-            </el-button>
+            <el-button v-permission="['manage user']" size="medium" icon="el-icon-document" circle />
           </router-link>
-
-          <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">
-            Edit
-          </el-button>
+          <el-button v-permission="['manage user']" size="medium" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
           <!--
           <el-button v-if="scope.row.status == -1" v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdateStatus(scope.row.id,1)">
             Set LUNAS
@@ -98,95 +108,106 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" class="is-right" @pagination="getList" />
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" :before-close="handleClose">
       <div v-loading="transactionCreating" class="form-container">
-        <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item label="Transaction No" prop="transaction_no">
-            <el-input v-model="newTransaction.transaction_no_form" />
-          </el-form-item>
-          <el-form-item label="Vendor" prop="vendor">
-            <el-select v-model="newTransaction.vendor_id_form" filterable class="filter-item">
-              <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
-                <span style="float: left">{{ v.name }}</span>
-                <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
-              </el-option>
-            </el-select>
-          </el-form-item>
+        <el-form ref="itemForm" :rules="rules" :model="newTransaction" label-position="left" label-width="150px">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="Transaction No" prop="transaction_no_form">
+                <el-input v-model="newTransaction.transaction_no_form" placeholder="Input your transaction no." :class="{'highlight':notransblurred && notransEmpty}" style="width:200px" @input="forceupdate" />
+                <!-- <span v-if="notransblurred && notransEmpty" class="error">Transaction Number is required!</span> -->
+              </el-form-item>
+              <el-form-item class="custom-datepicker" label="Transaction Date" prop="date_form">
+                <datepicker v-model="newTransaction.date_form" placeholder="input your transaction date" :class="{'highlight':dateblurred && dateEmpty}" name="uniquename" />
+                <!-- <span v-if="dateblurred && dateEmpty" class="error">Transaction date is required!</span> -->
+              </el-form-item>
+              <el-form-item label="Vendor" prop="vendor_id_form">
+                <el-select v-model="newTransaction.vendor_id_form" placeholder="select your vendor..." :class="{'highlight':vendorblurred && vendorEmpty}" filterable class="filter-item" style="width:200px" @change="forceupdate">
+                  <el-option v-for="v in vendorList" :key="v.id" :label="v.name" :value="v.id">
+                    <span style="float: left">{{ v.name }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ (v.pic_name)?v.pic_name:"-" }}</span>
+                  </el-option>
+                </el-select>
+                <!-- <span v-if="vendorblurred && vendorEmpty" class="error">Vendor is required!</span> -->
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item v-if="transactionId > 0" label="Status" prop="status">
+                <el-select v-model="newTransaction.status_form" style="width: 150px" class="filter-item" @change="forceupdate">
+                  <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
 
-          <el-form-item v-if="transactionId > 0" label="Status" prop="status">
-            <el-select v-model="newTransaction.status_form" style="width: 150px" class="filter-item" @change="forceupdate">
-              <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
-            </el-select>
-          </el-form-item>
+          <div class="div_tabel">
+            <hr>
+            <table class="transaksi_tabel_add">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Item</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th v-if="transactionId > 0">Retur</th>
+                  <th>Discount</th>
+                  <th>Total</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(d,index) in newTransaction.detail">
+                  <td style="width:40px">
+                    {{ index + 1 }}
+                  </td>
+                  <td style="width:212px">
+                    <el-select v-model="newTransaction.detail[index].item_id_form" :class="{'highlight':itemidblurred && itemidEmpty}" class="filter-item" @change="setItemPrice(index,'item')">
+                      <el-option v-for="i in itemList" :key="i.id" :label="i.name+'('+i.unit.name+')'" :value="i.id">
+                        {{ i.name }} ({{ i.unit.name }})
+                      </el-option>
+                    </el-select>
+                  </td>
+                  <td style="width:140px">
+                    <span v-if="newTransaction.detail[index].price_form">{{ newTransaction.detail[index].price_form | toCurrency }} / pcs</span>
+                    <span v-else>0 / pcs</span>
+                  </td>
+                  <td style="width:100px">
+                    <el-input v-model="newTransaction.detail[index].quantity_form" min="1" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                  </td>
+                  <td v-if="transactionId > 0" style="width:80px">
+                    <el-input v-model="newTransaction.detail[index].retur_form" min="0" :max="newTransaction.detail[index].quantity_form" type="number" />
+                  </td>
+                  <td style="width:80px">
+                    <el-input v-model="newTransaction.detail[index].discount_form" type="number" @input="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
+                  </td>
+                  <td style="width:146px;text-align:right" align="right">{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
+                  <td>
+                    <el-button type="danger" icon="el-icon-close" circle @click="spliceTransactionDetail(index)" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <hr>
+          </div>
 
-          <el-form-item>
-            Detail Transaction
-          </el-form-item>
+          <el-button :disabled="validate_error" type="addtable" @click="addNewItemForm">Add Item</el-button>
 
-          <hr>
-
-          <el-form-item label="Add Item">
-            <el-button @click="addNewItemForm"> + </el-button>
-          </el-form-item>
-
-          <table>
-            <thead>
-              <tr>
-                <th>No.</th>
-                <th>Item</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Discount</th>
-                <th>Total</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(d,index) in newTransaction.detail">
-                <td>
-                  {{ index }}
-                </td>
-                <td>
-                  <el-select v-model="newTransaction.detail[index].item_id_form" style="width: 150px" class="filter-item" @change="setItemPrice(index)">
-                    <el-option v-for="i in itemList" :key="i.id" :label="i.name+'('+i.unit.name+')'" :value="i.id">{{ i.name }} ({{ i.unit.name }})</el-option>
-                  </el-select>
-                </td>
-                <td>
-                  {{ newTransaction.detail[index].price_form }}
-                </td>
-                <td>
-                  <el-input-number v-model="newTransaction.detail[index].quantity_form" :min="0" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
-                </td>
-                <td>
-                  <el-input-number v-model="newTransaction.detail[index].discount_form" :min="0" :max="100" @change="countSubtotal(newTransaction.detail[index].quantity_form,newTransaction.detail[index].discount_form,index)" />
-                </td>
-                <td>{{ newTransaction.detail[index].subtotal_form | toCurrency }}</td>
-                <td>
-                  <el-button @click="spliceTransactionDetail(index)">
-                    delete
-                  </el-button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <hr>
-
-          <el-form-item label="Total Price" prop="total">
-            <el-input v-show="false" v-model="newTransaction.total_form" />
-            {{ newTransaction.total_form | toCurrency }}
+          <el-form-item class="total_price" label="Total Price" prop="total" style="float:right">
+            <el-input v-show="false" v-model="newTransaction.total_form" class="total_price" />
+            <span v-if="newTransaction.total_form">{{ newTransaction.total_form | toCurrency }}</span>
+            <span v-else>Rp -</span>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">
+          <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false;">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button v-if="transactionId <= 0" type="primary" @click="createTransaction()">
+          <el-button v-if="transactionId <= 0" :disabled="validate_error" type="addtransaksi" @click="createTransaction()">
             {{ $t('table.confirm') }}
           </el-button>
-          <el-button v-if="transactionId > 0" type="primary" @click="onUpdate()">
+          <el-button v-if="transactionId > 0" :disabled="validate_error" type="addtransaksi" @click="onUpdate()">
             Update
           </el-button>
         </div>
@@ -212,9 +233,13 @@ const vendorResource = new VendorResource();
 const transactionResource = new TransactionResource();
 const permissionResource = new Resource('permissions');
 
+import Datepicker from 'vuejs-datepicker';
+
+import Cookies from 'js-cookie';
+
 export default {
   name: 'UserList',
-  components: { Pagination },
+  components: { Pagination, Datepicker },
   directives: { waves, permission },
   data() {
     return {
@@ -228,27 +253,36 @@ export default {
       transactionId: 0,
       query: {
         page: 1,
-        limit: 15,
+        limit: 20,
         keyword: '',
-        role: '',
+        role: Cookies.get('Role'),
+        status: null,
+        vendor: null,
+        start_date: '',
+        end_date: '',
       },
       queryVendor: {
-        paginate: false,
+        paginate: true,
+        page: 1,
+        limit: 99999,
       },
       queryItem: {
         paginate: false,
       },
       nonAdminRoles: ['editor', 'user', 'visitor'],
+      validate_error : false,
       newTransaction: {
         transaction_no: '',
+        date_form: '',
         vendor_id: 0,
         total: 0,
         status: 0,
+        retur_form: 0,
         detail: [],
       },
       status: [
-        { label: 'LUNAS', value: 1 },
-        { label: 'BELUM LUNAS', value: -1 },
+        { label: 'Paid', value: 1 },
+        { label: 'Unpaid', value: -1 },
       ],
       titleForm: '',
       transcationId: 0,
@@ -262,11 +296,9 @@ export default {
         rolePermissions: [],
       },
       rules: {
-        name_form: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        phone_form: [
-          { required: true, message: 'Phone number is required', trigger: 'blur' },
-        ],
-        address_form: [{ required: true, message: 'Address is required', trigger: 'blur' }],
+        transaction_no_form: [{ required: true, message: 'Transaction number is required!', trigger: 'blur' }],
+        date_form: [{ required: true, message: 'date must be selected!', trigger: 'blur' }],
+        vendor_id_form: [{ required: true, message: 'Vendor ID is required!', trigger: 'change' }],
       },
       permissionProps: {
         children: 'children',
@@ -276,6 +308,19 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+      pickerOptions: {
+
+        onClick(picker) {
+          picker.$emit('pick', new Date());
+          picker.$emit('close');
+        },
+
+      },
+      errors: [],
+      vendorEmpty: false,
+      notransEmpty: false,
+      itemidEmpty: false,
+      dateEmpty: false,
     };
   },
   computed: {
@@ -340,33 +385,77 @@ export default {
     userPermissions() {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
     },
+    notransblurred: function() {
+      return this.newTransaction.transaction_no_form == '' || this.newTransaction.transaction_no_form == null;
+    },
+    dateblurred: function() {
+      return this.newTransaction.date_form == '' || this.newTransaction.date_form == null;
+    },
+    vendorblurred: function() {
+      return this.newTransaction.vendor_id_form == null;
+    },
+    itemidblurred: function() {
+      return this.itemIDform == null || this.itemIDform == '' || this.itemIDform == 0;
+    },
   },
   created() {
     this.resetnewTransaction();
-    this.getList();
+
     this.getVendorList();
     this.getItemList();
-    if (checkPermission(['manage permission'])) {
-      this.getPermissions();
-    }
+    // if (checkPermission(['manage permission'])) {
+    //   this.getPermissions();
+    // }
+    this.getList();
+    //console.log(this.role);
   },
   methods: {
-    forceupdate(){
+    checkItemName(athis){
+      let vm = athis;
+      alert(vm);
+    },
+
+    handleClose(done) {
+      this.$confirm('Are you sure to close this dialog?')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
+      this.validate_error = false;
+    },
+
+    forceupdate(event){
+      //console.log(event);
+      //console.log(this.newTransaction.date_form);
       this.$forceUpdate();
     },
     spliceTransactionDetail(index){
       this.newTransaction.detail.splice(index, 1);
+
+      //check duplicate child array
+      var array = this.newTransaction.detail;
+      const newArray = this.newTransaction.detail.map(item => item.item_id_form);
+      let findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) != index)
+      console.log(findDuplicates(newArray));
+      let array_check = findDuplicates(newArray);
+      if (array_check.length > 0) {
+        this.validate_error = true;
+      }else{
+        this.validate_error = false;
+      }
+      //end check duplicate child array
     },
     addNewItemForm(){
       this.newTransaction.detail.push(
         {
-          item_id_form: 0,
-          quantity_form: 0,
+          item_id_form: '',
+          quantity_form: 1,
           discount_form: 0,
           subtotal_form: 0,
+          retur_form: 0,
         }
       );
-      console.log(this.newTransaction.detail);
+      //console.log(this.newTransaction.detail);
     },
     checkPermission,
     async getPermissions() {
@@ -397,7 +486,7 @@ export default {
       this.loading = true;
       const { data, meta } = await transactionResource.list(this.query);
       this.list = data;
-      console.log(this.list);
+      //console.log(this.list);
 
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
@@ -405,10 +494,31 @@ export default {
       this.total = meta.total;
       this.loading = false;
     },
-    setItemPrice(index){
-      const value = this.newTransaction.detail[index].item_id_form;
+    setItemPrice(index,string){
+
+      if (string == "item") {
+        var array = this.newTransaction.detail;
+        // var newArray = this.newTransaction.detail.filter(function (el,index,array) {
+        //   return el.item_id_form
+        // });
+        const newArray = this.newTransaction.detail.map(item => item.item_id_form);
+        newArray.splice(index,1);
+        let boolean = newArray.includes(this.newTransaction.detail[index].item_id_form);
+        if (boolean) {
+          this.validate_error = true;
+          this.$message({
+            type: 'error',
+            message: 'Duplicate Item',
+          });
+        }else {
+          this.validate_error = false;
+        }
+      }
+
+      this.itemIDform = this.newTransaction.detail[index].item_id_form;
+      const _this = this;
       const filterItem = this.itemList.filter(function(i){
-        return i.id == value;
+        return i.id == _this.itemIDform;
       });
       this.newTransaction.detail[index].price_form = filterItem[0].price;
       this.countSubtotal(this.newTransaction.detail[index].quantity_form, this.newTransaction.detail[index].discount_form, index);
@@ -417,26 +527,32 @@ export default {
       let result = 0;
       if (discount) {
         result = (quantity * this.newTransaction.detail[index].price_form) - (discount / 100 * quantity * this.newTransaction.detail[index].price_form);
-      } else {
+      } else if (quantity) {
         result = this.newTransaction.detail[index].price_form * quantity;
+      } else {
+        result = 0;
       }
       this.newTransaction.detail[index].subtotal_form = result;
 
       // countTOTAL
       let total = 0;
       this.newTransaction.detail.forEach(element => {
-        total += element.subtotal_form;
+        total += parseFloat(element.subtotal_form);
+        //console.log(element.subtotal_form);
       });
-      console.log(total);
       this.newTransaction.total_form = total;
       // countTOTALEND
-      console.log({ quantity, discount, result });
+      //console.log({ quantity, discount, result });
     },
     handleFilter() {
       this.query.page = 1;
       this.getList();
     },
     handleCreate() {
+      // this.vendorEmpty = false;
+      // this.notransEmpty = false;
+      this.itemidEmpty = false;
+      // this.dateEmpty = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['itemForm'].clearValidate();
@@ -446,19 +562,23 @@ export default {
       this.resetnewTransaction();
     },
     handleUpdate(data){
+      this.validate_error = false;
+      this.notransEmpty = false;
+      this.dateEmpty = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['itemForm'].clearValidate();
       });
       this.titleForm = 'Edit Transaction';
-      console.log(data);
+      //console.log(data);
       this.transactionId = data.id;
       this.newTransaction.transaction_no_form = data.transaction_no;
       this.newTransaction.vendor_id_form = data.vendor_id;
       this.newTransaction.total_form = data.total;
       this.newTransaction.status_form = data.status;
+      this.newTransaction.date_form = data.created_at;
 
-      console.log(this.newTransaction.status_form);
+      //console.log(this.newTransaction.status_form);
 
       const tmp = [];
       data.detail_transaction.forEach(function(element, i) {
@@ -468,6 +588,7 @@ export default {
             'transaction_id_form': element.transaction_id,
             'item_id_form': element.item_id,
             'price_form': element.item.price,
+            'retur_form': (element.retur)?element.retur:"0",
             'quantity_form': element.quantity,
             'discount_form': element.discount,
             'subtotal_form': element.subtotal,
@@ -491,7 +612,7 @@ export default {
           });
           this.handleFilter();
         }).catch(error => {
-          console.log(error);
+          //console.log(error);
         });
       }).catch(() => {
         this.$message({
@@ -503,6 +624,13 @@ export default {
     createTransaction() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
+          // this.vendorEmpty = true;
+          // this.notransEmpty = true;
+          // this.dateEmpty = true;
+          // this.itemidEmpty = true;
+          // if (this.itemidblurred) {
+          //   return true;
+          // }
           this.transactionCreating = true;
           transactionResource
             .store(this.newTransaction)
@@ -515,45 +643,35 @@ export default {
               this.resetnewTransaction();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.vendorEmpty = false;
+              this.notransEmpty = false;
+              this.itemidEmpty = false;
+              this.dateEmpty = false;
             })
             .catch(error => {
-              console.log(error);
+              //console.log(error);
             })
             .finally(() => {
               this.transactionCreating = false;
             });
         } else {
-          console.log('error submit!!');
+          //console.log('error submit!!');
           return false;
         }
       });
     },
-    // handleUpdateStatus(id,status){
-    //   this.transactionCreating = true;
-    //   transactionResource
-    //     .changeStatus(id, {'status_form' : status})
-    //     .then(response => {
-    //       this.$message({
-    //         message: 'Transaction has been updated successfully',
-    //         type: 'success',
-    //         duration: 5 * 1000,
-    //       });
-    //       this.resetnewTransaction();
-    //       this.dialogFormVisible = false;
-    //       this.handleFilter();
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     })
-    //     .finally(() => {
-    //       this.transactionCreating = false;
-    //     });
-    // },
     onUpdate() {
-      console.log('update');
-
-      this.$refs['itemForm'].validate((valid) => {
-        if (valid) {
+      // this.$refs['itemForm'].validate((valid) => {
+      //   if (valid) {
+          // this.notransEmpty = true;
+          // this.itemidEmpty = true;
+          // if (this.notransblurred || this.itemidblurred) {
+          //   return true;
+          // }
+          // this.itemidEmpty = true;
+          // if (this.itemidblurred) {
+          //   return true;
+          // }
           this.transactionCreating = true;
           transactionResource
             .update(this.transactionId, this.newTransaction)
@@ -566,23 +684,30 @@ export default {
               this.resetnewTransaction();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
+              this.vendorEmpty = false;
+              this.notransEmpty = false;
+              this.itemidEmpty = false;
+              this.dateEmpty = false;
             })
             .catch(error => {
-              console.log(error);
+              //console.log(error);
             })
             .finally(() => {
               this.transactionCreating = false;
             });
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+        // } else {
+        //   //console.log('error submit!!');
+        //   return false;
+        // }
+      // });
     },
     resetnewTransaction() {
       this.newTransaction = {
         transaction_no: '',
+        created_at: '',
         vendor_id: 0,
+        retur: 0,
         total: 0,
         status: 0,
         detail: [],
@@ -649,7 +774,164 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+div[aria-label="Edit Transaction"] {
+  .el-dialog__body {
+    .total_price {
+      .el-form-item__label {
+        right: 192px !important;
+      }
+      .el-form-item__content {
+        right: 52px !important;
+      }
+    }
+  }
+}
+.el-dialog[aria-label="Create New Transaction"],
+.el-dialog[aria-label="Edit Transaction"]{
+  width:980px;
+  border-radius:10px;
+  .el-dialog__header{
+    margin: 26px 30px 0px;
+    border-bottom: 1px solid #D3D3D3;
+    padding: 24px 0 5.5px 0;
+    .el-dialog__title {
+      color:#707070;
+      font-size:33px;
+      font-family: 'Abel', sans-serif;
+      font-weight:400;
+      line-height:43px;
+    }
+  }
+  .el-dialog__body {
+    padding: 21px 30px;
+    color: #606266;
+    font-size:20x;
+    word-break: break-all;
+    .form-container{
+      .el-form-item {
+        &__content {
+          display: grid;
+        }
+      }
+      .el-form-item--medium .el-form-item__label {
+        color:#707070;
+        font-size:16px;
+        font-family: 'Ubuntu', sans-serif;
+        font-weight:500;
+        line-height:11px;
+        margin-top: 13px;
+      }
+      .el-input--medium .el-input__inner, input {
+        color:#707070;
+          height: 34px;
+          line-height: 34px;
+          font-size:16px;
+          background-color: #F4F4F4;
+      }
+      .total_price {
+        .el-form-item__label {
+          position: absolute;
+          right: 221px;
+          width: auto !important;
+        }
+        .el-form-item__content {
+          position: absolute;
+          right: 69px;
+          margin-left: 0 !important;
+          text-align: left;
+          width: 15%;
+        }
+      }
+      .div_tabel{
+        .transaksi_tabel_add{
+          width:100%;
+          border-spacing: 10px;
+          border-collapse: separate;
+           thead{
+            color:#707070;
+            font-size:16px;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight:400;
+            line-height:11px;
+            text-align:left;
+          }
+          tbody{
+           color:#707070;
+           font-size:16px;
+           font-family: 'Ubuntu', sans-serif;
+           font-weight:400;
+           line-height:11px;
+           .el-select-dropdown{
+             .el-scrollbar{
+               .el-select-dropdown__wrap{
+                 .el-select-dropdown__item {
+                      font-size:16px;
+                      padding: 0 15px;
+                      position: relative;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      color: #606266;
+                      height: 34px;
+                      line-height: 34px;
+                      box-sizing: border-box;
+                      cursor: pointer;
+                  }
+               }
+             }
+
+           }
+
+         }
+        }
+      }
+      .el-select__caret {
+          color: #C0C4CC;
+          font-size:20x;
+          transition: transform .3s;
+          transform: rotateZ(180deg);
+          cursor: pointer;
+          margin: 3px;
+      }
+      .el-select-dropdown{
+        .el-select-dropdown__list {
+            list-style: none;
+            padding: 0px 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .el-select-dropdown__item {
+             font-size:16px;
+             padding: 0 15px;
+             position: relative;
+             white-space: nowrap;
+             overflow: hidden;
+             text-overflow: ellipsis;
+             color: #606266;
+             height: 20px;
+             line-height: 20px;
+             box-sizing: border-box;
+             cursor: pointer;
+         }
+      }
+    }
+    .total_price{
+      color:#707070;
+      font-size:13px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:500;
+      line-height:14px;
+      text-align:left;
+    }
+    .dialog-footer{
+      text-align:center;
+      padding-top: 30px;
+      margin-top: 1px;
+      margin-left: 0px;
+    }
+  }
+}
 .edit-input {
   padding-right: 100px;
 }
@@ -666,14 +948,208 @@ export default {
 .app-container {
   flex: 1;
   justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
+  font-size:16px;
+  padding: 19px;
+  margin:20px;
+  background:#FFFFFF;
+  border-radius:10px;
+  .el-button--medium.is-circle {
+    padding: 8px;
+    border: none;
+  }
+  .filter-container{
+    .tabel_filter{
+      color:#707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:16px;
+      .el-input__inner {
+        color:#707070;
+        height: 36px ;
+        line-height: 36px;
+        font-size:16px;
+        border: 1px solid #D3D3D3;
+      }
+      .el-input--medium{
+        .el-input__inner {
+          color:#707070;
+          height: 36px ;
+          line-height: 36px;
+          font-size:16px;
+          border: 1px solid #D3D3D3;
+        }
+      }
+      .text_normal{
+        color: #707070;
+        font-weight: 500;
+        font-size: 16px;
+        font-family: 'Ubuntu', sans-serif;
+        font-weight: 500;
+        line-height: 29px;
+        padding: 0;
+        margin: 0;
+      }
+    }
+    .text_normal{
+      font-weight: 500 !important;
+      color: #707070;
+      font-size: 16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 500;
+      line-height: 29px;
+      padding: 0;
+      margin: 0;
+    }
+    .el-select.tabel_filter{
+      color:#707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:11px;
+      .el-input{
+        height: 36px;
+        line-height: 36px;
+        .el-select__caret {
+            color: #C0C4CC;
+            font-size:20x;
+            transition: transform .3s;
+            /* transform: rotateZ(180deg); */
+            cursor: pointer;
+            margin: 3px;
+        }
+        .el-input__inner {
+          color:#707070;
+          height: 36px;
+          line-height: 36px;
+          font-size:16px;
+          border: 1px solid #D3D3D3;
+        }
+      }
+    }
+  }
+  .el-table{
+      color: #707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 400;
+      line-height:11px;
+      padding:0px !important;
+      .el-tag {
+          padding: 0 5px;
+          line-height: 30px;
+          font-family: 'Ubuntu', sans-serif;
+          font-size:16px;
+      }
+  }
   .block {
     float: left;
     min-width: 250px;
   }
   .clear-left {
     clear: left;
+  }
+  .el-button--medium.is-circle {
+    padding: 8px;
+  }
+  .el-button--addtable {
+    color: #707070;
+    font-size:16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius:19px;
+    padding: 12px 11px;
+    margin-top: 3px;
+  }
+  .el-button--add {
+    color: #707070;
+    font-size: 16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius: 19px;
+    float: right;
+    padding: 10px;
+  }
+  .el-button--expexcel {
+    color: #FFFFFF;
+    font-size:16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: #85E67F;
+    border-radius:13px;
+  }
+  .el-button--canceltransaksi {
+    color: #B2B2B2;
+    font-size: 13px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 300;
+    line-height: 14px;
+    background-color: #F4F4F4;
+    border-radius:5px;
+    padding:8px 33px;
+  }
+  .el-button--addtransaksi {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 14px;
+    background-color: #46A2FD;
+    border-radius:5px;
+    padding:8px 33px;
+  }
+  .custom-datepicker {
+    input {
+      width: 200px;
+      height: 35px;
+      line-height: 35px;
+      color: #707070;
+      font-weight: 500;
+      font-size: 16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 400;
+      line-height: 11px;
+      border-radius: 4px;
+      border: 1px solid #DCDFE6;
+      padding: 0 30px 0 15px;
+      &::placeholder {
+        color: #C3C4CC;
+        opacity: 1; /* Firefox */
+      }
+      &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+       color: #C3C4CC;
+      }
+      &::-ms-input-placeholder { /* Microsoft Edge */
+       color: #C3C4CC;
+      }
+    }
+  }
+  .detail_list {
+    padding-left: 18px;
+    li {
+      text-align: left;
+      list-style: '-  ';
+    }
+  }
+  .error {
+    float: left;
+    font-size: 12px;
+    line-height: normal;
+    padding-top: 2px;
+    color: red;
+    opacity: 0.6;
+  }
+  .highlight {
+    input {
+      border-color: red;
+    }
   }
 }
 </style>

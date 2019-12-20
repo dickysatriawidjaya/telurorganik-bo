@@ -4,6 +4,10 @@
   </div>
 </template>
 
+<style lang="scss">
+@import '../../sass/app';
+</style>
+
 <script>
 export default {
   name: 'App',

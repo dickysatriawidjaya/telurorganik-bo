@@ -19,11 +19,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="checkPermission(['manage permission'])" align="center" label="Actions" width="200">
+      <el-table-column v-if="checkPermission(['manage permission'])" align="center" label="Actions" width="100">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.name !== 'admin'" v-permission="['manage permission']" type="primary" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row.id);">
-            {{ $t('permission.editPermission') }}
-          </el-button>
+          <el-button v-if="scope.row.name !== 'admin'" v-permission="['manage permission']" size="small" icon="el-icon-edit" circle @click="handleEditPermissions(scope.row.id);" />
         </template>
       </el-table-column>
     </el-table>
@@ -48,10 +46,10 @@
           <div class="clear-left" />
         </div>
         <div style="text-align:right;">
-          <el-button type="danger" @click="dialogVisible=false">
+          <el-button type="canceltransaksi" @click="dialogVisible=false">
             {{ $t('permission.cancel') }}
           </el-button>
-          <el-button type="primary" @click="confirmPermission">
+          <el-button type="addtransaksi" @click="confirmPermission">
             {{ $t('permission.confirm') }}
           </el-button>
         </div>
@@ -192,17 +190,253 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .el-dialog{
+    width:410px;
+    border-radius:10px;
+    .el-dialog__header{
+      margin: 26px 30px 0px;
+      border-bottom: 1px solid #D3D3D3;
+      padding: 24px 0 5.5px 0;
+      .el-dialog__title {
+        color:#707070;
+        font-size:27px;
+        font-family: 'Abel', sans-serif;
+        font-weight:400;
+        line-height:43px;
+      }
+    }
+    .el-dialog__body {
+      padding: 21px 30px;
+      color: #606266;
+      font-size: 14px;
+      word-break: break-all;
+      .form-container{
+        .el-form-item--medium .el-form-item__label {
+          color:#707070;
+          font-size:10px;
+          font-family: 'Ubuntu', sans-serif;
+          font-weight:500;
+          line-height:11px;
+          margin-top: 13px;
+        }
+        .el-input--medium .el-input__inner {
+            height: 26px;
+            line-height: 26px;
+            font-size: 10px;
+        }
+        .div_tabel{
+          .transaksi_tabel_add{
+            width:687px;
+            border-spacing: 10px;
+            border-collapse: separate;
+             thead{
+              color:#707070;
+              font-size:10px;
+              font-family: 'Ubuntu', sans-serif;
+              font-weight:400;
+              line-height:11px;
+              text-align:left;
+            }
+            tbody{
+             color:#707070;
+             font-size:10px;
+             font-family: 'Ubuntu', sans-serif;
+             font-weight:400;
+             line-height:11px;
+             .el-select-dropdown{
+               .el-scrollbar{
+                 .el-select-dropdown__wrap{
+                   .el-select-dropdown__item {
+                        font-size: 10px;
+                        padding: 0 15px;
+                        position: relative;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        color: #606266;
+                        height: 20px;
+                        line-height: 20px;
+                        box-sizing: border-box;
+                        cursor: pointer;
+                    }
+                 }
+               }
+
+             }
+
+           }
+          }
+        }
+        .el-select__caret {
+            color: #C0C4CC;
+            font-size: 14px;
+            transition: transform .3s;
+            transform: rotateZ(180deg);
+            cursor: pointer;
+            margin: 3px;
+        }
+        .el-select-dropdown{
+          .el-select-dropdown__list {
+              list-style: none;
+              padding: 0px 0;
+              margin: 0;
+              box-sizing: border-box;
+          }
+          .el-select-dropdown__item {
+               font-size: 10px;
+               padding: 0 15px;
+               position: relative;
+               white-space: nowrap;
+               overflow: hidden;
+               text-overflow: ellipsis;
+               color: #606266;
+               height: 20px;
+               line-height: 20px;
+               box-sizing: border-box;
+               cursor: pointer;
+           }
+        }
+      }
+      .total_price{
+        color:#707070;
+        font-size:13px;
+        font-family: 'Ubuntu', sans-serif;
+        font-weight:500;
+        line-height:14px;
+        text-align:left;
+      }
+      .dialog-footer{
+        text-align:center;
+        padding-top: 30px;
+        margin-top: 1px;
+        margin-left: 0px;
+      }
+    }
+  }
 .permissions-container {
   flex: 1;
   justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
+  width:96%;
+  font-size: 10px;
+  padding: 20px;
+  margin:20px;
+  background:#FFFFFF;
+  border-radius:10px;
+  .filter-container{
+    .tabel_filter{
+      color:#707070;
+      font-size:10px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:11px;
+      .el-input--medium{
+        .el-input__inner {
+          height: 36px ;
+          line-height: 36px;
+          font-size:10px;
+        }
+      }
+    }
+    .el-select.tabel_filter{
+      color:#707070;
+      font-size:10px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:11px;
+      .el-input{
+        height: 36px;
+        line-height: 36px;
+        .el-select__caret {
+            color: #C0C4CC;
+            font-size: 14px;
+            transition: transform .3s;
+            /* transform: rotateZ(180deg); */
+            cursor: pointer;
+            margin: 3px;
+        }
+        .el-input__inner {
+          height: 36px;
+          line-height: 36px;
+          font-size:10px;
+        }
+      }
+    }
+  }
+  .el-table{
+      color: #707070;
+      font-size:10px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 400;
+      line-height:11px;
+      padding:0px !important;
+      .el-tag {
+          padding: 0 5px;
+          line-height: 30px;
+          font-family: 'Ubuntu', sans-serif;
+          font-size: 10px;
+      }
+  }
   .block {
     float: left;
     min-width: 250px;
   }
   .clear-left {
     clear: left;
+  }
+  .el-button--medium.is-circle {
+    padding: 8px;
+  }
+  .el-button--addtable {
+    color: #707070;
+    font-size: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius:13px;
+    padding: 7px 20px;
+    margin-top: 3px;
+  }
+  .el-button--add {
+    color: #707070;
+    font-size: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius:13px;
+    float:right;
+  }
+  .el-button--expexcel {
+    color: #FFFFFF;
+    font-size: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: #85E67F;
+    border-radius:13px;
+  }
+  .el-button--canceltransaksi {
+    color: #B2B2B2;
+    font-size: 13px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 300;
+    line-height: 14px;
+    background-color: #F4F4F4;
+    border-radius:5px;
+    padding:8px 33px;
+  }
+  .el-button--addtransaksi {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 14px;
+    background-color: #46A2FD;
+    border-radius:5px;
+    padding:8px 33px;
   }
 }
 </style>

@@ -4,28 +4,37 @@
   .main-container {
     min-height: 100%;
     transition: margin-left .28s;
-    margin-left: $sideBarWidth;
+    margin-left: 247px;
     position: relative;
   }
-
+  .github-corner,.handle-button{
+    display: none;
+  }
   // Sidebar container
   .sidebar-container {
     transition: width 0.28s;
-    width: $sideBarWidth !important;
+    width: 247px !important;
     height: 100%;
     position: fixed;
-    font-size: 0px;
+    font-size: 16px;
     top: 0;
     bottom: 0;
     left: 0;
     z-index: 1001;
     overflow: hidden;
-
     //reset element-ui css
     .horizontal-collapse-transition {
       transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
     }
-
+    .el-menu-item{
+      font-size: 16px !important;
+      padding-left: 49px !important;
+    }
+    .el-menu-item.is-active{
+      color: #088600 !important;
+      background: url('/images/menu.png') no-repeat 50%;
+      background-position: left;
+    }
     .scrollbar-wrapper {
       overflow-x: hidden !important;
 
@@ -57,26 +66,34 @@
       height: 100%;
       width: 100% !important;
     }
+    .el-menu--inline{
+      span{
+        padding-left: 15.5px !important;
+      }
 
+    }
     // menu hover
     .submenu-title-noDropdown,
     .el-submenu__title {
+      font-size: 16px;
+      padding-left: 49px !important;
       &:hover {
-        background-color: $menuHover !important;
+        background-color: #FFFFFF !important;
+        color:#ffffff;
       }
     }
 
     .is-active>.el-submenu__title {
-      color: $subMenuActiveText !important;
+      color: #088600 !important;
     }
 
     & .nest-menu .el-submenu>.el-submenu__title,
     & .el-submenu .el-menu-item {
-      min-width: $sideBarWidth !important;
-      background-color: $subMenuBg !important;
-
+      min-width: 247px !important;
+      background-color: #ffffff !important;
       &:hover {
-        background-color: $subMenuHover !important;
+        background-color: #ffffff !important;
+        color: #ffffff;
       }
     }
   }
@@ -179,9 +196,10 @@
 
   .nest-menu .el-submenu>.el-submenu__title,
   .el-menu-item {
+    font-size: 16px;
     &:hover {
       // you can use $subMenuHover
-      background-color: $menuHover !important;
+      background-color: #ffffff !important;
     }
   }
 

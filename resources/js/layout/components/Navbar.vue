@@ -5,7 +5,7 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
-      <template v-if="device!=='mobile'">
+      <!-- <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
@@ -15,11 +15,14 @@
         </el-tooltip>
 
         <lang-select class="right-menu-item hover-effect" />
-      </template>
+      </template> -->
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'/128'" class="user-avatar">
+          <div class="box-nama">
+            hai,<span class="nama-user">{{ user }}</span>
+          </div>
+          <img :src="'/images/profil.png'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -28,22 +31,13 @@
               {{ $t('navbar.dashboard') }}
             </el-dropdown-item>
           </router-link>
-          <router-link v-show="userId !== null" :to="`/administrator/users/edit/${userId}`">
-            <el-dropdown-item>
-              {{ $t('navbar.profile') }}
-            </el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/tuandm/laravue/">
-            <el-dropdown-item>
-              {{ $t('navbar.github') }}
-            </el-dropdown-item>
-          </a>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <div class="garis" />
   </div>
 </template>
 
@@ -55,6 +49,7 @@ import Screenfull from '@/components/Screenfull';
 import SizeSelect from '@/components/SizeSelect';
 import LangSelect from '@/components/LangSelect';
 import Search from '@/components/HeaderSearch';
+import Cookies from 'js-cookie';
 
 export default {
   components: {
@@ -64,6 +59,11 @@ export default {
     SizeSelect,
     LangSelect,
     Search,
+  },
+  data() {
+    return {
+      user: Cookies.get('Role'),
+    };
   },
   computed: {
     ...mapGetters([
@@ -86,13 +86,37 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+  .garis{
+    border-bottom:1px solid #D3D3D3;
+    margin-top: 89px;
+    width: 97%;
+    margin-left: 20px;
+  }
+  .rightPanel{
+    display:none;
+  }
+  .app-breadcrumb.el-breadcrumb .no-redirect{
+    color:#707070 !important;
+    font-size:33px;
+    font-family: 'Abel', sans-serif;
+    font-weight:400;
+    line-height:34px;
+  }
+  .app-breadcrumb.el-breadcrumb[data-v-03d80f31] {
+    color:#707070 !important;
+    font-size:33px;
+    font-family: 'Abel', sans-serif;
+    font-weight:400;
+    line-height:34px;
+    margin-left: 20px;
+    margin-top: 47px;
+  }
 .navbar {
-  height: 50px;
+  height: 93px;
   overflow: hidden;
   position: relative;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  background: #F4F4F4;
 
   .hamburger-container {
     line-height: 46px;
@@ -101,7 +125,7 @@ export default {
     cursor: pointer;
     transition: background .3s;
     -webkit-tap-highlight-color:transparent;
-
+    display:none;
     &:hover {
       background: rgba(0, 0, 0, .025)
     }
@@ -127,7 +151,7 @@ export default {
 
     .right-menu-item {
       display: inline-block;
-      padding: 0 8px;
+      padding: 0px 8px 0px 8px;
       height: 100%;
       font-size: 18px;
       color: #5a5e66;
@@ -145,16 +169,38 @@ export default {
 
     .avatar-container {
       margin-right: 30px;
+      color:#707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:14px;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        margin-top: 31px;
         position: relative;
-
+        .box-nama{
+          position: absolute;
+          display: inline-block;
+          vertical-align: bottom;
+          right: 25px;
+          top: 21px;
+          font-size:19px;
+          font-weight:300;
+          line-height:20px;
+          color:#B2B2B2;
+          .nama-user{
+            margin-right: 30px;
+            color:#707070;
+            font-size:19px;
+            font-weight:500;
+            line-height:20px;
+          }
+        }
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 4px;
+          width: 30px;
+          height: 30px;
+          margin-top: 16px;
         }
 
         .el-icon-caret-bottom {

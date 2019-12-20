@@ -1,21 +1,38 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @input="handleFilter" />
-      <el-select v-model="query.status" :placeholder="$t('table.status')" clearable style="width: 150px" class="filter-item" @change="handleFilter">
-        <el-option key="1" label="Active" value="1" />
-        <el-option key="-1" label="Deleted" value="-1" />
-      </el-select>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-      <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }} Excel <svg-icon icon-class="excel" />
-      </el-button>
+      <el-row>
+        <el-col :span="9">
+          <h3 class="text_normal">
+            Keyword
+          </h3>
+        </el-col>
+        <el-col :span="3">
+          <h3 class="text_normal">
+            Status
+          </h3>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="9">
+          <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="padding-right:26px;" class="filter-item tabel_filter" @input="handleFilter" />
+        </el-col>
+        <el-col :span="3">
+          <el-select v-model="query.status" :placeholder="$t('table.status')" class="filter-item tabel_filter" @change="handleFilter">
+            <el-option key="1" label="Active" value="1" />
+            <el-option key="-1" label="Deleted" value="-1" />
+          </el-select>
+        </el-col>
+        <el-col :span="12">
+          <el-button class="filter-item" style="margin-left: 10px;" type="add" icon="el-icon-plus" @click="handleCreate">
+            {{ $t('table.add') }} Item
+          </el-button>
+        </el-col>
+      </el-row>
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" prop="index" sortable width="80">
+      <el-table-column align="center" label="No." prop="index" sortable width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
         </template>
@@ -27,21 +44,21 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Price" prop="price" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.price | toCurrency }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="Unit" prop="unit" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.unit.name }}</span>
         </template>
       </el-table-column>
 
+      <el-table-column align="right" label="Price" prop="price" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.price | toCurrency }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Created Date" prop="created_at" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.created_at | moment("DD MMMM  YYYY") }}</span>
+          <span>{{ scope.row.created_at | moment("DD/MMM/YY") }}</span>
         </template>
       </el-table-column>
 
@@ -56,48 +73,47 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="350">
+      <el-table-column align="center" label="Actions" width="150">
         <template slot-scope="scope">
-          <el-button v-permission="['manage user']" type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">
-            Edit
-          </el-button>
-          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
-            Delete
-          </el-button>
+          <el-button v-permission="['manage user']" size="medium" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
+          <el-button v-if="scope.row.status == 1" v-permission="['manage user']" size="medium" icon="el-icon-delete" circle @click="handleDelete(scope.row.id, scope.row.name);" />
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible">
-      <div v-loading="vendorCreating" class="form-container">
-        <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="newItem.name_form" />
+    <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" :before-close="handleClose">
+      <div v-loading="itemCreating" class="form-container">
+        <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="100px" style="max-width: 500px;">
+          <el-form-item label="Name" prop="name_form">
+            <el-input v-model="newItem.name_form" placeholder="name"/>
+            <!-- <span v-if="nameblurred && nameEmpty" class="error">Name form is required!</span> -->
           </el-form-item>
-          <el-form-item label="Unit" prop="unit">
-            <el-select v-model="newItem.unit_id_form" style="width: 150px" class="filter-item">
+          <el-form-item label="Unit" prop="unit_id_form">
+            <el-select v-model="newItem.unit_id_form" placeholder="select unit" style="width: 100%" class="filter-item" @change="forceUpdate">
               <el-option v-for="u in unitList" :key="u.id" :label="u.name" :value="u.id">{{ u.name }}</el-option>
             </el-select>
+            <!-- <span v-if="unitblurred && unitEmpty" class="error">Unit ID must be selected!</span> -->
           </el-form-item>
-          <el-form-item label="Price" prop="price">
-            <el-input-number v-model="newItem.price_form" :min="1" />
+          <el-form-item label="Price" prop="price_form">
+            <el-input v-model="newItem.price_form" placeholder="price" @input="forceUpdate" />
+            <!-- <span v-if="priceblurred && priceEmpty" class="error">Price is required!</span> -->
           </el-form-item>
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
-            <el-select v-model="newItem.status_form" style="width: 150px" class="filter-item">
+            <el-select v-model="newItem.status_form" style="width: 100%" class="filter-item" @change="forceupdate">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">
+          <el-button type="canceltransaksi" @click="dialogFormVisible = false, attemptSubmit = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button v-if="itemId <= 0" type="primary" @click="createUser()">
+          <el-button v-if="itemId <= 0" type="addtransaksi" @click="createUser()">
             {{ $t('table.confirm') }}
           </el-button>
-          <el-button v-if="itemId > 0" type="primary" @click="onUpdate()">
+          <el-button v-if="itemId > 0" type="addtransaksi" @click="onUpdate()">
             Update
           </el-button>
         </div>
@@ -132,7 +148,7 @@ export default {
       total: 0,
       loading: true,
       downloading: false,
-      vendorCreating: false,
+      itemCreating: false,
       query: {
         page: 1,
         limit: 15,
@@ -161,12 +177,9 @@ export default {
         rolePermissions: [],
       },
       rules: {
-        name_form: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        phone_form: [
-          { required: true, message: 'Phone number is required', trigger: 'blur' },
-        ],
-        price_form: [{ required: true, message: 'Price is required', trigger: 'blur' }],
-        address_form: [{ required: true, message: 'Address is required', trigger: 'blur' }],
+        name_form: [{ required: true, message: 'Name form is required!', trigger: 'blur' }],
+        unit_id_form: [{ required: true, message: 'Unit ID must be selected!', trigger: 'change' }],
+        price_form: [{ required: true, message: 'Price is required!', trigger: 'blur' }],
       },
       permissionProps: {
         children: 'children',
@@ -176,9 +189,14 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+      errors: [],
+      priceEmpty: false,
+      nameEmpty: false,
+      unitEmpty: false,
     };
   },
   computed: {
+
     normalizedMenuPermissions() {
       let tmp = [];
       this.currentUser.permissions.role.forEach(permission => {
@@ -240,6 +258,15 @@ export default {
     userPermissions() {
       return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
     },
+    nameblurred: function() {
+      return this.newItem.name_form == '';
+    },
+    priceblurred: function() {
+      return this.newItem.price_form == null || this.newItem.price_form == '' || this.newItem.price_form == 0;
+    },
+    unitblurred: function() {
+      return this.newItem.unit_id_form == null;
+    },
   },
   created() {
     this.resetnewItem();
@@ -250,6 +277,22 @@ export default {
     }
   },
   methods: {
+    handleClose(done) {
+      this.$confirm('Are you sure to close this dialog?')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
+    },
+    forceUpdate(){
+      this.$forceUpdate();
+    },
+    forceUpdate2(){
+      this.$forceUpdate();
+      this.$nextTick(() => {
+        this.$refs['itemForm'].clearValidate();
+      });
+    },
     checkPermission,
     async getPermissions() {
       const { data } = await permissionResource.list({});
@@ -330,7 +373,13 @@ export default {
     createUser() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
-          this.vendorCreating = true;
+          // this.priceEmpty = true;
+          // this.nameEmpty = true;
+          // this.unitEmpty = true;
+          // if (this.priceblurred || this.nameblurred || this.unitblurred) {
+          //   return true;
+          // }
+          this.itemCreating = true;
           itemResource
             .store(this.newItem)
             .then(response => {
@@ -342,12 +391,18 @@ export default {
               this.resetnewItem();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.priceEmpty = false;
+              this.nameEmpty = false;
+              this.unitEmpty = false;
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
-              this.vendorCreating = false;
+              this.itemCreating = false;
             });
         } else {
           console.log('error submit!!');
@@ -356,25 +411,14 @@ export default {
       });
     },
     onUpdate() {
-      // this.vendorCreating = true;
-      // itemResource
-      //   .update(this.itemId, this.newItem)
-      //   .then(response => {
-      //     this.vendorCreating = false;
-      //     this.$message({
-      //       message: 'Vendor information has been updated successfully',
-      //       type: 'success',
-      //       duration: 5 * 1000,
-      //     });
-      //   })
-      //   .catch(error => {
-      //     console.log(error);
-      //     this.vendorCreating = false;
-      //   });
-
-      this.$refs['itemForm'].validate((valid) => {
-        if (valid) {
-          this.vendorCreating = true;
+      // this.$refs['itemForm'].validate((valid) => {
+      //   if (valid) {
+          // this.priceEmpty = true;
+          // this.nameEmpty = true;
+          // if (this.priceblurred || this.nameblurred) {
+          //   return true;
+          // }
+          this.itemCreating = true;
           itemResource
             .update(this.itemId, this.newItem)
             .then(response => {
@@ -386,18 +430,22 @@ export default {
               this.resetnewItem();
               this.dialogFormVisible = false;
               this.handleFilter();
+              this.attemptSubmit = false;
             })
             .catch(error => {
-              console.log(error);
+              if (error.response.status == 403) {
+                this.errors = error.response.data.errors;
+                console.log(this.errors);
+              }
             })
             .finally(() => {
-              this.vendorCreating = false;
+              this.itemCreating = false;
             });
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+      //   } else {
+      //     console.log('error submit!!');
+      //     return false;
+      //   }
+      // });
     },
     resetnewItem() {
       this.newItem = {
@@ -468,7 +516,131 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.el-dialog{
+      width:410px;
+      border-radius:10px;
+      .el-dialog__header{
+        margin: 26px 30px 0px;
+        border-bottom: 1px solid #D3D3D3;
+        padding: 24px 0 5.5px 0;
+        .el-dialog__title {
+          color:#707070;
+          font-size:33px;
+          font-family: 'Abel', sans-serif;
+          font-weight:400;
+          line-height:43px;
+        }
+      }
+      .el-dialog__body {
+        padding: 21px 30px;
+        color: #606266;
+        font-size: 20px;
+        word-break: break-all;
+        .form-container{
+          .el-form-item--medium .el-form-item__label {
+            color:#707070;
+            font-size:16px;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight:500;
+            line-height:11px;
+            margin-top: 13px;
+          }
+          .el-input--medium .el-input__inner {
+            color:#707070;
+              height: 34px;
+              line-height: 34px;
+              font-size: 16px;
+          }
+          .div_tabel{
+            .transaksi_tabel_add{
+              width:687px;
+              border-spacing: 10px;
+              border-collapse: separate;
+               thead{
+                color:#707070;
+                font-size:13px;
+                font-family: 'Ubuntu', sans-serif;
+                font-weight:400;
+                line-height:11px;
+                text-align:left;
+              }
+              tbody{
+               color:#707070;
+               font-size:13px;
+               font-family: 'Ubuntu', sans-serif;
+               font-weight:400;
+               line-height:11px;
+               .el-select-dropdown{
+                 .el-scrollbar{
+                   .el-select-dropdown__wrap{
+                     .el-select-dropdown__item {
+                          font-size: 10px;
+                          padding: 0 15px;
+                          position: relative;
+                          white-space: nowrap;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          color: #606266;
+                          height: 20px;
+                          line-height: 20px;
+                          box-sizing: border-box;
+                          cursor: pointer;
+                      }
+                   }
+                 }
+
+               }
+
+             }
+            }
+          }
+          .el-select__caret {
+              color: #C0C4CC;
+              font-size: 14px;
+              transition: transform .3s;
+              transform: rotateZ(180deg);
+              cursor: pointer;
+              margin: 3px;
+          }
+          .el-select-dropdown{
+            .el-select-dropdown__list {
+                list-style: none;
+                padding: 0px 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            .el-select-dropdown__item {
+                 font-size: 16px;
+                 padding: 0 15px;
+                 position: relative;
+                 white-space: nowrap;
+                 overflow: hidden;
+                 text-overflow: ellipsis;
+                 color: #606266;
+                 height: 20px;
+                 line-height: 20px;
+                 box-sizing: border-box;
+                 cursor: pointer;
+             }
+          }
+        }
+        .total_price{
+          color:#707070;
+          font-size:16px;
+          font-family: 'Ubuntu', sans-serif;
+          font-weight:500;
+          line-height:14px;
+          text-align:left;
+        }
+        .dialog-footer{
+          text-align:center;
+          padding-top: 30px;
+          margin-top: 1px;
+          margin-left: 0px;
+        }
+      }
+    }
 .edit-input {
   padding-right: 100px;
 }
@@ -485,14 +657,180 @@ export default {
 .app-container {
   flex: 1;
   justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
+  width:96%;
+  font-size:16px;
+  padding: 16px;
+  margin:20px;
+  background:#FFFFFF;
+  border-radius:10px;
+  .el-button--medium.is-circle {
+    padding: 8px;
+    border: none;
+  }
+  .filter-container{
+    .text_normal{
+      font-weight: 500 !important;
+      color: #707070;
+      font-size: 16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 500;
+      line-height: 29px;
+      padding: 0;
+      margin: 0;
+    }
+    .tabel_filter{
+      color:#707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:16px;
+      .el-input__inner {
+        color:#707070;
+        height: 36px ;
+        line-height: 36px;
+        font-size:16px;
+        border: 1px solid #D3D3D3 !important;
+      }
+      .el-input--medium{
+        .el-input__inner {
+          color:#707070;
+          height: 36px ;
+          line-height: 36px;
+          font-size:16px;
+          border: 1px solid #D3D3D3 !important;
+        }
+      }
+    }
+    .el-select.tabel_filter{
+      color:#707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight:300;
+      line-height:11px;
+      .el-input{
+        height: 36px;
+        line-height: 36px;
+        .el-select__caret {
+            color: #C0C4CC;
+            font-size: 14px;
+            transition: transform .3s;
+            /* transform: rotateZ(180deg); */
+            cursor: pointer;
+            margin: 3px;
+        }
+        .el-input__inner {
+          color:#707070;
+          height: 36px;
+          line-height: 36px;
+          font-size:16px;
+          border: 1px solid #D3D3D3;
+        }
+      }
+    }
+  }
+  .el-table{
+      color: #707070;
+      font-size:16px;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 400;
+      line-height:11px;
+      padding:0px !important;
+      .el-tag {
+          padding: 0 5px;
+          line-height: 30px;
+          font-family: 'Ubuntu', sans-serif;
+          font-size: 16px;
+      }
+      .cell {
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+        word-break: break-all;
+        line-height: qqpx;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .status-col .cell {
+        padding: 0 10px;
+        text-align: left;
+      }
+  }
   .block {
     float: left;
     min-width: 250px;
   }
   .clear-left {
     clear: left;
+  }
+  .el-button--medium.is-circle {
+    padding: 8px;
+  }
+  .el-button--addtable {
+    color: #707070;
+    font-size:16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius:13px;
+    padding: 7px 20px;
+    margin-top: 3px;
+  }
+  .el-button--add {
+    color: #707070;
+    font-size: 16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: transparent;
+    border-color: #707070;
+    border-radius: 19px;
+    float: right;
+    padding: 10px;
+  }
+  .el-button--expexcel {
+    color: #FFFFFF;
+    font-size:16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 11px;
+    background-color: #85E67F;
+    border-radius:13px;
+  }
+  .el-button--canceltransaksi {
+    color: #B2B2B2;
+    font-size: 13px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 300;
+    line-height: 14px;
+    background-color: #F4F4F4;
+    border-radius:5px;
+    padding:8px 33px;
+  }
+  .el-button--addtransaksi {
+    color: #FFFFFF;
+    font-size: 16px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+    line-height: 14px;
+    background-color: #46A2FD;
+    border-radius:5px;
+    padding:8px 33px;
+  }
+  .error {
+    float: left;
+    font-size: 12px;
+    line-height: normal;
+    padding-top: 2px;
+    color: red;
+    opacity: 0.6;
+  }
+  .highlight {
+    input {
+      border-color: red;
+    }
   }
 }
 </style>

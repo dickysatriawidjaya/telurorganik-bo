@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\UnitResource;
 use Validator;
 use App\Laravue\Models\Unit;
+use App\Laravue\Models\Item;
 use Illuminate\Support\Arr;
 
 class UnitController extends Controller
@@ -21,22 +22,21 @@ class UnitController extends Controller
         $keyword = Arr::get($searchParams, 'keyword', '');
         $paginate = Arr::get($searchParams, 'paginate', '');
 
-        if (!empty($status)) {
-            $unitQuery->where('status',$status);
-        }
-
         if (!empty($keyword)) {
             $unitQuery->where('name', 'LIKE', '%' . $keyword . '%');
             $unitQuery->orWhere('unit_code', 'LIKE', '%' . $keyword . '%');
             $unitQuery->orWhere('description', 'LIKE', '%' . $keyword . '%');
         }
 
-        $unitQuery->orderBy('status','DESC');
+        if (!empty($status)) {
+            $unitQuery->where('status',$status);
+        }
 
-        if ($paginate == true) {
+        $unitQuery->orderBy('id','DESC');
+        if ($paginate == "true") {
             return UnitResource::collection($unitQuery->paginate($limit));
         } else {
-            return UnitResource::collection($unitQuery->get());
+            return UnitResource::collection($unitQuery->where("status",1)->get());
         }
     }
 
@@ -48,12 +48,13 @@ class UnitController extends Controller
             [
                 'name_form' => 'required',
                 'unit_code_form' => 'required',
+                'description_form' => 'required',
             ]
         );
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
-        } 
+        }
 
         $check = Unit::where('name',$request->name_form)->where('status',1)->first();
         if ($check) {
@@ -71,7 +72,7 @@ class UnitController extends Controller
 
     public function update(Request $request, Unit $unit)
     {
-        
+
         if ($unit === null) {
             return response()->json(['error' => 'unit not found'], 404);
         }
@@ -98,15 +99,21 @@ class UnitController extends Controller
 
     public function destroy(unit $unit)
     {
-        try {
-            $unit->update(['status'=>-1]);
-        } catch (\Exception $ex) {
-            response()->json(['error' => $ex->getMessage()], 403);
+        $check_item_with_this_unit = Item::where("unit_id",$unit->id)->where('status',1)->get();
+
+        if (count($check_item_with_this_unit)>0) {
+           return response()->json(['error' =>"Unit cannot be delete, because there is Item relation with this unit"], 403);
+        }else{
+            try {
+                $unit->update(['status'=>-1]);
+            } catch (\Exception $ex) {
+               return response()->json(['error' => $ex->getMessage()], 403);
+            }
         }
 
         return response()->json(null, 204);
     }
-    
+
     private function getValidationRules($isNew = true)
     {
         return [
