@@ -81,6 +81,13 @@ class VendorController extends Controller
                 foreach ($request->child as $key => $c) {
                     $child = New Vendor;
                     $child->parent_id = $vendor->id;
+
+                    $check = Vendor::where('name',$c['name_form'])->where('status',1)->first();
+
+                    if ($check) {
+                        return response()->json(['errors' => "Vendor Name " .$c['name_form']. ' Already Exist'], 403);
+                    }
+
                     $child->name = $c['name_form'];
                     $child->pic_name = $c['pic_name_form'];
                     $child->phone = $c['phone_form'];
@@ -136,6 +143,13 @@ class VendorController extends Controller
                                 $child = new Vendor;
                             }
                             $child->parent_id = $vendor->id;
+
+                            $check = Vendor::where('name',$c['name_form'])->where('status',1)->first();
+
+                            if ($check) {
+                                return response()->json(['errors' => "Vendor Name " .$c['name_form']. ' Already Exist'], 403);
+                            }
+
                             $child->name = $c['name_form'];
                             $child->pic_name = $c['pic_name_form'];
                             $child->phone = $c['phone_form'];

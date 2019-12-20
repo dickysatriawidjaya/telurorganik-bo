@@ -85,7 +85,7 @@
 
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" :before-close="handleClose">
       <div v-loading="itemCreating" class="form-container">
-        <el-form ref="itemForm" :rules="rules" :model="newItem" label-position="left" label-width="100px" style="max-width: 500px;">
+        <el-form ref="itemForm" :model="newItem" label-position="left" label-width="100px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name_form">
             <el-input v-model="newItem.name_form" placeholder="name"/>
             <!-- <span v-if="nameblurred && nameEmpty" class="error">Name form is required!</span> -->
@@ -101,7 +101,7 @@
             <!-- <span v-if="priceblurred && priceEmpty" class="error">Price is required!</span> -->
           </el-form-item>
           <el-form-item v-if="itemId > 0" label="Status" prop="status">
-            <el-select v-model="newItem.status_form" style="width: 100%" class="filter-item" @change="forceupdate">
+            <el-select v-model="newItem.status_form" style="width: 100%" class="filter-item" @change="forceUpdate">
               <el-option v-for="s in status" :key="s.value" :label="s.label" :value="s.value">{{ s.label }}</el-option>
             </el-select>
           </el-form-item>
@@ -270,11 +270,12 @@ export default {
   },
   created() {
     this.resetnewItem();
-    this.getList();
     this.getUnitList();
-    if (checkPermission(['manage permission'])) {
-      this.getPermissions();
-    }
+    // if (checkPermission(['manage permission'])) {
+    //   this.getPermissions();
+    // }
+    this.getList();
+
   },
   methods: {
     handleClose(done) {
@@ -287,12 +288,12 @@ export default {
     forceUpdate(){
       this.$forceUpdate();
     },
-    forceUpdate2(){
-      this.$forceUpdate();
-      this.$nextTick(() => {
-        this.$refs['itemForm'].clearValidate();
-      });
-    },
+    // forceUpdate2(){
+    //   this.$forceUpdate();
+    //   this.$nextTick(() => {
+    //     this.$refs['itemForm'].clearValidate();
+    //   });
+    // },
     checkPermission,
     async getPermissions() {
       const { data } = await permissionResource.list({});
