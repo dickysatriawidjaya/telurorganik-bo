@@ -85,7 +85,7 @@
 
     <el-dialog :title="titleForm" :visible.sync="dialogFormVisible" class="a" :before-close="handleClose">
       <div v-loading="vendorCreating" class="form-container">
-        <el-form ref="unitForm" :rules="rules" :model="newUnit" label-position="left" label-width="100px" style="max-width: 500px;">
+        <el-form ref="unitForm" :rules="rules" :model="newUnit" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item label="Name" prop="name_form">
             <el-input v-model="newUnit.name_form" :class="{'highlight':nameblurred && nameEmpty}" placeholder="Unit Name" />
             <!-- <span v-if="nameblurred && nameEmpty" class="error">Name form is required!</span> -->
