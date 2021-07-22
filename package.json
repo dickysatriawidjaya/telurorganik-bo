@@ -82,6 +82,6 @@
     "vuedraggable": "^2.23.2",
     "vuejs-datepicker": "^1.6.2",
     "vuex": "3.1.0",
-    "xlsx": "^0.14.5"
+    "xlsx": "^0.17.0"
   }
 }
